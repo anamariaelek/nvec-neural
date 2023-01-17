@@ -1,0 +1,223 @@
+---
+title: "01. RNAseq"
+format: html
+editor: visual
+---
+
+## Setup
+
+Load packages
+
+```{r warning=FALSE, message=FALSE, results = FALSE}
+library(data.table)
+library(ggplot2)
+theme_py <- theme_light() + theme(
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.border = element_rect(colour = "black", fill = NA),
+  text = element_text(size=20),
+  strip.placement = "outside", 
+  strip.text = element_text(size=20, color="black"),
+  strip.background = element_rect(fill="white")
+)
+theme_set(theme_py)
+library(patchwork)
+library(ggrepel)
+library(ComplexHeatmap)
+library(DESeq2)
+```
+
+Load expression data
+
+```{r}
+dat_dir <- "RNASEQ_QUANTIFICATION"
+
+# column data
+des_fn <- file.path(dat_dir, "design_table.tsv")
+des_dt <- fread(des_fn) 
+col_dt <- des_dt[,.(sample,reporter_line,condition)]
+col_dt[,reporter_line:=factor(reporter_line, levels=c("Elav","Fox","Ncol"))]
+col_dt[,condition:=factor(condition, levels = c("positive","negative"))]
+setorder(col_dt, reporter_line, condition)
+
+condition_cols <- c("positive"="blue","negative"="red") 
+line_cols = c("Elav" = "#ff7f00", "Fox" = "#984ea3", "Ncol" = "#4daf4a")
+
+col_df <- copy(col_dt)
+class(col_df) <- "data.frame"
+rownames(col_df) <- col_df$sample
+
+# count matrix
+con_fn <- file.path(dat_dir, "merged_quantification_transcripts.tsv")
+con_mt <- read.table(con_fn)[,rownames(col_df)]
+
+```
+
+Data contains expression normalized values
+
+```{r fig.width=7, fig.height=5}
+con_dt <- as.data.table(con_mt, keep.rownames="gene")
+con_dt <- melt.data.table(con_dt, id.vars="gene", variable.name="sample", value.name="expr")
+con_dt <- merge.data.table(con_dt, col_dt, by="sample", all.x=TRUE, sort=FALSE)
+ggplot(con_dt, aes(log10(expr+1e-6))) +
+  geom_density() +
+  facet_grid(condition~reporter_line) 
+```
+
+## Marker genes
+
+Use normalized log-transformed expression data
+
+```{r}
+norm_mt <- log10(con_mt+1e-6)
+```
+
+Identify marker genes
+
+```{r}
+# gene markers by normalized expression
+genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>2))
+# genes_vari <- names(which(apply(norm_mt, 1, function(x) var(x)>0.05)))
+gene_marks <- genes_high
+```
+
+```{r include=FALSE}
+# gene markers by normalized expression + significant kruskall wallis
+factor <- paste0(col_df$condition, col_df$reporter_line)
+kw_pvals <- apply(norm_mt, 1, function(x) kruskal.test(x~factor)$p.value)
+kw_qvals <- p.adjust(kw_pvals, method="BH")
+kw_genes <- names(which(kw_qvals<0.05))
+genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>2))
+gene_marks <- intersect(genes_high, kw_genes)
+```
+
+Cluster samples based on markers expression
+
+```{r include=FALSE}
+# hclust genes
+cor_genes <- cor(t(norm_mt[gene_marks,]))
+hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
+gene_order <- rownames(cor_genes)[hclust_genes$order]
+```
+
+```{r}
+# kmeans
+set.seed(1950)
+k <- 13
+cl <- kmeans(norm_mt[gene_marks,], k)
+gene_order <- tapply(names(cl$cluster), cl$cluster, function(gs) {
+  cor_genes <- cor(t(norm_mt[gs,]))
+  hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
+  rownames(cor_genes)[hclust_genes$order]
+})
+cluster_order <- hclust(dist(cor(cor(t(cl$centers)))),method="ward.D2")$order
+gene_order <- unlist(gene_order[rev(cluster_order)])
+```
+
+Heatmap of markers
+
+```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
+# matrix to plot
+plot_mt <- norm_mt[gene_order,]
+plot_max <- max(abs(range(plot_mt)))
+plot_mt <- pmin(plot_mt, plot_max)
+
+col_ann <- HeatmapAnnotation(
+    which = "column", border = TRUE,
+    "reporter_line" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporter_line),
+    "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
+    col = list("reporter_line" = line_cols, "condition" = condition_cols)
+)
+hm <- Heatmap(
+  plot_mt, name = "norm expression", border = TRUE, 
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = FALSE, show_column_names = TRUE,
+  top_annotation = col_ann
+)
+hm
+```
+
+# PCA
+
+PCA on all samples.
+
+```{r fig.width=8, fig.height=10, warning=FALSE}
+set.seed(1950)
+norm_mt <- log10(con_mt+1e-6)
+pca_res <- prcomp(t(norm_mt), center = TRUE)
+
+# variance explained
+pca_var <- data.table(pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2))
+pca_var[,pct_cum:=cumsum(pct_var)]
+pca_var[,PC:=factor(1:.N)]
+gp_var <- ggplot(pca_var, aes(PC, pct_var)) + 
+  geom_bar(stat = "identity") +
+  geom_line(aes(y = pct_cum, group = 1)) + 
+  geom_point(aes(y = pct_cum)) +
+  scale_y_continuous(expand = expansion(0.01,0)) +
+  labs(y = "% of variance\nexplained", x = "PC") +
+  theme(panel.grid.major.y = element_line(size = 0.5))
+
+pca_dt <- as.data.table(pca_res$x, keep.rownames = "sample")
+pca_dt <- merge.data.table(col_dt, pca_dt, by="sample", sort=FALSE)
+gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=reporter_line, shape=condition)) + 
+  geom_point(size=5) +
+  scale_fill_manual(values = line_cols) +
+  scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
+  geom_text_repel(aes(label = sample))
+
+gp_var / gp_bip 
+```
+
+PCA per cell line.
+
+```{r fig.height=8, fig.width=7}
+set.seed(1950)
+norm_mt <- log10(con_mt+1e-6)
+
+cls <- c("Fox","Elav","Ncol")
+gp_l <- lapply(cls, function(cl) {
+  
+  pca_res <- prcomp(t(norm_mt[,grep(cl,colnames(norm_mt))]), center = TRUE)
+  
+  # variance explained
+  pca_var <- data.table(pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2))
+  pca_var <- pca_var[-nrow(pca_var)]
+  pca_var[,pct_cum:=cumsum(pct_var)]
+  pca_var[,PC:=factor(1:.N-1)]
+  gp_var <- ggplot(pca_var, aes(PC, pct_var)) + 
+    geom_bar(stat = "identity") +
+    geom_line(aes(y = pct_cum, group = 1)) + 
+    geom_point(aes(y = pct_cum)) +
+    scale_y_continuous(expand = expansion(0.01,0)) +
+    labs(y = "% of variance\nexplained", x = "PC") +
+    theme(panel.grid.major.y = element_line(size = 0.5))
+  
+  # pca plot
+  pca_dt <- as.data.table(pca_res$x, keep.rownames = "sample")
+  pca_dt <- merge.data.table(col_dt, pca_dt, by="sample", sort=FALSE)
+  gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=condition, shape=condition)) + 
+    geom_point(size=5) +
+    scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
+    scale_fill_manual(values = condition_cols) +
+    geom_text_repel(aes(label = sample))
+  
+  gp_var / gp_bip 
+
+})
+gp_l
+# wrap_plots(gp_l, ncol = 1, nrow = 3)
+```
+
+## DESeq2
+
+```{r eval=FALSE}
+require(DESeq2)
+dds <- DESeqDataSetFromMatrix(
+  countData = con_mt,
+  colData = col_df,
+  design = ~ condition + reporter_line + condition:reporter_line
+)
+dds
+
+```

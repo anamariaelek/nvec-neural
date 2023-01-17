@@ -1,0 +1,25 @@
+sample	fq1	fq2	condition1	reporter_line	condition
+JGC6_NcolNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGC6_18s006047-1-1_Gahan_lane118s006047_sequence.fastq.gz		NcolNeg	Ncol	negative
+JGC7_NcolPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGC7_18s006048-1-1_Gahan_lane118s006048_sequence.fastq.gz		NcolPos	Ncol	positive
+JGC8_NcolNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGC8_18s006049-1-1_Gahan_lane118s006049_sequence.fastq.gz		NcolNeg	Ncol	negative
+JGD1_ElavPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD1_18s006055-1-1_Gahan_lane118s006055_sequence.fastq.gz		ElavPos	Elav	positive
+JGD2_ElavNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD2_18s006056-1-1_Gahan_lane118s006056_sequence.fastq.gz		ElavNeg	Elav	negative
+JGD3_ElavPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD3_18s006057-1-1_Gahan_lane118s006057_sequence.fastq.gz		ElavPos	Elav	positive
+JGD4_ElavNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD4_18s006058-1-1_Gahan_lane118s006058_sequence.fastq.gz		ElavNeg	Elav	negative
+JGD5_ElavPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD5_18s006059-1-1_Gahan_lane118s006059_sequence.fastq.gz		ElavPos	Elav	positive
+JGD6_ElavNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD6_18s006060-1-1_Gahan_lane118s006060_sequence.fastq.gz		ElavNeg	Elav	negative
+JGD7_ElavPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD7_18s006061-1-1_Gahan_lane118s006061_sequence.fastq.gz		ElavPos	Elav	positive
+JGD8_ElavNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HKHBGX9_JGD8_18s006062-1-1_Gahan_lane118s006062_sequence.fastq.gz		ElavNeg	Elav	negative
+JGC1_NcolPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HL2BGX9_JGC1_18s006042-1-1_Gahan_lane118s006042_sequence.fastq.gz		NcolPos	Ncol	positive
+JGC2_NcolNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HL2BGX9_JGC2_18s006043-1-1_Gahan_lane118s006043_sequence.fastq.gz		NcolNeg	Ncol	negative
+JGC3_NcolPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HL2BGX9_JGC3_18s006044-1-1_Gahan_lane118s006044_sequence.fastq.gz		NcolPos	Ncol	positive
+JGC4_NcolNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HL2BGX9_JGC4_18s006045-1-1_Gahan_lane118s006045_sequence.fastq.gz		NcolNeg	Ncol	negative
+JGC5_NcolPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H3HL2BGX9_JGC5_18s006046-1-1_Gahan_lane118s006046_sequence.fastq.gz		NcolPos	Ncol	positive
+JGA1_FoxPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA1_18s006026-1-1_Gahan_lane118s006026_sequence.fastq.gz		FoxPos	Fox	positive
+JGA2_FoxNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA2_18s006027-1-1_Gahan_lane118s006027_sequence.fastq.gz		FoxNeg	Fox	negative
+JGA3_FoxPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA3_18s006028-1-1_Gahan_lane118s006028_sequence.fastq.gz		FoxPos	Fox	positive
+JGA4_FoxNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA4_18s006029-1-1_Gahan_lane118s006029_sequence.fastq.gz		FoxNeg	Fox	negative
+JGA5_FoxPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA5_18s006030-1-1_Gahan_lane118s006030_sequence.fastq.gz		FoxPos	Fox	positive
+JGA6_FoxNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA6_18s006031-1-1_Gahan_lane118s006031_sequence.fastq.gz		FoxNeg	Fox	negative
+JGA7_FoxPos	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA7_18s006032-1-1_Gahan_lane118s006032_sequence.fastq.gz		FoxPos	Fox	positive
+JGA8_FoxNeg	/Volumes/nve_1/NVE/TIERIpro_dev_v2_FoxNcolElav/raw_data/H5F2HBGX9_JGA8_18s006033-1-1_Gahan_lane118s006033_sequence.fastq.gz		FoxNeg	Fox	negative

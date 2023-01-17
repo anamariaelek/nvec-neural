@@ -1,0 +1,748 @@
+Elav_neg_R1:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 21491358
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 21491358
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 21491358
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 21438990
+  properly paired_passed_pct: 99.76
+  read1_failed: 0
+  read1_passed: 10745679
+  read2_failed: 0
+  read2_passed: 10745679
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 21491358
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 21491358
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_neg_R2:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 22322852
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 22322852
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 22322852
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 22240842
+  properly paired_passed_pct: 99.63
+  read1_failed: 0
+  read1_passed: 11161426
+  read2_failed: 0
+  read2_passed: 11161426
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 22322852
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 22322852
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_neg_R3:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 21566330
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 21566330
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 21566330
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 21547278
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 10783165
+  read2_failed: 0
+  read2_passed: 10783165
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 21566330
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 21566330
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_neg_R4:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 19131780
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 19131780
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 19131780
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 19107260
+  properly paired_passed_pct: 99.87
+  read1_failed: 0
+  read1_passed: 9565890
+  read2_failed: 0
+  read2_passed: 9565890
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 19131780
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 19131780
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_pos_R1:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 19976754
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 19976754
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 19976754
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 19958594
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 9988377
+  read2_failed: 0
+  read2_passed: 9988377
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 19976754
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 19976754
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_pos_R2:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 33866234
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 33866234
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 33866234
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 33835300
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 16933117
+  read2_failed: 0
+  read2_passed: 16933117
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 33866234
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 33866234
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_pos_R3:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 12875848
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 12875848
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 12875848
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 12865826
+  properly paired_passed_pct: 99.92
+  read1_failed: 0
+  read1_passed: 6437924
+  read2_failed: 0
+  read2_passed: 6437924
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 12875848
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 12875848
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Elav_pos_R4:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 16406158
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 16406158
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 16406158
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 16392046
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 8203079
+  read2_failed: 0
+  read2_passed: 8203079
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 16406158
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 16406158
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Fox_neg_R1:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 25583248
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 25583248
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 25583248
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 25544680
+  properly paired_passed_pct: 99.85
+  read1_failed: 0
+  read1_passed: 12791624
+  read2_failed: 0
+  read2_passed: 12791624
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 25583248
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 25583248
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Fox_neg_R2:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 16533664
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 16533664
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 16533664
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 16438838
+  properly paired_passed_pct: 99.43
+  read1_failed: 0
+  read1_passed: 8266832
+  read2_failed: 0
+  read2_passed: 8266832
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 16533664
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 16533664
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Fox_neg_R3:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 36513952
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 36513952
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 36513952
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 36430098
+  properly paired_passed_pct: 99.77
+  read1_failed: 0
+  read1_passed: 18256976
+  read2_failed: 0
+  read2_passed: 18256976
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 36513952
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 36513952
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Fox_pos_R1:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 14036472
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 14036472
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 14036472
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 14023242
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 7018236
+  read2_failed: 0
+  read2_passed: 7018236
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 14036472
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 14036472
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Fox_pos_R2:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 14888500
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 14888500
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 14888500
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 14875576
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 7444250
+  read2_failed: 0
+  read2_passed: 7444250
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 14888500
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 14888500
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Fox_pos_R3:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 20643108
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 20643108
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 20643108
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 20621138
+  properly paired_passed_pct: 99.89
+  read1_failed: 0
+  read1_passed: 10321554
+  read2_failed: 0
+  read2_passed: 10321554
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 20643108
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 20643108
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_neg_R1:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 16219746
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 16219746
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 16219746
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 16199796
+  properly paired_passed_pct: 99.88
+  read1_failed: 0
+  read1_passed: 8109873
+  read2_failed: 0
+  read2_passed: 8109873
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 16219746
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 16219746
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_neg_R2:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 46898932
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 46898932
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 46898932
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 46838642
+  properly paired_passed_pct: 99.87
+  read1_failed: 0
+  read1_passed: 23449466
+  read2_failed: 0
+  read2_passed: 23449466
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 46898932
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 46898932
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_neg_R3:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 23480046
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 23480046
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 23480046
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 23453142
+  properly paired_passed_pct: 99.89
+  read1_failed: 0
+  read1_passed: 11740023
+  read2_failed: 0
+  read2_passed: 11740023
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 23480046
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 23480046
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_neg_R4:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 46986044
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 46986044
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 46986044
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 46918752
+  properly paired_passed_pct: 99.86
+  read1_failed: 0
+  read1_passed: 23493022
+  read2_failed: 0
+  read2_passed: 23493022
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 46986044
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 46986044
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_pos_R1:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 11869910
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 11869910
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 11869910
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 11859954
+  properly paired_passed_pct: 99.92
+  read1_failed: 0
+  read1_passed: 5934955
+  read2_failed: 0
+  read2_passed: 5934955
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 11869910
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 11869910
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_pos_R2:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 11595688
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 11595688
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 11595688
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 11585518
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 5797844
+  read2_failed: 0
+  read2_passed: 5797844
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 11595688
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 11595688
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_pos_R3:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 14071920
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 14071920
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 14071920
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 14049902
+  properly paired_passed_pct: 99.84
+  read1_failed: 0
+  read1_passed: 7035960
+  read2_failed: 0
+  read2_passed: 7035960
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 14071920
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 14071920
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0
+Ncol_pos_R4:
+  duplicates_failed: 0
+  duplicates_passed: 0
+  flagstat_total: 29508094
+  mapped_failed: 0
+  mapped_failed_pct: .nan
+  mapped_passed: 29508094
+  mapped_passed_pct: 100.0
+  paired in sequencing_failed: 0
+  paired in sequencing_passed: 29508094
+  properly paired_failed: 0
+  properly paired_failed_pct: .nan
+  properly paired_passed: 29482670
+  properly paired_passed_pct: 99.91
+  read1_failed: 0
+  read1_passed: 14754047
+  read2_failed: 0
+  read2_passed: 14754047
+  secondary_failed: 0
+  secondary_passed: 0
+  singletons_failed: 0
+  singletons_failed_pct: .nan
+  singletons_passed: 0
+  singletons_passed_pct: 0.0
+  supplementary_failed: 0
+  supplementary_passed: 0
+  total_failed: 0
+  total_passed: 29508094
+  with itself and mate mapped_failed: 0
+  with itself and mate mapped_passed: 29508094
+  with mate mapped to a different chr (mapQ >= 5)_failed: 0
+  with mate mapped to a different chr (mapQ >= 5)_passed: 0
+  with mate mapped to a different chr_failed: 0
+  with mate mapped to a different chr_passed: 0

@@ -1,0 +1,352 @@
+Elav_neg_R1_T1_1:
+  bp_processed: 1924183833
+  bp_written: 1896494825
+  percent_trimmed: 1.4390001373636945
+  quality_trimmed: 4600822
+  r_processed: 46931313
+  r_with_adapters: 14651877
+  r_written: 46931313
+Elav_neg_R1_T1_2:
+  bp_processed: 1924183833
+  bp_written: 1889501884
+  percent_trimmed: 1.8024238851402925
+  quality_trimmed: 11712029
+  r_processed: 46931313
+  r_with_adapters: 14607989
+  r_written: 46931313
+Elav_neg_R2_T1_1:
+  bp_processed: 1267864074
+  bp_written: 1252090577
+  percent_trimmed: 1.244100004366872
+  quality_trimmed: 2393291
+  r_processed: 30923514
+  r_with_adapters: 9087054
+  r_written: 30923514
+Elav_neg_R2_T1_2:
+  bp_processed: 1267864074
+  bp_written: 1248114131
+  percent_trimmed: 1.5577334672549448
+  quality_trimmed: 6413096
+  r_processed: 30923514
+  r_with_adapters: 9059714
+  r_written: 30923514
+Elav_neg_R3_T1_1:
+  bp_processed: 2258791270
+  bp_written: 2226588093
+  percent_trimmed: 1.4256818426609201
+  quality_trimmed: 5284424
+  r_processed: 55092470
+  r_with_adapters: 16959128
+  r_written: 55092470
+Elav_neg_R3_T1_2:
+  bp_processed: 2258791270
+  bp_written: 2218526848
+  percent_trimmed: 1.7825649733452353
+  quality_trimmed: 13503405
+  r_processed: 55092470
+  r_with_adapters: 16891769
+  r_written: 55092470
+Elav_neg_R4_T1_1:
+  bp_processed: 1740557297
+  bp_written: 1716064880
+  percent_trimmed: 1.4071594794503337
+  quality_trimmed: 4003139
+  r_processed: 42452617
+  r_with_adapters: 12963129
+  r_written: 42452617
+Elav_neg_R4_T1_2:
+  bp_processed: 1740557297
+  bp_written: 1709631832
+  percent_trimmed: 1.7767565051321605
+  quality_trimmed: 10559606
+  r_processed: 42452617
+  r_with_adapters: 12900932
+  r_written: 42452617
+Elav_pos_R1_T1_1:
+  bp_processed: 2762916118
+  bp_written: 2723321416
+  percent_trimmed: 1.4330765144133848
+  quality_trimmed: 6614836
+  r_processed: 67388198
+  r_with_adapters: 20891298
+  r_written: 67388198
+Elav_pos_R1_T1_2:
+  bp_processed: 2762916118
+  bp_written: 2713292108
+  percent_trimmed: 1.7960737091041863
+  quality_trimmed: 16795774
+  r_processed: 67388198
+  r_with_adapters: 20833528
+  r_written: 67388198
+Elav_pos_R2_T1_1:
+  bp_processed: 1713639772
+  bp_written: 1690363214
+  percent_trimmed: 1.3583110278091748
+  quality_trimmed: 3335812
+  r_processed: 41796092
+  r_with_adapters: 12773817
+  r_written: 41796092
+Elav_pos_R2_T1_2:
+  bp_processed: 1713639772
+  bp_written: 1685041824
+  percent_trimmed: 1.668842452613197
+  quality_trimmed: 8746296
+  r_processed: 41796092
+  r_with_adapters: 12734877
+  r_written: 41796092
+Elav_pos_R3_T1_1:
+  bp_processed: 1672412058
+  bp_written: 1648230857
+  percent_trimmed: 1.4458877454470016
+  quality_trimmed: 3793061
+  r_processed: 40790538
+  r_with_adapters: 12709483
+  r_written: 40790538
+Elav_pos_R3_T1_2:
+  bp_processed: 1672412058
+  bp_written: 1642498748
+  percent_trimmed: 1.7886327628953271
+  quality_trimmed: 9629861
+  r_processed: 40790538
+  r_with_adapters: 12680930
+  r_written: 40790538
+Elav_pos_R4_T1_1:
+  bp_processed: 1869053265
+  bp_written: 1842354872
+  percent_trimmed: 1.428444737234388
+  quality_trimmed: 4313603
+  r_processed: 45586665
+  r_with_adapters: 14124433
+  r_written: 45586665
+Elav_pos_R4_T1_2:
+  bp_processed: 1869053265
+  bp_written: 1835875469
+  percent_trimmed: 1.7751123855745226
+  quality_trimmed: 10803018
+  r_processed: 45586665
+  r_with_adapters: 14119257
+  r_written: 45586665
+Fox_neg_R1_T1_1:
+  bp_processed: 2085304977
+  bp_written: 2056465997
+  percent_trimmed: 1.3829622198230624
+  quality_trimmed: 4791239
+  r_processed: 50861097
+  r_with_adapters: 15440587
+  r_written: 50861097
+Fox_neg_R1_T1_2:
+  bp_processed: 2085304977
+  bp_written: 2048487275
+  percent_trimmed: 1.7655787717424127
+  quality_trimmed: 12884798
+  r_processed: 50861097
+  r_with_adapters: 15392665
+  r_written: 50861097
+Fox_neg_R2_T1_1:
+  bp_processed: 1678823843
+  bp_written: 1656588633
+  percent_trimmed: 1.3244516446863448
+  quality_trimmed: 4520247
+  r_processed: 40946923
+  r_with_adapters: 12009195
+  r_written: 40946923
+Fox_neg_R2_T1_2:
+  bp_processed: 1678823843
+  bp_written: 1653342642
+  percent_trimmed: 1.517800757133993
+  quality_trimmed: 7790263
+  r_processed: 40946923
+  r_with_adapters: 12023880
+  r_written: 40946923
+Fox_neg_R3_T1_1:
+  bp_processed: 2052345528
+  bp_written: 2024632394
+  percent_trimmed: 1.3503152184615963
+  quality_trimmed: 3896089
+  r_processed: 50057208
+  r_with_adapters: 15147410
+  r_written: 50057208
+Fox_neg_R3_T1_2:
+  bp_processed: 2052345528
+  bp_written: 2017964804
+  percent_trimmed: 1.6751918003545843
+  quality_trimmed: 10679614
+  r_processed: 50057208
+  r_with_adapters: 15097057
+  r_written: 50057208
+Fox_pos_R1_T1_1:
+  bp_processed: 1720835354
+  bp_written: 1695845643
+  percent_trimmed: 1.452184890431999
+  quality_trimmed: 4068837
+  r_processed: 41971594
+  r_with_adapters: 13045879
+  r_written: 41971594
+Fox_pos_R1_T1_2:
+  bp_processed: 1720835354
+  bp_written: 1689674911
+  percent_trimmed: 1.8107742223896686
+  quality_trimmed: 10365185
+  r_processed: 41971594
+  r_with_adapters: 12986288
+  r_written: 41971594
+Fox_pos_R2_T1_1:
+  bp_processed: 1505467930
+  bp_written: 1484173395
+  percent_trimmed: 1.414479483465317
+  quality_trimmed: 4039768
+  r_processed: 36718730
+  r_with_adapters: 11119276
+  r_written: 36718730
+Fox_pos_R2_T1_2:
+  bp_processed: 1505467930
+  bp_written: 1481050717
+  percent_trimmed: 1.621901902619739
+  quality_trimmed: 7168079
+  r_processed: 36718730
+  r_with_adapters: 11153591
+  r_written: 36718730
+Fox_pos_R3_T1_1:
+  bp_processed: 1825406633
+  bp_written: 1801392404
+  percent_trimmed: 1.3155550421405748
+  quality_trimmed: 3473922
+  r_processed: 44522113
+  r_with_adapters: 13448764
+  r_written: 44522113
+Fox_pos_R3_T1_2:
+  bp_processed: 1825406633
+  bp_written: 1795830783
+  percent_trimmed: 1.6202335121020677
+  quality_trimmed: 9102348
+  r_processed: 44522113
+  r_with_adapters: 13413047
+  r_written: 44522113
+Ncol_neg_R1_T1_1:
+  bp_processed: 2142437042
+  bp_written: 2112803346
+  percent_trimmed: 1.3831769811231636
+  quality_trimmed: 4926757
+  r_processed: 52254562
+  r_with_adapters: 15941421
+  r_written: 52254562
+Ncol_neg_R1_T1_2:
+  bp_processed: 2142437042
+  bp_written: 2105531219
+  percent_trimmed: 1.722609452530181
+  quality_trimmed: 12245552
+  r_processed: 52254562
+  r_with_adapters: 15943572
+  r_written: 52254562
+Ncol_neg_R2_T1_1:
+  bp_processed: 2254495085
+  bp_written: 2223687060
+  percent_trimmed: 1.3665155096135417
+  quality_trimmed: 6018589
+  r_processed: 54987685
+  r_with_adapters: 16363366
+  r_written: 54987685
+Ncol_neg_R2_T1_2:
+  bp_processed: 2254495085
+  bp_written: 2218469606
+  percent_trimmed: 1.5979400105899988
+  quality_trimmed: 11228252
+  r_processed: 54987685
+  r_with_adapters: 16411150
+  r_written: 54987685
+Ncol_neg_R3_T1_1:
+  bp_processed: 1962865406
+  bp_written: 1936284507
+  percent_trimmed: 1.3541885713991741
+  quality_trimmed: 5301575
+  r_processed: 47874766
+  r_with_adapters: 14172029
+  r_written: 47874766
+Ncol_neg_R3_T1_2:
+  bp_processed: 1962865406
+  bp_written: 1932041961
+  percent_trimmed: 1.5703290152131806
+  quality_trimmed: 9503826
+  r_processed: 47874766
+  r_with_adapters: 14225375
+  r_written: 47874766
+Ncol_neg_R4_T1_1:
+  bp_processed: 2037952232
+  bp_written: 2011436349
+  percent_trimmed: 1.3011042449203
+  quality_trimmed: 3707008
+  r_processed: 49706152
+  r_with_adapters: 14828528
+  r_written: 49706152
+Ncol_neg_R4_T1_2:
+  bp_processed: 2037952232
+  bp_written: 2004955589
+  percent_trimmed: 1.6191077730815038
+  quality_trimmed: 10275782
+  r_processed: 49706152
+  r_with_adapters: 14778525
+  r_written: 49706152
+Ncol_pos_R1_T1_1:
+  bp_processed: 1808941361
+  bp_written: 1783071700
+  percent_trimmed: 1.4300994801566704
+  quality_trimmed: 4212477
+  r_processed: 44120521
+  r_with_adapters: 13479032
+  r_written: 44120521
+Ncol_pos_R1_T1_2:
+  bp_processed: 1808941361
+  bp_written: 1776800116
+  percent_trimmed: 1.7767986123238408
+  quality_trimmed: 10603185
+  r_processed: 44120521
+  r_with_adapters: 13430301
+  r_written: 44120521
+Ncol_pos_R2_T1_1:
+  bp_processed: 1502333070
+  bp_written: 1481966469
+  percent_trimmed: 1.3556648260428694
+  quality_trimmed: 3867606
+  r_processed: 36642270
+  r_with_adapters: 10968291
+  r_written: 36642270
+Ncol_pos_R2_T1_2:
+  bp_processed: 1502333070
+  bp_written: 1478951389
+  percent_trimmed: 1.5563580052191754
+  quality_trimmed: 6854216
+  r_processed: 36642270
+  r_with_adapters: 11019339
+  r_written: 36642270
+Ncol_pos_R3_T1_1:
+  bp_processed: 1351381320
+  bp_written: 1332430265
+  percent_trimmed: 1.4023469704317062
+  quality_trimmed: 3624533
+  r_processed: 32960520
+  r_with_adapters: 9994022
+  r_written: 32960520
+Ncol_pos_R3_T1_2:
+  bp_processed: 1351381320
+  bp_written: 1328858933
+  percent_trimmed: 1.6666196777087312
+  quality_trimmed: 7219882
+  r_processed: 32960520
+  r_with_adapters: 10002939
+  r_written: 32960520
+Ncol_pos_R4_T1_1:
+  bp_processed: 1893141380
+  bp_written: 1867354702
+  percent_trimmed: 1.362110525522399
+  quality_trimmed: 3382076
+  r_processed: 46174180
+  r_with_adapters: 14122130
+  r_written: 46174180
+Ncol_pos_R4_T1_2:
+  bp_processed: 1893141380
+  bp_written: 1861669329
+  percent_trimmed: 1.6624247577325681
+  quality_trimmed: 9095169
+  r_processed: 46174180
+  r_with_adapters: 14128201
+  r_written: 46174180
