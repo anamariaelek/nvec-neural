@@ -1,0 +1,64 @@
+Nvec_vc1.1_XM_032366098.2	NvMyc1	progenitors	
+Nvec_vc1.1_XM_001640809.3	NvMyc2	progenitors	
+Nvec_vc1.1_XM_032384889.2	NvHes2	progenitors	
+Nvec_vc1.1_XM_001637125.3	NvNanos1	progenitors	
+Nvec_vc1.1_XM_001641165.3	NvNanos2	progenitors	
+Nvec_vc1.1_XM_001632568.3	NvSoxB(2)	progenitors	
+Nvec_vc1.1_XM_032376421.2	NvAth-like	progenitors	
+Nvec_vc1.1_XM_032385706.2 	NvFoxQ2d	progenitors	
+Nvec_vc1.1_XM_048724864.1	NvElav1	neurons	
+Nvec_vc1.1_XM_032370984.2	NvAshA	neurons	
+Nvec_vc1.1_XM_032363992.2	NvBrain3/Pou4	neurons	
+Nvec_vc1.1_XM_032364887.2	NvFoxL2	neurons	
+Nvec_vc1.1_XM_001638751.3	NvRFamide	neurons	
+Nvec_vc1.1_XM_001647471.3	NvOtxC	neurons	
+Nvec_vc1.1_XM_032372264.2	NvSoxC	neurons	
+Nvec_vc1.1_XM_032377897.2	NvPea3/Ets	neurons	
+Nvec_vc1.1_XM_032362713.2	NvIslet	neurons	
+Nvec_vc1.1_XM_032367288.2	NvGATA	neurons	
+Nvec_vc1.1_XM_001639701.3	NvSox2	cnidocytes	
+Nvec_vc1.1_XM_001641129.3	NvZNF845	cnidocytes	
+Nvec_vc1.1_XM_001634328.3	NvNR12	cnidocytes	
+Nvec_vc1.1_XM_001631763.3	NvPaxA	cnidocytes	
+v1g170524	NvtrypsinA 	secretory	old_id
+v1g124644	NvtrypsinB 	secretory	old_id
+v1g105460	NvtrypsinC 	secretory	old_id
+v1g107265 	NvChitinaseA	secretory	old_id
+v1g80063	NvChitinaseB	secretory	old_id
+v1g177213	NvChitinaseC 	secretory	old_id
+v1g83175	Nvpl1 	secretory	old_id
+v1g151935 	Nvpl2 	secretory	old_id
+v1g207484	Nvilp1	secretory	old_id
+v1g199266	Nvilp2	secretory	old_id
+NVE3796	Nvilp3 	secretory	old_id
+v1g85808	NvinsR 	secretory	old_id
+v1g203270	NvMucin	secretory	old_id
+v1g239401	NvePTx1 	secretory	old_id
+v1g113139 	Nv1	secretory	old_id
+v1g239031	NvLysin1b	secretory	old_id
+Nvec_vc1.1_XM_032375152.2	NvMuscleLIM1.1 	gastrodermis	
+Nvec_vc1.1_XM_032381908.2	NvHand2	gastrodermis	
+Nvec_vc1.1_XM_001623084.3	NvSix4/5	gastrodermis	
+Nvec_vc1.1_XM_001625950.3	NvFoxC	gastrodermis	
+Nvec_vc1.1_XM_001641086.3	NvSnailA	gastrodermis	
+Nvec_vc1.1_XM_032387186.2	NvSnailA	gastrodermis	
+Nvec_vc1.1_XM_001634938.2	Nem64	muscle	tentacle_retractor
+Nvec_vc1.1_XM_032385184.2	Nem24	muscle	mesentery_retractor
+Nvec_vc1.1_XM_032385185.2	Nem7	muscle	mesentery_retractor
+Nvec_vc1.1_XM_032374843.2	Tbx1	muscle	parietal_circular
+Nvec_vc1.1_XM_032384965.2	BarH-Like3	muscle	circular
+Nvec_vc1.1_XM_032377358.2	VAx-EMX-Like	muscle	parietal
+NVE23841	NvSox3 	ectoderm	
+Nvec_vc1.1_XM_001634505.3	NvFoxA	patterning	
+Nvec_vc1.1_XM_032366733.2	Nvanthox1/NvAx1  	patterning	
+Nvec_vc1.1_XM_032376421.2	NvAth-like		
+Nvec_vc1.1_XM_032375602.2	NvInsm1		
+Nvec_vc1.1_XM_032385745.2	NvPrdm14-like		
+Nvec_vc1.1_XM_032373618.2	Homeobox protein Nkx-2.2a		
+Nvec_vc1.1_XM_032380334.2	RFX:RFX4/RFX6/RFX8		
+Nvec_vc1.1_XM_032375228.2	RFX:RFX4/RFX6/RFX8		
+Nvec_vc1.1_XM_032365096.2	RFX:RFX4/RFX6/RFX8		
+Nve7731	Rfx4/6
+Nve21445	Rx
+Nve1796	PaxC
+
