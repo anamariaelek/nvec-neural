@@ -46,7 +46,7 @@ for (newdir in c(cns_dir, res_dir))
   dir.create(newdir, showWarnings = FALSE)
 ```
 
-## Differntial peak analysis
+## Peaks counts normalization
 
 Find consensus set of peaks
 
@@ -77,14 +77,22 @@ chrList <- Seqinfo(
   genome = "jaNemVect1.1"
 )
 message(Sys.time(), " Started calculating consensus")
+ur <- unlist(regions)
+up <- unlist(peaks)
+
+# debugging
+# id <- seqnames(ur)=="NC_064034.1" & start(ur)>3160976 & end(ur)<3168925
+# ur <- ur[id]
+# up <- up[id]
+
 results <- findConsensusPeakRegions(
-    narrowPeaks = unlist(regions),
-    peaks = unlist(peaks),
-    chrInfo = chrList,
-    extendingSize = 100,
-    expandToFitPeakRegion = TRUE,
-    shrinkToFitPeakRegion = TRUE,
-    minNbrExp = 3,
+    narrowPeaks = ur,
+    peaks = up,
+    chrInfo = chrList["NC_064034.1"],
+    extendingSize = 250,
+    expandToFitPeakRegion = FALSE,
+    shrinkToFitPeakRegion = FALSE,
+    minNbrExp = 2,
     nbrThreads = detectCores()-1
 )
 message(Sys.time(), " Done calculating consensus")
@@ -156,15 +164,17 @@ pkt_dt[,width:=NULL]
 setcolorder(pkt_dt, c("seqnames", "start", "end", "name", "score", "strand", "sample"))
 fwrite(pkt_dt, file.path(cns_dir,"consensusSeekeR-peaks-samples.bed"), sep="\t", col.names=FALSE)
 ```
-```{bash eval=FALSE, eval=FALSE}
+
+```{bash eval=FALSE}
 nth=12
 res="ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks-counts.tsv"
 bed="ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks.bed"
-bam=$( ls ATACSEQ/nucleosome_free_regions/bam/*bam )
+bam=$( echo ATACSEQ/nucleosome_free_regions/bam/*R*bam )
 
 cols=$( echo -e seqnames start end name score strand | column -t )
 for b in $bam
 do 
+  echo $b
   name=$( basename $b)
   cols=$( echo -e ${cols} ${name} | column -t )
 done
@@ -192,7 +202,9 @@ col_dt[,reporterline:=str_extract(sample,"Elav|Fox|Ncol")]
 col_dt[,reporterline:=factor(reporterline, levels=c("Elav","Fox","Ncol"))]
 col_dt[,condition:=str_extract(sample,"pos|neg")]
 col_dt[,condition:=str_replace_all(condition,c("pos"="positive","neg"="negative"))]
-col_dt[,condition:=factor(condition, levels = c("positive","negative"))]
+col_dt[,condition:=factor(condition, levels = c("negative","positive"))]
+# col_dt[,linecondition:=paste(as.character(reporterline), as.character(condition), sep="-"), by=1:nrow(col_dt)]
+# col_dt[,linecondition:=factor(linecondition)]
 
 col_df <- copy(col_dt)
 class(col_df) <- "data.frame"
@@ -202,30 +214,20 @@ rownames(col_df) <- col_df$sample
 pks_mt <- as.matrix(pks_ct[,-c(1:6)])
 rownames(pks_mt) <- pks_ct$name
 pks_mt <- pks_mt[,rownames(col_df)]
-```
 
-DESeq2
-
-```{r eval=FALSE}
+# DESeq2 input
 require(DESeq2)
 dds <- DESeqDataSetFromMatrix(
   countData = pks_mt,
   colData = col_df,
   design = ~ condition + reporterline + condition:reporterline
 )
-dds <- DESeq(dds)
 saveRDS(dds, file.path(res_dir, "dds.rds"))
-
-# DE results
-res <- results(dds)
-res <- results(dds, contrast=c("condition","positive","negative"))
-resLFC <- lfcShrink(dds, coef="condition_negative_vs_positive", type="apeglm")
-
 ```
 
 ## Marker peaks
 
-Use normalized log-transformed expression data
+Use normalized log-transformed accessibility data
 
 ```{r}
 # load DESeq2 results
@@ -311,7 +313,7 @@ elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
 
 # kmeans
 set.seed(1950)
-k <- 7
+k <- 4
 cl <- kmeans(norm_mt[peaks_marks,], k)
 peaks_order <- tapply(names(cl$cluster), cl$cluster, function(gs) {
   cor_peaks <- cor(t(norm_mt[gs,]))
@@ -418,6 +420,55 @@ gp_l <- lapply(names(line_cols), function(cl) {
 gp_l
 ```
 
+## Differntial peak analysis
+
+DESeq2
+
+```{r, eval=FALSE}
+dds <- readRDS(file.path(res_dir, "dds.rds"))
+dds <- DESeq(dds)
+saveRDS(dds, file.path(res_dir, "dds.rds"))
+```
+
+Contrasts
+
+```{r}
+ggplotMA <- function(res, padj_thr=0.05,sign_col="red",lims=c(NA,NA),title="") {
+  res_dt <- as.data.table(res)
+  res_dt[log2FoldChange<lims[1], log2FoldChange:=lims[1]]
+  res_dt[log2FoldChange>lims[2], log2FoldChange:=lims[2]]
+  gp <- ggplot(res_dt, aes(x=baseMean, y=log2FoldChange, colour=padj<padj_thr)) + 
+    geom_point(size=0.5) + 
+    scale_color_manual(values = c("FALSE"="grey", "TRUE"=sign_col), name = sprintf("p.adjusted < %s",padj_thr)) +
+    guides(colour = guide_legend(override.aes = list(size=4))) +
+    scale_y_continuous(limits = lims, expand = expansion(mult = c(0.01,0.01))) +
+    geom_hline(aes(yintercept = 0), size = 1) +
+    labs(
+      x = "mean of normalized counts",
+      y = "log2 fold change",
+    ) +
+    theme(legend.position = "bottom")
+  if (title!="")
+    gp <- gp + labs(title = title)
+  gp
+}
+
+res_pos_neg <- results(dds, contrast=c("condition","positive","negative"))
+coef <- "condition_positive_vs_negative"
+res_lfc_pos_neg <- lfcShrink(dds, coef=coef, type="apeglm")
+gp_pos_neg <- ggplotMA(res_lfc_pos_neg, lims=c(-2,2), title=str_replace_all(coef, c("_"=" ","condition"="Condition:")))
+
+```
+
+## Motif discovery
+
+De novo motifs in differentially accessible peaks
+
+```{bash}
+
+```
+
+
 ## Footprinting
 
 Merge replicates per condition
@@ -441,7 +492,7 @@ do
 done
 ```
 
-### ATACorrect
+Footprint score calculation for consensus peaks
 
 ```{bash eval=FALSE}
 bam_dir="ATACSEQ/nucleosome_free_regions/bam/"
@@ -457,29 +508,33 @@ do
   do
     name=${line}_${cond}
     
-    echo $(date) "- Starting ATACorrect"
+    echo $(date) "- Starting ATACorrect for" ${name}
     TOBIAS ATACorrect \
       --bam ${bam_dir}/${name}.ncfree.sorted.bam \
       --genome ${genome} \
       --peaks ${peaks} \
+      --prefix ${name} \
       --outdir ${out_dir}/ATACorrect \
       --cores ${nth}
     
     echo $(date) "- Starting FootprintScores"
     TOBIAS FootprintScores \
-    --signal ${out_dir}/ATACorrect/${name}_corrected.bw \
-    --regions test_data/merged_peaks.bed \
-    --output Bcell_footprints.bw \
-    --cores ${nth}
+      --signal ${out_dir}/ATACorrect/${name}_corrected.bw \
+      --regions ${peaks} \
+      --fp-min 10 --fp-max 50 \
+      --output ${out_dir}/${name}_footprints.bw \
+      --cores ${nth}
     
   done
 done
 
-
 ```
+
+Motif scores in consensus peaks
 
 ```{r}
-"genome/Nvec_vc1.1_gDNA.fasta"
-"ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks.bed"
+
 ```
 
+1. Differential peaks between conditions
+2. Shared peaks with different footprint scores

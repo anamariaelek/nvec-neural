@@ -20,6 +20,7 @@ Nvec_vc1.1_XM_001639701.3	NvSox2	cnidocytes
 Nvec_vc1.1_XM_001641129.3	NvZNF845	cnidocytes	
 Nvec_vc1.1_XM_001634328.3	NvNR12	cnidocytes	
 Nvec_vc1.1_XM_001631763.3	NvPaxA	cnidocytes	
+Nvec_vc1.1_XM_032363026.2	NvMinicollgen-3/NvNcol-3	cnidocytes
 v1g170524	NvtrypsinA 	secretory	old_id
 v1g124644	NvtrypsinB 	secretory	old_id
 v1g105460	NvtrypsinC 	secretory	old_id
@@ -58,7 +59,3 @@ Nvec_vc1.1_XM_032373618.2	Homeobox protein Nkx-2.2a
 Nvec_vc1.1_XM_032380334.2	RFX:RFX4/RFX6/RFX8		
 Nvec_vc1.1_XM_032375228.2	RFX:RFX4/RFX6/RFX8		
 Nvec_vc1.1_XM_032365096.2	RFX:RFX4/RFX6/RFX8		
-Nve7731	Rfx4/6
-Nve21445	Rx
-Nve1796	PaxC
-
