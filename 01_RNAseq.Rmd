@@ -34,6 +34,10 @@ Directories and inputs
 
 ```{r}
 dat_dir <- "RNASEQ_QUANTIFICATION"
+res_dir <- file.path(dat_dir, "results")
+fig_dir <- file.path(dat_dir, "plots")
+for (newdir in c(res_dir, fig_dir))
+  dir.create(newdir, showWarnings = FALSE)
 ```
 
 ## Differential expression
@@ -86,23 +90,17 @@ dds <- DESeqDataSetFromMatrix(
 
 ## Marker genes
 
-Use normalized log-transformed expression data
-
-```{r}
-norm_mt <- log10(con_mt+1)
-```
-
-Inspect genes normalized expression distribution
+Inspect genes expression distribution
 
 ```{r fig.width=8, fig.height=6, warning=FALSE, message=FALSE}
 # normalized accessibility distribution
-norm_dt <- as.data.table(norm_mt, keep.rownames = "gene")
+norm_dt <- as.data.table(con_mt, keep.rownames = "gene")
 norm_dt <- melt.data.table(norm_dt, id.vars = "gene", variable.name = "sample", value.name = "norm_counts")
 norm_dt <- merge.data.table(norm_dt, col_dt, by="sample")
 setorder(norm_dt, gene, condition, reporterline)
 norm_dt[,sample:=factor(sample, levels = unique(norm_dt$sample))]
 
-gp_acc <- ggplot(norm_dt, aes(sample, norm_counts, fill=reporterline)) +
+gp_acc <- ggplot(norm_dt, aes(sample, log10(norm_counts), fill=reporterline)) +
   geom_violin(scale = "width", alpha = 0.8, color = "black") +
   geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") + 
   scale_fill_manual(values = line_cols, limits = force) +
@@ -120,14 +118,27 @@ gp_var <- ggplot(var_dt, aes(log10(var))) +
   scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
   labs(x = "log10(expression variance)")
 
-gp_acc / gp_var + plot_layout(heights = c(2,1))
+gp_pch <- gp_acc / gp_var + plot_layout(heights = c(2,1))
+gp_pch
+```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_var.pdf"), width=8, height=6)
+gp_pch
+dev.off()
+```
+
+Use normalized log-transformed expression data
+
+```{r}
+norm_mt <- (con_mt+10)/apply(con_mt+10,1,median) # row normalize to bring genes to same range
+norm_mt <- log2(norm_mt)
 ```
 
 Identify marker genes
 
-```{r}
+```{r include=TRUE, eval=TRUE}
 # gene markers by normalized expression
-genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>2))
+genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>1.5))
 genes_vari <- names(which(apply(norm_mt, 1, function(x) var(x)>0.1)))
 gene_marks <- intersect(genes_high, genes_vari)
 ```
@@ -142,20 +153,25 @@ genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[
 gene_marks <- intersect(genes_high, kw_genes)
 ```
 
-Cluster genes
+```{r include=TRUE, eval=FALSE}
+# gene markers by high FC + significant DEseq2 LTR test 
+# need to do DESeq2 first!!!
+dds_qval <- dds_res$padj 
+names(dds_qval) <- rownames(dds_res)
+genes_deseq <- names(which(dds_qval<1e-2))
+gene_marks <- genes_deseq
+#genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing = T)[4])>2))
+#gene_marks <- intersect(genes_high, deseq_genes)
 
-```{r include=FALSE, eval=FALSE}
-# hclust genes
-cor_genes <- cor(t(norm_mt[gene_marks,]))
-hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
-gene_order <- rownames(cor_genes)[hclust_genes$order]
 ```
 
-```{r}
+Select number of clusters for genes
+
+```{r fig.width=10, fig.height=6}
 set.seed(1950)
 
 # determine k for kmeans
-ks <- 1:20
+ks <- 1:30
 tot_withinss <- sapply(ks,  function(k) {
   cl <- kmeans(norm_mt[gene_marks,], k)
   cl$tot.withinss
@@ -164,37 +180,62 @@ elbow_dt <- data.table(k = ks, tot_withinss = tot_withinss)
 elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
   geom_line() + geom_point()+
   scale_x_continuous(breaks = ks)
+elbow_gp
+```
+
+Cluster genes
+
+```{r}
+set.seed(1950)
 
 # kmeans
-k <- 7
+k <- 20
 cl <- kmeans(norm_mt[gene_marks,], k)
-gene_order <- tapply(names(cl$cluster), cl$cluster, function(gs) {
+gene_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
   cor_genes <- cor(t(norm_mt[gs,]))
   hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
   rownames(cor_genes)[hclust_genes$order]
 })
-cluster_order <- hclust(dist(cor(cor(t(cl$centers)))),method="ward.D2")$order
-gene_order <- unlist(gene_order[cluster_order])
+cluster_order <- hclust(dist(cor(t(cl$centers)),method="maximum"),method="ward.D2")$order
+cluster_names <- structure(paste0("M",seq_along(cluster_order)), names = cluster_order)
+gene_order <- unlist(gene_order_list[cluster_order])
+modules_dt <- data.table(
+  gene = unlist(gene_order_list),
+  clusters = as.character(rep(names(gene_order_list), sapply(gene_order_list, length)))
+)[,modules:=cluster_names[as.character(clusters)]]
 ```
 
 Heatmap of markers
 
 ```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
-# matrix to plot
+# order rows and columns
 samples_order <- col_dt[order(condition,reporterline)]$sample
 plot_mt <- norm_mt[gene_order,samples_order]
-plot_max <- quantile(abs(range(plot_mt)), 0.75)
-plot_min <- min(abs(range(plot_mt)))
-plot_mt <- pmin(plot_mt, plot_max)
 
-# colors annotations
-col_vec <- c("white","#d6e72e","#6fb600","#003f4d")
-col_fun <- circlize::colorRamp2(seq(plot_min, plot_max, length.out = length(col_vec)), col_vec)
+# center at 0
+plot_min <- quantile(abs(range(plot_mt)),0.75)
+plot_mt <- pmin(pmax(plot_mt,-plot_min),plot_min) 
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11,'BrBG'))(1000)
+col_fun <- circlize::colorRamp2(seq(-plot_min, plot_min, length.out = length(col_vec)), col_vec)
+
+# color annotations
 col_ann <- HeatmapAnnotation(
     which = "column", border = TRUE,
     "reporterline" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporterline),
     "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
     col = list("reporterline" = line_cols, "condition" = condition_cols)
+)
+
+# gene module annotations
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    # "mcol" = modules_dt[match(rownames(plot_mt),gene)]$modules,
+    "module" = anno_block(
+      labels = unique(modules_dt[match(rownames(plot_mt),gene)]$modules),
+      gp = gpar(col=NA)
+    )
 )
 
 # genes annotations
@@ -211,14 +252,23 @@ mark_ann <- HeatmapAnnotation(
 
 # heatmap
 hm <- Heatmap(
-  plot_mt, name = "normalized\nexpression", border = TRUE, 
+  plot_mt, name = "normalized\nexpression",  
   col = col_fun,
   cluster_rows = FALSE, cluster_columns = FALSE,
   show_row_names = FALSE, show_column_names = TRUE,
-  row_title = "genes",
-  top_annotation = col_ann, right_annotation = mark_ann
+  row_title = "genes", 
+  row_split = modules_dt[match(rownames(plot_mt),gene)]$modules, 
+  cluster_row_slices = FALSE,
+  top_annotation = col_ann, right_annotation = mark_ann, 
+  left_annotation = module_ann,
+  border = TRUE
 )
 hm
+```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "clustering_heatmap.pdf"), width=8, height=10)
+draw(hm)
+dev.off()
 ```
 
 ## PCA
@@ -243,10 +293,12 @@ gp_var <- ggplot(pca_var, aes(PC, pct_var)) +
 
 pca_dt <- as.data.table(pca_res$x, keep.rownames = "sample")
 pca_dt <- merge.data.table(col_dt, pca_dt, by="sample", sort=FALSE)
+
 gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=reporterline, shape=condition)) + 
   geom_point(size=5) +
   scale_fill_manual(values = line_cols) +
   scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
+  guides(fill = guide_legend(override.aes=list(shape=21))) +
   geom_text_repel(aes(label = sample))
 
 gp_var / gp_bip 
@@ -281,6 +333,7 @@ gp_l <- lapply(names(line_cols), function(cl) {
     geom_point(size=5) +
     scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
     scale_fill_manual(values = condition_cols) +
+    guides(fill = guide_legend(override.aes=list(shape=21))) +
     geom_text_repel(aes(label = sample))
   
   gp_var / gp_bip 

@@ -42,7 +42,8 @@ dat_dir <- "ATACSEQ/nucleosome_free_regions/"
 pks_dir <- file.path(dat_dir, "macs2_peaks")
 cns_dir <- file.path(dat_dir, "consensus_peaks")
 res_dir <- file.path(dat_dir, "results")
-for (newdir in c(cns_dir, res_dir))
+fig_dir <- file.path(dat_dir, "plots")
+for (newdir in c(cns_dir, res_dir, fig_dir))
   dir.create(newdir, showWarnings = FALSE)
 ```
 
@@ -71,24 +72,25 @@ names(peaks) <- names(pks_files)
 
 # get consensus
 chrList <- Seqinfo(
-  seqnames = seqnames(BSgenome.jaNemVect1.1.DToL.Assembly),
-  seqlengths = seqlengths(BSgenome.jaNemVect1.1.DToL.Assembly),
-  isCircular = c(rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly))-1), TRUE),
-  genome = "jaNemVect1.1"
+    seqnames = seqnames(BSgenome.jaNemVect1.1.DToL.Assembly),
+    seqlengths = seqlengths(BSgenome.jaNemVect1.1.DToL.Assembly),
+    isCircular = c(rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly))-1), TRUE),
+    genome = "jaNemVect1.1"
 )
 message(Sys.time(), " Started calculating consensus")
 ur <- unlist(regions)
 up <- unlist(peaks)
 
 # debugging
-# id <- seqnames(ur)=="NC_064034.1" & start(ur)>3160976 & end(ur)<3168925
+# id <- seqnames(ur)=="NC_064035.1" & start(ur)>1644829 & end(ur)<1649211
 # ur <- ur[id]
 # up <- up[id]
+# chrList <- chrList["NC_064035.1"]
 
 results <- findConsensusPeakRegions(
     narrowPeaks = ur,
     peaks = up,
-    chrInfo = chrList["NC_064034.1"],
+    chrInfo = chrList,
     extendingSize = 250,
     expandToFitPeakRegion = FALSE,
     shrinkToFitPeakRegion = FALSE,
@@ -203,8 +205,8 @@ col_dt[,reporterline:=factor(reporterline, levels=c("Elav","Fox","Ncol"))]
 col_dt[,condition:=str_extract(sample,"pos|neg")]
 col_dt[,condition:=str_replace_all(condition,c("pos"="positive","neg"="negative"))]
 col_dt[,condition:=factor(condition, levels = c("negative","positive"))]
-# col_dt[,linecondition:=paste(as.character(reporterline), as.character(condition), sep="-"), by=1:nrow(col_dt)]
-# col_dt[,linecondition:=factor(linecondition)]
+col_dt[,group:=paste(as.character(reporterline), as.character(condition), sep=""), by=1:nrow(col_dt)]
+col_dt[,group:=factor(group)]
 
 col_df <- copy(col_dt)
 class(col_df) <- "data.frame"
@@ -220,7 +222,7 @@ require(DESeq2)
 dds <- DESeqDataSetFromMatrix(
   countData = pks_mt,
   colData = col_df,
-  design = ~ condition + reporterline + condition:reporterline
+  design = ~ condition + reporterline
 )
 saveRDS(dds, file.path(res_dir, "dds.rds"))
 ```
@@ -235,7 +237,6 @@ dds <- readRDS(file.path(res_dir, "dds.rds"))
 
 # transformation
 vsd <- vst(dds, blind=FALSE)
-# rld <- rlog(dds, blind=FALSE)
 norm_mt <- vsd@assays@data[[1]]
 ```
 
@@ -266,7 +267,13 @@ gp_var <- ggplot(var_dt, aes(log10(var))) +
   scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
   labs(x = "log10(peak accessibility variance)")
 
-gp_acc / gp_var + plot_layout(heights = c(2,1))
+gp_pch <- gp_acc / gp_var + plot_layout(heights = c(2,1))
+gp_pch
+```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_var.pdf"), width=8, height=6)
+gp_pch
+dev.off()
 ```
 
 Identify marker peaks
@@ -290,13 +297,6 @@ peaks_marks <- intersect(peaks_high, kw_peaks)
 
 Cluster peaks
 
-```{r include=FALSE, eval=FALSE}
-# hclust genes
-cor_peaks <- cor(t(norm_mt[peaks_marks,]))
-hclust_peaks <- hclust(as.dist(1-cor(cor_peaks)),method="ward.D2")
-peaks_order <- rownames(cor_peaks)[hclust_peaks$order]
-```
-
 ```{r}
 set.seed(1950)
 
@@ -310,46 +310,82 @@ elbow_dt <- data.table(k = ks, tot_withinss = tot_withinss)
 elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
   geom_line() + geom_point()+
   scale_x_continuous(breaks = ks)
+elbow_gp
+```
 
+Cluster peaks
+
+```{r}
 # kmeans
 set.seed(1950)
-k <- 4
+k <- 6
 cl <- kmeans(norm_mt[peaks_marks,], k)
-peaks_order <- tapply(names(cl$cluster), cl$cluster, function(gs) {
+peaks_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
   cor_peaks <- cor(t(norm_mt[gs,]))
   hclust_peaks <- hclust(as.dist(1-cor(cor_peaks)),method="ward.D2")
   rownames(cor_peaks)[hclust_peaks$order]
 })
-cluster_order <- hclust(dist(cor(cor(t(cl$centers)))),method="ward.D2")$order
-peaks_order <- unlist(peaks_order[rev(cluster_order)])
+cluster_order <- hclust(dist(cor(t(cl$centers)),method="maximum"),method="ward.D2")$order
+cluster_names <- structure(paste0("M",seq_along(cluster_order)), names = cluster_order)
+peaks_order <- unlist(peaks_order_list[cluster_order])
+modules_dt <- data.table(
+  peak = unlist(peaks_order_list),
+  clusters = as.character(rep(names(peaks_order_list), sapply(peaks_order_list, length)))
+)[,modules:=cluster_names[as.character(clusters)]]
 ```
 
 Heatmap of markers
 
 ```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
-# matrix to plot
+# order rows and columns
 samples_order <- col_dt[order(condition,reporterline)]$sample
 plot_mt <- norm_mt[peaks_order,samples_order]
-plot_max <- quantile(abs(range(plot_mt)), 0.75)
-plot_min <- min(abs(range(plot_mt)))
-plot_mt <- pmin(plot_mt, plot_max)
-col_vec <- c("white","#d6e72e","#6fb600","#003f4d")
-col_fun <- circlize::colorRamp2(seq(plot_min, plot_max, length.out = length(col_vec)), col_vec)
+
+# center at 0
+plot_min <- quantile(abs(range(plot_mt)),0.75)
+plot_mt <- pmin(pmax(plot_mt,-plot_min),plot_min) 
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11,'BrBG'))(1000)
+col_fun <- circlize::colorRamp2(seq(-plot_min, plot_min, length.out = length(col_vec)), col_vec)
+
+# color annotaitons
 col_ann <- HeatmapAnnotation(
     which = "column", border = TRUE,
     "reporterline" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporterline),
     "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
     col = list("reporterline" = line_cols, "condition" = condition_cols)
 )
+
+# peak module annotations
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    # "mcol" = modules_dt[match(rownames(plot_mt),peak)]$modules,
+    "module" = anno_block(
+      labels = unique(modules_dt[match(rownames(plot_mt),peak)]$modules),
+      gp = gpar(col=NA)
+    )
+)
+
+# heatmap
 hm <- Heatmap(
-  plot_mt, name = "normalized\naccessibility", border = TRUE, 
+  plot_mt, name = "normalized\naccessibility",
   col = col_fun,
   cluster_rows = FALSE, cluster_columns = FALSE,
   show_row_names = FALSE, show_column_names = TRUE,
-  row_title = "peaks",
-  top_annotation = col_ann
+  row_title = "peaks", 
+  row_split = modules_dt[match(rownames(plot_mt),peak)]$modules, 
+  cluster_row_slices = FALSE,
+  top_annotation = col_ann,  
+  left_annotation = module_ann, 
+  border = TRUE
 )
 hm
+```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_heatmap.pdf"), width=8, height=10)
+draw(hm)
+dev.off()
 ```
 
 ## PCA
@@ -378,9 +414,16 @@ gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=reporterline, shape=condition)) +
   geom_point(size=5) +
   scale_fill_manual(values = line_cols) +
   scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
+  guides(fill = guide_legend(override.aes=list(shape=21))) +
   geom_text_repel(aes(label = sample))
 
-gp_var / gp_bip 
+gp_pch <- gp_var / gp_bip 
+gp_pch
+```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "PCA_all.pdf"), width=8, height=10)
+gp_pch
+dev.off()
 ```
 
 PCA per cell line
@@ -412,6 +455,7 @@ gp_l <- lapply(names(line_cols), function(cl) {
     geom_point(size=5) +
     scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
     scale_fill_manual(values = condition_cols) +
+    guides(fill = guide_legend(override.aes=list(shape=21))) +
     geom_text_repel(aes(label = sample))
   
   gp_var / gp_bip 
@@ -419,45 +463,119 @@ gp_l <- lapply(names(line_cols), function(cl) {
 })
 gp_l
 ```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "PCA_reporter_lines.pdf"), width=7, height=8)
+gp_l
+dev.off()
+```
 
 ## Differntial peak analysis
 
-DESeq2
+Differential analysis with DESeq2
 
-```{r, eval=FALSE}
-dds <- readRDS(file.path(res_dir, "dds.rds"))
-dds <- DESeq(dds)
-saveRDS(dds, file.path(res_dir, "dds.rds"))
+```{r, eval=TRUE}
+# all positive vs negative
+dds_cond <- DESeqDataSetFromMatrix(
+  countData = pks_mt,
+  colData = col_df,
+  design = ~ condition
+)
+dds_cond <- DESeq(dds_cond)
+
+# condition within reporter line line
+dds_conl <- DESeqDataSetFromMatrix(
+  countData = pks_mt,
+  colData = col_df,
+  design = ~ group
+)
+dds_conl <- DESeq(dds_conl)
+
 ```
 
-Contrasts
+Function for MA plots
 
 ```{r}
-ggplotMA <- function(res, padj_thr=0.05,sign_col="red",lims=c(NA,NA),title="") {
+ggplotMA <- function(res, padj_thr=0.05,sign_col="red",lims_fc=c(NA,NA),lims_mean=c(NA,NA),title="") {
   res_dt <- as.data.table(res)
-  res_dt[log2FoldChange<lims[1], log2FoldChange:=lims[1]]
-  res_dt[log2FoldChange>lims[2], log2FoldChange:=lims[2]]
+  res_dt[log2FoldChange<lims_fc[1], log2FoldChange:=lims_fc[1]]
+  res_dt[log2FoldChange>lims_fc[2], log2FoldChange:=lims_fc[2]]
   gp <- ggplot(res_dt, aes(x=baseMean, y=log2FoldChange, colour=padj<padj_thr)) + 
     geom_point(size=0.5) + 
     scale_color_manual(values = c("FALSE"="grey", "TRUE"=sign_col), name = sprintf("p.adjusted < %s",padj_thr)) +
     guides(colour = guide_legend(override.aes = list(size=4))) +
-    scale_y_continuous(limits = lims, expand = expansion(mult = c(0.01,0.01))) +
+    scale_y_continuous(limits = lims_fc, expand = expansion(mult = c(0.01,0.01))) +
+    scale_x_continuous(limits = lims_mean) +
     geom_hline(aes(yintercept = 0), size = 1) +
     labs(
       x = "mean of normalized counts",
-      y = "log2 fold change",
+      y = "log2 fold change", 
+      subtitle = sprintf(
+        "up=%s; down=%s",
+        nrow(res_dt[padj<padj_thr & log2FoldChange>0]),
+        nrow(res_dt[padj<padj_thr & log2FoldChange<0])
+      )
     ) +
-    theme(legend.position = "bottom")
+    theme(
+      legend.position = "bottom", 
+      plot.title = element_text(size = 20),
+      plot.subtitle = element_text(size = 18)
+    )
   if (title!="")
     gp <- gp + labs(title = title)
   gp
 }
+```
 
-res_pos_neg <- results(dds, contrast=c("condition","positive","negative"))
-coef <- "condition_positive_vs_negative"
-res_lfc_pos_neg <- lfcShrink(dds, coef=coef, type="apeglm")
-gp_pos_neg <- ggplotMA(res_lfc_pos_neg, lims=c(-2,2), title=str_replace_all(coef, c("_"=" ","condition"="Condition:")))
+Contrasts
 
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=9}
+contrast <- c("condition","positive","negative")
+res_pos <- results(dds_cond, contrast = contrast)
+res_lfc_pos <- lfcShrink(dds_cond, contrast = contrast, type="ashr")
+gp_pos <- ggplotMA(
+  res_lfc_pos, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+contrast <- c("group", "Foxpositive", "Foxnegative")
+res_fox <- results(dds_conl, contrast = contrast)
+res_lfc_fox <- lfcShrink(dds_conl, contrast = contrast, type="ashr")
+contrast <- str_replace_all(contrast,c("positive"=" positive","negative"=" negative"))
+gp_fox <- ggplotMA(
+  res_lfc_fox, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+contrast <- c("group", "Elavpositive", "Elavnegative")
+res_elav <- results(dds_conl, contrast = contrast)
+res_lfc_elav <- lfcShrink(dds_conl, contrast = contrast, type="ashr")
+contrast <- str_replace_all(contrast,c("positive"=" positive","negative"=" negative"))
+gp_elav <- ggplotMA(
+  res_lfc_elav, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+contrast <- c("group", "Ncolpositive", "Ncolnegative")
+res_ncol <- results(dds_conl, contrast = contrast)
+res_lfc_ncol <- lfcShrink(dds_conl, contrast = contrast, type="ashr")
+contrast <- str_replace_all(contrast,c("positive"=" positive","negative"=" negative"))
+gp_ncol <- ggplotMA(
+  res_lfc_ncol, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+gp_pch <- ((gp_pos + gp_fox) / (gp_elav + gp_ncol)) + 
+  plot_layout(guides = "collect") & theme(legend.position = "bottom")
+gp_pch
+```
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "MA_plots.pdf"), width=8, height=9)
+gp_pch
+dev.off()
 ```
 
 ## Motif discovery
@@ -495,6 +613,7 @@ done
 Footprint score calculation for consensus peaks
 
 ```{bash eval=FALSE}
+conda activate TOBIAS_ENV
 bam_dir="ATACSEQ/nucleosome_free_regions/bam/"
 out_dir="ATACSEQ/nucleosome_free_regions/footprint/"
 mkdir ${out_dir}
@@ -529,6 +648,13 @@ do
 done
 
 ```
+
+## Motifs
+
+```{r}
+
+```
+
 
 Motif scores in consensus peaks
 
