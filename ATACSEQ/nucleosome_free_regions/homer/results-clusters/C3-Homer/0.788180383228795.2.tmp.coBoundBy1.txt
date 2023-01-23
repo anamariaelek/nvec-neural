@@ -1,0 +1,1 @@
+#Name (cmd = mergePeaks ATACSEQ/nucleosome_free_regions/homer/results/3-Homer/bg.clean.pos ATACSEQ/nucleosome_free_regions/homer/results/3-Homer/target.clean..pos -d 250 -cobound 1 -prefix ATACSEQ/nucleosome_free_regions/homer/results/3-Homer/0.788180383228795.2.tmp)	chr	start	end	strand	stat	stat2	ATACSEQ/nucleosome_free_regions/homer/results/3-Homer/target.clean..pos

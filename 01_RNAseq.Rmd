@@ -51,7 +51,7 @@ des_dt <- fread(des_fn)
 setnames(des_dt,"reporter_line","reporterline") # DESeq factors have problems with _
 col_dt <- des_dt[,.(sample,reporterline,condition)]
 col_dt[,reporterline:=factor(reporterline, levels=c("Elav","Fox","Ncol"))]
-col_dt[,condition:=factor(condition, levels = c("positive","negative"))]
+col_dt[,condition:=factor(condition, levels = c("negative","positive"))]
 setorder(col_dt, reporterline, condition)
 
 condition_cols <- c("positive"="blue","negative"="red") 
@@ -77,7 +77,7 @@ ggplot(con_dt, aes(log10(expr+1e-6))) +
   facet_grid(condition~reporterline) 
 ```
 
-DESeq2
+Data for differential expression analysis
 
 ```{r eval=FALSE}
 require(DESeq2)
@@ -100,7 +100,7 @@ norm_dt <- merge.data.table(norm_dt, col_dt, by="sample")
 setorder(norm_dt, gene, condition, reporterline)
 norm_dt[,sample:=factor(sample, levels = unique(norm_dt$sample))]
 
-gp_acc <- ggplot(norm_dt, aes(sample, log10(norm_counts), fill=reporterline)) +
+gp_exp <- ggplot(norm_dt, aes(sample, log10(norm_counts), fill=reporterline)) +
   geom_violin(scale = "width", alpha = 0.8, color = "black") +
   geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") + 
   scale_fill_manual(values = line_cols, limits = force) +
@@ -118,11 +118,11 @@ gp_var <- ggplot(var_dt, aes(log10(var))) +
   scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
   labs(x = "log10(expression variance)")
 
-gp_pch <- gp_acc / gp_var + plot_layout(heights = c(2,1))
+gp_pch <- gp_exp / gp_var + plot_layout(heights = c(2,1))
 gp_pch
 ```
 ```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "peaks_var.pdf"), width=8, height=6)
+pdf(file.path(fig_dir, "genes_var.pdf"), width=8, height=6)
 gp_pch
 dev.off()
 ```
@@ -196,13 +196,17 @@ gene_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
   hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
   rownames(cor_genes)[hclust_genes$order]
 })
+names(gene_order_list) <- unique(cl$cluster)
+gene_order_list <- gene_order_list[as.character(seq_along(gene_order_list))]
+
+# cluster clusters
 cluster_order <- hclust(dist(cor(t(cl$centers)),method="maximum"),method="ward.D2")$order
-cluster_names <- structure(paste0("M",seq_along(cluster_order)), names = cluster_order)
-gene_order <- unlist(gene_order_list[cluster_order])
-modules_dt <- data.table(
+gene_order_list <- gene_order_list[as.character(cluster_order)]
+gene_order <- unname(unlist(gene_order_list[cluster_order]))
+clusters_dt <- data.table(
   gene = unlist(gene_order_list),
   clusters = as.character(rep(names(gene_order_list), sapply(gene_order_list, length)))
-)[,modules:=cluster_names[as.character(clusters)]]
+)
 ```
 
 Heatmap of markers
@@ -229,11 +233,13 @@ col_ann <- HeatmapAnnotation(
 )
 
 # gene module annotations
+clann <- clusters_dt[match(rownames(plot_mt),gene)]$clusters
+clann_lab <- unique(clusters_dt[match(rownames(plot_mt),gene)]$clusters)
+clann <- factor(clann, levels=clann_lab)
 module_ann <- HeatmapAnnotation(
     which = "row", border = TRUE,
-    # "mcol" = modules_dt[match(rownames(plot_mt),gene)]$modules,
     "module" = anno_block(
-      labels = unique(modules_dt[match(rownames(plot_mt),gene)]$modules),
+      labels = clann_lab,
       gp = gpar(col=NA)
     )
 )
@@ -257,7 +263,7 @@ hm <- Heatmap(
   cluster_rows = FALSE, cluster_columns = FALSE,
   show_row_names = FALSE, show_column_names = TRUE,
   row_title = "genes", 
-  row_split = modules_dt[match(rownames(plot_mt),gene)]$modules, 
+  row_split = clann, 
   cluster_row_slices = FALSE,
   top_annotation = col_ann, right_annotation = mark_ann, 
   left_annotation = module_ann,
