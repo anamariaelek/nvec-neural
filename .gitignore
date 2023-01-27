@@ -2,4 +2,5 @@ ATACSEQ/*/bam
 ATACSEQ/*/bigwig
 ATACSEQ/*/consensus_peaks
 ATACSEQ/*/footprint
+CisBP
 genome
