@@ -50,7 +50,7 @@ for (newdir in c(cns_dir, hom_dir, res_dir, fig_dir))
   dir.create(newdir, showWarnings = FALSE)
 ```
 
-## Peaks counts normalization
+## Peaks counts
 
 Find consensus set of peaks
 
@@ -230,8 +230,6 @@ dds <- DESeqDataSetFromMatrix(
 saveRDS(dds, file.path(res_dir, "dds.rds"))
 ```
 
-## Marker peaks
-
 Peaks counts distributions
 
 ```{r fig.width=8, fig.height=6, warning=FALSE, message=FALSE}
@@ -278,197 +276,10 @@ dds <- readRDS(file.path(res_dir, "dds.rds"))
 dds <- estimateSizeFactors(dds)
 norm_mt <- counts(dds, normalized=TRUE)
 # row normalize to bring peaks to same range
-norm_mt <- (pks_mt+10)/apply(pks_mt+10,1,median) 
+norm_mt <- (norm_mt+10)/apply(norm_mt+10,1,median) 
 norm_mt <- log2(norm_mt)
-```
-
-Identify marker peaks
-
-```{r include=FALSE, eval=TRUE}
-# peak markers by normalized accessibility
-peaks_fc <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>=2))
-peaks_vari <- names(which(apply(norm_mt, 1, function(x) var(x)>1)))
-peaks_marks_1 <- intersect(peaks_fc, peaks_vari)
-length(peaks_marks_1)
-```
-
-```{r include=FALSE, eval=FALSE}
-# peak markers by normalized accessibility + significant kruskall wallis
-factor <- paste0(col_dt$condition, col_dt$reporterline)
-kw_pvals <- apply(norm_mt, 1, function(x) kruskal.test(x~factor)$p.value)
-kw_qvals <- p.adjust(kw_pvals, method="BH")
-kw_peaks <- names(which(kw_qvals<0.05))
-peaks_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>2))
-peaks_marks_2 <- intersect(peaks_high, kw_peaks)
-```
-
-```{r include=TRUE, eval=TRUE}
-# gene markers by high FC + significant DEseq2 LTR test 
-dds <- readRDS(file.path(res_dir, "dds.rds"))
-dds <- DESeq(dds, test="LRT", reduced=~1)
-dds_res <- results(dds)
-dds_qval <- dds_res$padj 
-names(dds_qval) <- rownames(dds_res)
-peaks_deseq <- names(which(dds_qval<1e-2))
-peaks_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing = T)[2])>=1.8))
-peaks_marks <- intersect(peaks_high, peaks_deseq)
-length(peaks_marks)
-```
-
-Cluster peaks
-
-```{r}
-set.seed(1950)
-
-# determine k for kmeans
-ks <- 1:25
-tot_withinss <- sapply(ks,  function(k) {
-  cl <- kmeans(norm_mt[peaks_marks,], k)
-  cl$tot.withinss
-})
-elbow_dt <- data.table(k = ks, tot_withinss = tot_withinss)
-elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
-  geom_line() + geom_point()+
-  scale_x_continuous(breaks = ks)
-elbow_gp
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "kmeans_elbow.pdf"), width=8, height=6)
-elbow_gp
-dev.off()
-```
-
-Cluster peaks
-
-```{r}
-# kmeans
-set.seed(1950)
-k <- 15
-cl <- kmeans(norm_mt[peaks_marks,], k)
-peaks_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
-  cor_peaks <- cor(t(norm_mt[gs,]))
-  hclust_peaks <- hclust(as.dist(1-cor(cor_peaks)),method="ward.D2")
-  rownames(cor_peaks)[hclust_peaks$order]
-})
-names(peaks_order_list) <- unique(cl$cluster)
-peaks_order_list <- peaks_order_list[as.character(seq_along(peaks_order_list))]
-
-# cluster clusters
-cluster_order <- hclust(dist(cor(t(cl$centers)),method="euclidean"),method="ward.D2")$order
-peaks_order_list <- peaks_order_list[as.character(cluster_order)]
-peaks_order <- unname(unlist(peaks_order_list))
-clusters_dt <- data.table(
-  peak = peaks_order,
-  clusters = as.character(rep(names(peaks_order_list), sapply(peaks_order_list, length)))
-)
-
-# group clusters (manually)
-clusters_dt[clusters %in% c(8), group:=1] # Elav
-clusters_dt[clusters %in% c(9), group:=2]
-clusters_dt[clusters %in% c(14), group:=3] # Fox
-clusters_dt[clusters %in% c(13,5), group:=4]
-clusters_dt[clusters %in% c(10,2), group:=5] 
-clusters_dt[clusters %in% c(6,7,3,11,12), group:=6] # Ncol
-clusters_dt[clusters %in% c(15), group:=7] 
-clusters_dt[clusters %in% c(1), group:=8] 
-clusters_dt[clusters %in% c(4), group:=9] 
-setorder(clusters_dt, group)
-peaks_order <- clusters_dt$peak
-
-# add clusters info to peaks coordinates bed file
-pks_bed <- fread(file.path(cns_dir,"consensusSeekeR-peaks.bed"))
-setnames(pks_bed, c("V4"), c("peak"))
-clusters_bed <- merge.data.table(pks_bed, clusters_dt, by="peak", sort = FALSE)
-setcolorder(clusters_bed, c(colnames(pks_bed)))
-clusters_bed[,clusters:=paste0("C",clusters)]
-clusters_bed[,group:=paste0("G",group)]
-fwrite(clusters_bed, file.path(res_dir, "consensusSeekeR-peaks-clusters.bed"), sep="\t", col.names = FALSE)
-```
-
-Heatmap of markers
-
-```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
-# order rows and columns
-samples_order <- col_dt[order(condition,reporterline)]$sample
-plot_mt <- norm_mt[peaks_order,samples_order]
-
-# center at 0
-plot_min <- quantile(abs(range(plot_mt)),0.75)
-plot_min <- 5
-plot_mt <- pmin(pmax(plot_mt,-plot_min),plot_min) 
-
-# heatmap colors
-col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11,'BrBG'))(1000)
-col_fun <- circlize::colorRamp2(seq(-plot_min, plot_min, length.out = length(col_vec)), col_vec)
-
-# color annotaitons
-col_ann <- HeatmapAnnotation(
-    which = "column", border = TRUE,
-    "reporterline" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporterline),
-    "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
-    col = list("reporterline" = line_cols, "condition" = condition_cols)
-)
-
-# peak module annotations
-clann <- clusters_dt[match(rownames(plot_mt),peak)]$clusters
-clann_lab <- unique(clusters_dt[match(rownames(plot_mt),peak)]$clusters)
-clann <- factor(clann, levels=clann_lab)
-grann <- clusters_dt[match(rownames(plot_mt),peak)]$group
-grann_lab <- unique(clusters_dt[match(rownames(plot_mt),peak)]$group)
-grann <- factor(grann, levels=grann_lab)
-module_ann <- HeatmapAnnotation(
-    which = "row", border = TRUE,
-    # "cluster" = anno_block(
-    #   labels = clann_lab,
-    #   gp = gpar(col=NA)
-    # ),
-    "group" = anno_block(
-      labels = grann_lab,
-      gp = gpar(col=NA)
-    )
-)
-
-# peaks annotations
-row_labels_marks_ids <- match(clusters_dt[,.SD[1],clusters]$peak, rownames(plot_mt))
-row_labels_marks <- clusters_dt[,.SD[1],clusters]$clusters
-mark_ann <- HeatmapAnnotation(
-  which = "row", 
-  marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
-  show_legend = FALSE
-)
-mark_ann <- HeatmapAnnotation(
-    which = "row", border = TRUE,
-    "padj<0.05" = rownames(plot_mt) %in% peaks_deseq,
-    "var>1" = rownames(plot_mt) %in% peaks_vari,
-    "FC>2" = rownames(plot_mt) %in% peaks_fc,
-    col = list(
-      "padj<0.05" = c("TRUE" = "#e6ab02", "FALSE"="#d9d9d9"),
-      "var>1" = c("TRUE" = "#3690c0", "FALSE"="#d9d9d9"),
-      "FC>2" = c("TRUE" = "#e7298a", "FALSE"="#d9d9d9")
-    )
-)
-
-# heatmap
-hm <- Heatmap(
-  plot_mt, name = "normalized\naccessibility",
-  col = col_fun,
-  cluster_rows = FALSE, cluster_columns = FALSE,
-  show_row_names = FALSE, show_column_names = TRUE,
-  row_title = "peaks", 
-  row_split = grann, 
-  cluster_row_slices = FALSE,
-  top_annotation = col_ann,  
-  left_annotation = module_ann, right_annotation = mark_ann,
-  border = TRUE
-)
-hm
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "peaks_heatmap_group.pdf"), width=8, height=10)
-draw(hm)
-dev.off()
+# save
+write.table(norm_mt, file.path(res_dir,"norm_accessibility.tsv"), sep="\t", row.names = TRUE, quote = FALSE)
 ```
 
 ## PCA
@@ -551,6 +362,201 @@ gp_l
 ```{r include=FALSE, eval=TRUE}
 pdf(file.path(fig_dir, "PCA_reporter_lines.pdf"), width=7, height=8)
 gp_l
+dev.off()
+```
+
+## Marker peaks
+
+Use normalized peak counts
+
+```{r}
+norm_mt <- read.table(file.path(res_dir,"norm_accessibility.tsv"), header = TRUE)
+```
+
+Identify marker peaks
+
+```{r include=FALSE, eval=TRUE}
+# peak markers by normalized accessibility
+peaks_fc <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>=2))
+peaks_vari <- names(which(apply(norm_mt, 1, function(x) var(x)>1)))
+peaks_marks_1 <- intersect(peaks_fc, peaks_vari)
+length(peaks_marks_1)
+```
+
+```{r include=TRUE, eval=TRUE}
+# gene markers by high FC + significant DEseq2 LTR test 
+dds <- readRDS(file.path(res_dir, "dds.rds"))
+dds <- DESeq(dds, test="LRT", reduced=~1)
+dds_res <- results(dds)
+dds_qval <- dds_res$padj 
+names(dds_qval) <- rownames(dds_res)
+peaks_deseq <- names(which(dds_qval<1e-2))
+peaks_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing = T)[2])>=1.8))
+peaks_marks <- intersect(peaks_high, peaks_deseq)
+length(peaks_marks)
+```
+
+Cluster peaks
+
+```{r fig.width=10, fig.height=6}
+set.seed(1950)
+
+# determine k for kmeans
+ks <- 1:30
+tot_withinss <- sapply(ks,  function(k) {
+  cl <- kmeans(norm_mt[peaks_marks,], k)
+  cl$tot.withinss
+})
+elbow_dt <- data.table(k = ks, tot_withinss = tot_withinss)
+elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
+  geom_line() + geom_point()+
+  scale_x_continuous(breaks = ks)
+elbow_gp
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "kmeans_elbow.pdf"), width=8, height=6)
+elbow_gp
+dev.off()
+```
+
+Cluster peaks
+
+```{r}
+# kmeans
+set.seed(1950)
+k <- 19
+cl <- kmeans(norm_mt[peaks_marks,], k)
+peaks_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
+  cor_peaks <- cor(t(norm_mt[gs,]))
+  hclust_peaks <- hclust(as.dist(1-cor(cor_peaks)),method="ward.D2")
+  rownames(cor_peaks)[hclust_peaks$order]
+})
+names(peaks_order_list) <- unique(cl$cluster)
+peaks_order_list <- peaks_order_list[as.character(seq_along(peaks_order_list))]
+
+# cluster clusters
+cluster_order <- hclust(dist(cor(t(cl$centers)),method="euclidean"),method="ward.D2")$order
+peaks_order_list <- peaks_order_list[as.character(cluster_order)]
+peaks_order <- unname(unlist(peaks_order_list))
+clusters_dt <- data.table(
+  peak = peaks_order,
+  clusters = as.character(rep(names(peaks_order_list), sapply(peaks_order_list, length)))
+)
+
+# group clusters (manually)
+clusters_dt[clusters %in% c(16), group:=1] # Elav
+clusters_dt[clusters %in% c(5), group:=2] # Elav + Fox
+clusters_dt[clusters %in% c(14,17), group:=3] # Fox
+clusters_dt[clusters %in% c(6,11), group:=4] # Fox + Ncol
+clusters_dt[clusters %in% c(9), group:=5] 
+clusters_dt[clusters %in% c(13,4), group:=6] # Elav + Ncol
+clusters_dt[clusters %in% c(1,2,15,7,8,10,19,18), group:=7] # Ncol
+clusters_dt[clusters %in% c(12), group:=8] 
+clusters_dt[clusters %in% c(3), group:=9] 
+setorder(clusters_dt, group)
+peaks_order <- clusters_dt$peak
+
+# add clusters info to peaks coordinates bed file
+pks_bed <- fread(file.path(cns_dir,"consensusSeekeR-peaks.bed"))
+setnames(pks_bed, c("V4"), c("peak"))
+clusters_bed <- merge.data.table(pks_bed, clusters_dt, by="peak", sort = FALSE)
+setcolorder(clusters_bed, c(colnames(pks_bed)))
+clusters_bed[,clusters:=paste0("C",clusters)]
+clusters_bed[,group:=paste0("G",group)]
+fwrite(clusters_bed, file.path(res_dir, "consensusSeekeR-peaks-clusters.bed"), sep="\t", col.names = FALSE)
+```
+
+Heatmap of markers
+
+```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
+# order rows and columns
+samples_order <- col_dt[order(condition,reporterline)]$sample
+plot_mt <- norm_mt[peaks_order,samples_order]
+
+# center at 0
+plot_min <- quantile(abs(range(plot_mt)),0.75)
+plot_min <- 5
+plot_mt <- pmin(pmax(plot_mt,-plot_min),plot_min) 
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11,'BrBG'))(1000)
+col_fun <- circlize::colorRamp2(seq(-plot_min, plot_min, length.out = length(col_vec)), col_vec)
+
+# color annotaitons
+col_ann <- HeatmapAnnotation(
+    which = "column", border = TRUE,
+    "reporterline" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporterline),
+    "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
+    col = list("reporterline" = line_cols, "condition" = condition_cols)
+)
+
+# # peak module annotations (clusters)
+# clann <- clusters_dt[match(rownames(plot_mt),peak)]$clusters
+# clann_lab <- unique(clusters_dt[match(rownames(plot_mt),peak)]$clusters)
+# clann <- factor(clann, levels=clann_lab)
+# module_ann <- HeatmapAnnotation(
+#     which = "row", border = TRUE,
+#     "cluster" = anno_block(
+#       labels = clann_lab,
+#       gp = gpar(col=NA)
+#     )
+# )
+# row_split <- clann
+
+# peak module annotations (manually groupped clusters)
+grann <- clusters_dt[match(rownames(plot_mt),peak)]$group
+grann_lab <- unique(clusters_dt[match(rownames(plot_mt),peak)]$group)
+grann <- factor(grann, levels=grann_lab)
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "group" = anno_block(
+      labels = grann_lab,
+      gp = gpar(col=NA)
+    )
+)
+row_split <- grann
+
+
+# peaks annotations
+row_labels_marks_ids <- match(clusters_dt[,.SD[1],clusters]$peak, rownames(plot_mt))
+row_labels_marks <- clusters_dt[,.SD[1],clusters]$clusters
+mark_ann <- HeatmapAnnotation(
+  which = "row", 
+  marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
+  show_legend = FALSE
+)
+mark_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "padj<0.05" = rownames(plot_mt) %in% peaks_deseq,
+    "var>1" = rownames(plot_mt) %in% peaks_vari,
+    "FC>2" = rownames(plot_mt) %in% peaks_fc,
+    col = list(
+      "padj<0.05" = c("TRUE" = "#e6ab02", "FALSE"="#d9d9d9"),
+      "var>1" = c("TRUE" = "#3690c0", "FALSE"="#d9d9d9"),
+      "FC>2" = c("TRUE" = "#e7298a", "FALSE"="#d9d9d9")
+    )
+)
+
+# heatmap
+hm <- Heatmap(
+  plot_mt, name = "normalized\naccessibility",
+  col = col_fun,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = FALSE, show_column_names = TRUE,
+  row_title = "peaks", 
+  row_split = row_split, 
+  cluster_row_slices = FALSE,
+  top_annotation = col_ann,  
+  left_annotation = module_ann, right_annotation = mark_ann,
+  border = TRUE
+)
+hm
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_heatmap_group.pdf"), width=8, height=10)
+draw(hm)
 dev.off()
 ```
 
@@ -668,21 +674,7 @@ dev.off()
 
 Save per-group foreground and background peaks for motif discovery
 
-```{r eval=FALSE, include=FALSE}
-dir.create(file.path(hom_dir, "peaks"))
-dir.create(file.path(hom_dir, "results"))
-clusters_bed <- fread(file.path(res_dir, "consensusSeekeR-peaks-clusters.bed"))
-setnames(clusters_bed, c("seqnames","start","end","name","score","strand","cluster"))
-clusters_bed[,cluster:=factor(cluster, levels=paste0("C",seq_along(unique(cluster))))]
-for (ci in levels(clusters_bed$cluster)) {
-  fg <- clusters_bed[cluster==ci]
-  bg <- clusters_bed[cluster!=ci]
-  fwrite(fg, file.path(hom_dir, "peaks",sprintf("peaks-%s-fg.bed",ci)), col.names=FALSE, sep="\t")
-  fwrite(bg, file.path(hom_dir, "peaks",sprintf("peaks-%s-bg.bed",ci)), col.names=FALSE, sep="\t")
-}
-```
-
-```{r}
+```{r eval=FALSE}
 dir.create(file.path(hom_dir, "peaks"))
 dir.create(file.path(hom_dir, "results"))
 clusters_bed <- fread(file.path(res_dir, "consensusSeekeR-peaks-clusters.bed"))
@@ -697,31 +689,6 @@ for (ci in levels(clusters_bed$group)) {
 ```
 
 De novo and known motifs in groups of accessible peaks
-
-```{bash eval=FALSE, include=FALSE}
-findMotifs(){
-	genome="genome/Nvec_vc1.1_gDNA.fasta"
-	homdir="ATACSEQ/nucleosome_free_regions/homer"
-	bedfg=${homdir}"/peaks/peaks-C"${1}"-fg.bed"
-	bedbg=${homdir}"/peaks/peaks-C"${1}"-bg.bed"
-	outdir=$homdir"/results/${1}-Homer"
-	echo ""
-	echo "Starting HOMER analysis for" $1
-	echo "using the intervals in" $bedfg
-	echo "Output will be saved to" $outdir
-	findMotifsGenome.pl $bedfg $genome $outdir -size 250 -len 6,8,10,12 -bg $bedbg 
-	echo ""
-	echo "Finished de novo analysis for module" $1
-}
-
-for cluster in {1..15}
-do
-  findMotifs "$cluster" &
-done
-wait
-echo "Done."
-
-```
 
 ```{bash eval=FALSE}
 
@@ -765,7 +732,10 @@ Parse all Homer results
 
 ```{r eval=FALSE}
 clusters_bed <- fread(file.path(res_dir, "consensusSeekeR-peaks-clusters.bed"))
-setnames(clusters_bed, c("seqnames","start","end","name","score","strand","cluster","group"))
+setnames(
+  clusters_bed, 
+  c("seqnames", "start", "end", "name", "score", "strand", "cluster", "group")
+)
 clusters_bed[,group:=factor(group, levels=paste0("G",seq_along(unique(group))))]
 
 ParseHomerDenovo <- function(fn, eta=1) {
@@ -796,6 +766,7 @@ ParseHomerDenovo <- function(fn, eta=1) {
   })
   ml <- unlist(unname(ml))
   names(ml) <- str_extract(ml, ".+(?=\\,BestGuess)")
+  names(ml) <- ml
   dt[,name2:=ml[name]]
   dt[!is.na(name2), name:=name2]
   dt[,name2:=NULL]
@@ -828,7 +799,7 @@ fwrite(hm_dt, file.path(hom_dir, "results", "allResuls.txt"), sep="\t", col.name
 
 Save all Homer motifs 
 
-```{r}
+```{r eval=FALSE}
 mt_dt <- unique(hm_dt[,.(name)])
 
 mt_list <- lapply(levels(clusters_bed$group), function(ci) {
@@ -927,18 +898,9 @@ names(pwms_homer) <- sapply(pwms_homer, function(x) x@name)
 
 Load CisBP Nematostella motifs
 
-```{r}
-# only CisBP
-# cisbp_dir <- file.path("CisBP","CisBP_2023_01_26")
-# cisbp_tfs <- fread(file.path(cisbp_dir, "TF_Information.txt"), fill = TRUE)
-# cisbp_mot <- read_cisbp(file.path(cisbp_dir, "PWM.txt"))
-
-# CisBP motifs + aditionally transferred based on %ID
-pwms_files_cisbp <- file.path("annotation","CisBP_ident_transfered_motifs.RDS")
-# scRNAseq_nvec_v3/TFs/CisBP/Nvec/CisBP_ident_transfered_motifs.RDS
-pwms_cisbp <- readRDS(pwms_files_cisbp) # 2382
-
-# annotation for CisBP motifs
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+# liftover annotation for CisBP motifs
+# original in scRNAseq_nvec_v3/TFs/CisBP/Nvec/CisBP_ident_transfered_motifs.RDS
 dt_cisbp <- fread(str_replace(pwms_files_cisbp,"RDS","tsv"))
 setnames(dt_cisbp, "gene", "ID_JGI_Vienna")
 annotation_file <- file.path("annotation","Nvec_annotation_v3_2020-10-23_ID_JGI_Vienna_matched_DToL_names")
@@ -948,7 +910,23 @@ data_cisbp <- data_cisbp[!is.na(Motif_ID)]
 data_cisbp <- data_cisbp[match(names(pwms_cisbp), Motif_ID)]
 data_cisbp[is.na(gene), gene:=""]
 data_cisbp[is.na(name), name:=""]
-gen_cisbp <- data_cisbp$gene
+setcolorder(
+  data_cisbp, c(
+    "gene", 
+    setdiff(colnames(dt_cisbp),"ID_JGI_Vienna"), 
+    "ID_JGI_Vienna","ID_DToL","Percentage_overlap/Blast_ID","Source"
+  )
+)
+setnames(data_cisbp,"gene","Gene_ID")
+fwrite(data_cisbp, str_replace(pwms_files_cisbp,"RDS","tsv"), sep="\t")
+```
+
+```{r}
+# CisBP motifs + additionally transferred based on %ID
+pwms_files_cisbp <- file.path("annotation","CisBP_ident_transfered_motifs.RDS")
+pwms_cisbp <- readRDS(pwms_files_cisbp) # 2382
+data_cisbp <- fread(str_replace(pwms_files_cisbp,"RDS","tsv"))
+gen_cisbp <- data_cisbp$Gene_ID
 nms_cisbp <- data_cisbp$name
 pwms_cisbp_nm <- lapply(seq_along(pwms_cisbp), function(i) {
   motif <- pwms_cisbp[[i]]
@@ -958,6 +936,8 @@ pwms_cisbp_nm <- lapply(seq_along(pwms_cisbp), function(i) {
 })
 names(pwms_cisbp_nm) <- names(pwms_cisbp)
 ```
+
+Save all motifs
 
 ```{r}
 pwms <- c(pwms_homer,pwms_cisbp)
@@ -985,9 +965,9 @@ IC_threshold <- 0.5
 len_threshold <- 8
 ```
 
-Calculate pairwise similarity.
+Calculate pairwise similarity
 
-```{r}
+```{r eval=FALSE}
 # motifs
 pwms <- readRDS(file.path(res_dir,"motifs-all.rds"))
 
@@ -1012,7 +992,7 @@ Choose the minimum cluster similarity appropriately so that clusters of motifs t
 ```{r message=FALSE, eval=FALSE}
 # motifs and similarity
 pwms <- readRDS(file.path(res_dir,"motifs-all.rds"))
-sim_mat <- readRDS(file.path(sim_dir,sprintf("motifs-similarity-%s-%s%s.rds",similarity,method,normalization)))
+sim_mat <- readRDS(file.path(res_dir,sprintf("motifs-similarity-%s-%s%s.rds",similarity,method,normalization)))
 
 # ordering
 reclust_motifs <- TRUE
@@ -1053,23 +1033,23 @@ arch <- mta_merge_archetype(
   occupancy_threshold = 1,
   verbose = TRUE
 )
-# list of 1143 archetypes including 3392 motifs (137 archetype(s) fail filters)
+# list of 1118 archetypes including 3276 motifs (131 archetype(s) fail filters)
 arch <- arch[sapply(arch, function(x) length(x)>0)]
-arch_file <- file.path(sim_dir,sprintf("motif-archetypes-%s-%s%s-%s-IC%s-%sbp.rds",similarity,method,normalization,min_cluster_similarity,IC_threshold,len_threshold))
+arch_file <- file.path(res_dir,sprintf("motif-archetypes-%s-%s%s-%s-IC%s-%sbp.rds",similarity,method,normalization,min_cluster_similarity,IC_threshold,len_threshold))
 saveRDS(arch, arch_file)
 ```
 
 Annotate archetype motifs (dictionary).
 
-```{r}
+```{r eval=FALSE}
 # archetype motifs
-arch_file <- file.path(res_dir,sprintf("motif-archetypes-%s-%s%s-%s-IC%s-%sbp.rds",similarity,method,normalization,min_cluster_similarity,IC_threshold,len_threshold))
+arch_file <- file.path(res_dir,"motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
 arch <- readRDS(arch_file)
 
 # cisbp direct and inferred motifs for nematostella assigned to genes
 CisBP_ann_file <- file.path("annotation","CisBP_ident_transfered_motifs.tsv")
 cisbp_ann <- fread(CisBP_ann_file)
-setnames(cisbp_ann,"Motif_ID","motif")
+setnames(cisbp_ann,c("Gene_ID","Motif_ID"),c("gene","motif"))
 cisbp_tfs <- cisbp_ann[,.(gene,motif)][]
 TF_motifs_file <- file.path(res_dir,"CisBP_ident_transfered_genes_to_motifs.tsv")
 fwrite(cisbp_tfs, TF_motifs_file, sep="\t")
@@ -1100,6 +1080,8 @@ fwrite(dict, str_replace(arch_file, ".rds$",".dict"), sep="\t", quote=FALSE, col
 ```
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
+arch_file <- file.path(res_dir,"motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
+dict <- fread(str_replace(arch_file, ".rds$",".dict"))
 dict_nmot <- dict[,.(archetype_name,archetype_num_motifs)]
 gp_nmot <- ggplot(dict_nmot, aes(archetype_num_motifs)) + 
   geom_bar(color="white") +
@@ -1117,7 +1099,7 @@ dev.off()
 
 Plot archetyping clusters.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, eval=FALSE}
 # plot archetyping clusters
 archetyping_file <- file.path(
   fig_dir,
@@ -1138,14 +1120,14 @@ for (x in seq_along(arch)) {
       relative_entropy = TRUE,
       normalise.scores = FALSE
     ) + labs(title = x))
-  }, error=function(e) message(sprintf("Failed to plot ARCH%s\n%s",i,e)))
+  }, error=function(e) message(sprintf("Failed to plot ARCH%s\n%s",x,e)))
 }
 dev.off()
 ```
 
 Save archetype motifs.
 
-```{r}
+```{r eval=FALSE}
 # save motifs
 arch <- readRDS(arch_file)
 archetypes <-  lapply(arch, function(x) x$ppm_consensus@name)
@@ -1166,7 +1148,6 @@ arch_list <- lapply(arch_list, function(x) {
   x@alphabet <- "DNA"
   x
 }) 
-names(arch_list) <- arch_names
 universalmotif::write_meme(
   motifs = arch_list, 
   file = str_replace(arch_file, ".rds$","-pwms.meme"), 
@@ -1177,24 +1158,19 @@ universalmotif::write_meme(
 
 Plot heatmap of similarity of all motifs used in archetyping (i.e. motifs after filtering), with archetyping clusters indicated.
 
-```{r}
+```{r eval=FALSE}
 require(ComplexHeatmap)
 
 pwms <- readRDS(file.path(res_dir,"motifs-all.rds"))
-sim_mat <- readRDS(file.path(
-  res_dir,
-  sprintf("motifs-similarity-%s-%s%s.rds",similarity,method,normalization)
-))
-arch_file <- file.path(
-  res_dir,
-  sprintf("motif-archetypes-%s-%s%s-%s-IC%s-%sbp.rds",similarity,method,normalization,min_cluster_similarity,IC_threshold,len_threshold)
-)
+sim_mat_file <- file.path(res_dir,"motifs-similarity-PPM-PCCnorm.rds")
+sim_mat <- readRDS(sim_mat_file)
+arch_file <- file.path(res_dir,"motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
 arch <- readRDS(arch_file)
 dict <- fread(str_replace(arch_file, ".rds$",".dict"))
 names(arch) <- unique(dict$archetype_name)
 heatmap_file <- file.path(
   fig_dir,
-  sprintf("motif-similarity-archetypes-%s-%s%s-%s-IC%s-%sbp.pdf",similarity,method,normalization,min_cluster_similarity,IC_threshold,len_threshold)
+  str_replace_all(basename(sim_mat_file), c("similarity"="similarity-archetypes", ".rds$"=".pdf"))
 )
 mta_plot_archetype_heatmap(sim_mat = sim_mat, arch = arch, dict = dict, output_file = heatmap_file, height=14, width=16)
 ```
@@ -1235,7 +1211,7 @@ arc_dt <- unique(dict[gene!=""][,.(archetype_name,gene)])[,.(number_of_genes=.N)
 orp_arc <- unique(dict[!archetype_name %in% arc_dt$archetype_name]$archetype_name)
 gp_arc <- ggplot(arc_dt, aes(number_of_genes)) + 
   geom_bar(color="white") + 
-  scale_x_continuous(expand = expansion(mult=0.01), breaks = c(1,seq(10,100,10))) +
+  scale_x_continuous(expand = expansion(mult=0.01)) +
   scale_y_continuous(expand = expansion(mult=c(0,0.01))) +
   theme(panel.grid.major = element_line(size=0.5)) +
   labs(x="number of TFs per archetype motif", y="number of archetype motifs", caption = sprintf("%s motifs with gene(s); %s motifs without a gene",nrow(arc_dt),length(orp_arc)))
@@ -1254,6 +1230,7 @@ dev.off()
 Missing TFs and motifies classified in TF families
 
 ```{r fig.height=6, fig.width=6, message=FALSE, warning=FALSE, echo=FALSE}
+TF_family_annotation_file <- file.path("annotation","gene_families_searchinfo.csv")
 tf_fams <- fread(TF_family_annotation_file)
 
 # missing TFs
