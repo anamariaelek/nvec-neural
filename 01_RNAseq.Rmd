@@ -13,6 +13,7 @@ Load packages
 
 ```{r warning=FALSE, message=FALSE, results = FALSE}
 library(data.table)
+library(stringr)
 library(ggplot2)
 theme_py <- theme_light() + theme(
   panel.grid.major = element_blank(),
@@ -40,15 +41,15 @@ for (newdir in c(res_dir, fig_dir))
   dir.create(newdir, showWarnings = FALSE)
 ```
 
-## Differential expression
+## Gene counts
 
 Load expression data
 
 ```{r}
 # column data
 des_fn <- file.path(dat_dir, "design_table.tsv")
-des_dt <- fread(des_fn) 
-setnames(des_dt,"reporter_line","reporterline") # DESeq factors have problems with _
+des_dt <- fread(des_fn)
+setnames(des_dt, "reporter_line","reporterline") # DESeq factors have problems with _
 col_dt <- des_dt[,.(sample,reporterline,condition)]
 col_dt[,reporterline:=factor(reporterline, levels=c("Elav","Fox","Ncol"))]
 col_dt[,condition:=factor(condition, levels = c("negative","positive"))]
@@ -62,17 +63,17 @@ class(col_df) <- "data.frame"
 rownames(col_df) <- col_df$sample
 
 # count matrix
-con_fn <- file.path(dat_dir, "merged_quantification_transcripts.tsv")
-con_mt <- as.matrix(read.table(con_fn)[,rownames(col_df)])
+con_fn <- file.path(dat_dir, "raw_counts_rnaseq.tsv")
+con_df <- read.table(con_fn, header = TRUE)
+con_mt <- as.matrix(con_df[,rownames(col_df)])
+rownames(con_mt) <- con_df$transcript
 ```
 
-Data contains expression normalized values!
-
-```{r fig.width=7, fig.height=5}
+```{r echo=FALSE, include=FALSE, fig.width=7, fig.height=5}
 con_dt <- as.data.table(con_mt, keep.rownames="gene")
 con_dt <- melt.data.table(con_dt, id.vars="gene", variable.name="sample", value.name="expr")
 con_dt <- merge.data.table(con_dt, col_dt, by="sample", all.x=TRUE, sort=FALSE)
-ggplot(con_dt, aes(log10(expr+1e-6))) +
+ggplot(con_dt, aes(log10(expr+1))) +
   geom_density() +
   facet_grid(condition~reporterline) 
 ```
@@ -86,32 +87,31 @@ dds <- DESeqDataSetFromMatrix(
   colData = col_df,
   design = ~ condition + reporterline + condition:reporterline
 )
+saveRDS(dds, file.path(res_dir, "dds.rds"))
 ```
-
-## Marker genes
 
 Inspect genes expression distribution
 
 ```{r fig.width=8, fig.height=6, warning=FALSE, message=FALSE}
 # normalized accessibility distribution
-norm_dt <- as.data.table(con_mt, keep.rownames = "gene")
-norm_dt <- melt.data.table(norm_dt, id.vars = "gene", variable.name = "sample", value.name = "norm_counts")
-norm_dt <- merge.data.table(norm_dt, col_dt, by="sample")
-setorder(norm_dt, gene, condition, reporterline)
-norm_dt[,sample:=factor(sample, levels = unique(norm_dt$sample))]
+con_dt <- as.data.table(con_mt, keep.rownames = "gene")
+con_dt <- melt.data.table(con_dt, id.vars = "gene", variable.name = "sample", value.name = "norm_counts")
+con_dt <- merge.data.table(con_dt, col_dt, by="sample")
+setorder(con_dt, gene, condition, reporterline)
+con_dt[,sample:=factor(sample, levels = unique(con_dt$sample))]
 
-gp_exp <- ggplot(norm_dt, aes(sample, log10(norm_counts), fill=reporterline)) +
+gp_exp <- ggplot(con_dt, aes(sample, log10(norm_counts), fill=reporterline)) +
   geom_violin(scale = "width", alpha = 0.8, color = "black") +
   geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") + 
   scale_fill_manual(values = line_cols, limits = force) +
   scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
-  labs(x="samples", y="normalized\n expression (TPM)") +
+  labs(x="samples", y="gene counts") +
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
     legend.title = element_blank(), legend.position = "none"
   )
 
-var_dt <- norm_dt[,.(var=var(norm_counts)),.(gene)]
+var_dt <- con_dt[,.(var=var(norm_counts)),.(gene)]
 gp_var <- ggplot(var_dt, aes(log10(var))) + 
   geom_density() +
   scale_x_continuous(limits=c(-4,NA)) +
@@ -130,151 +130,15 @@ dev.off()
 Use normalized log-transformed expression data
 
 ```{r}
-norm_mt <- (con_mt+10)/apply(con_mt+10,1,median) # row normalize to bring genes to same range
+# normalize samples
+dds <- readRDS(file.path(res_dir, "dds.rds"))
+dds <- estimateSizeFactors(dds)
+norm_mt <- counts(dds, normalized=TRUE)
+# row normalize to bring genes to same range
+norm_mt <- (norm_mt+10)/apply(norm_mt+10,1,median) 
 norm_mt <- log2(norm_mt)
-```
-
-Identify marker genes
-
-```{r include=TRUE, eval=TRUE}
-# gene markers by normalized expression
-genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>1.5))
-genes_vari <- names(which(apply(norm_mt, 1, function(x) var(x)>0.1)))
-gene_marks <- intersect(genes_high, genes_vari)
-```
-
-```{r include=FALSE, eval=FALSE}
-# gene markers by normalized expression + significant kruskall wallis
-factor <- paste0(col_dt$condition, col_dt$reporterline)
-kw_pvals <- apply(norm_mt, 1, function(x) kruskal.test(x~factor)$p.value)
-kw_qvals <- p.adjust(kw_pvals, method="BH")
-kw_genes <- names(which(kw_qvals<0.05))
-genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>2))
-gene_marks <- intersect(genes_high, kw_genes)
-```
-
-```{r include=TRUE, eval=FALSE}
-# gene markers by high FC + significant DEseq2 LTR test 
-# need to do DESeq2 first!!!
-dds_qval <- dds_res$padj 
-names(dds_qval) <- rownames(dds_res)
-genes_deseq <- names(which(dds_qval<1e-2))
-gene_marks <- genes_deseq
-#genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing = T)[4])>2))
-#gene_marks <- intersect(genes_high, deseq_genes)
-
-```
-
-Select number of clusters for genes
-
-```{r fig.width=10, fig.height=6}
-set.seed(1950)
-
-# determine k for kmeans
-ks <- 1:30
-tot_withinss <- sapply(ks,  function(k) {
-  cl <- kmeans(norm_mt[gene_marks,], k)
-  cl$tot.withinss
-})
-elbow_dt <- data.table(k = ks, tot_withinss = tot_withinss)
-elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
-  geom_line() + geom_point()+
-  scale_x_continuous(breaks = ks)
-elbow_gp
-```
-
-Cluster genes
-
-```{r}
-set.seed(1950)
-
-# kmeans
-k <- 20
-cl <- kmeans(norm_mt[gene_marks,], k)
-gene_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
-  cor_genes <- cor(t(norm_mt[gs,]))
-  hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
-  rownames(cor_genes)[hclust_genes$order]
-})
-names(gene_order_list) <- unique(cl$cluster)
-gene_order_list <- gene_order_list[as.character(seq_along(gene_order_list))]
-
-# cluster clusters
-cluster_order <- hclust(dist(cor(t(cl$centers)),method="maximum"),method="ward.D2")$order
-gene_order_list <- gene_order_list[as.character(cluster_order)]
-gene_order <- unname(unlist(gene_order_list[cluster_order]))
-clusters_dt <- data.table(
-  gene = unlist(gene_order_list),
-  clusters = as.character(rep(names(gene_order_list), sapply(gene_order_list, length)))
-)
-```
-
-Heatmap of markers
-
-```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
-# order rows and columns
-samples_order <- col_dt[order(condition,reporterline)]$sample
-plot_mt <- norm_mt[gene_order,samples_order]
-
-# center at 0
-plot_min <- quantile(abs(range(plot_mt)),0.75)
-plot_mt <- pmin(pmax(plot_mt,-plot_min),plot_min) 
-
-# heatmap colors
-col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11,'BrBG'))(1000)
-col_fun <- circlize::colorRamp2(seq(-plot_min, plot_min, length.out = length(col_vec)), col_vec)
-
-# color annotations
-col_ann <- HeatmapAnnotation(
-    which = "column", border = TRUE,
-    "reporterline" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporterline),
-    "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
-    col = list("reporterline" = line_cols, "condition" = condition_cols)
-)
-
-# gene module annotations
-clann <- clusters_dt[match(rownames(plot_mt),gene)]$clusters
-clann_lab <- unique(clusters_dt[match(rownames(plot_mt),gene)]$clusters)
-clann <- factor(clann, levels=clann_lab)
-module_ann <- HeatmapAnnotation(
-    which = "row", border = TRUE,
-    "module" = anno_block(
-      labels = clann_lab,
-      gp = gpar(col=NA)
-    )
-)
-
-# genes annotations
-marks_gold <- fread("annotation/golden-marks-230116.tsv")[,1:2]
-setnames(marks_gold, c("gene","name"))
-marks_gold <- marks_gold[gene %in% rownames(plot_mt)]
-row_labels_marks_ids <- match(marks_gold$gene, rownames(plot_mt))
-row_labels_marks <- marks_gold[match(rownames(plot_mt)[row_labels_marks_ids], gene)]$name
-mark_ann <- HeatmapAnnotation(
-  which = "row", 
-  marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
-  show_legend = FALSE
-)
-
-# heatmap
-hm <- Heatmap(
-  plot_mt, name = "normalized\nexpression",  
-  col = col_fun,
-  cluster_rows = FALSE, cluster_columns = FALSE,
-  show_row_names = FALSE, show_column_names = TRUE,
-  row_title = "genes", 
-  row_split = clann, 
-  cluster_row_slices = FALSE,
-  top_annotation = col_ann, right_annotation = mark_ann, 
-  left_annotation = module_ann,
-  border = TRUE
-)
-hm
-```
-```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "clustering_heatmap.pdf"), width=8, height=10)
-draw(hm)
-dev.off()
+# save
+write.table(norm_mt, file.path(res_dir,"norm_expression.tsv"), sep="\t", row.names = TRUE, quote = FALSE)
 ```
 
 ## PCA
@@ -347,3 +211,418 @@ gp_l <- lapply(names(line_cols), function(cl) {
 })
 gp_l
 ```
+
+## Marker genes
+
+Use normalized gene counts
+
+```{r}
+norm_mt <- read.table(file.path(res_dir,"norm_expression.tsv"), header = TRUE)
+```
+
+Identify marker genes
+
+```{r include=FALSE, eval=FALSE}
+# gene markers by normalized expression
+genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing=TRUE)[2])>1.5))
+genes_vari <- names(which(apply(norm_mt, 1, function(x) var(x)>0.1)))
+gene_marks <- intersect(genes_high, genes_vari)
+```
+
+```{r include=TRUE, eval=TRUE}
+# gene markers by high FC + significant DEseq2 LTR test 
+dds <- readRDS(file.path(res_dir, "dds.rds"))
+dds <- DESeq(dds, test="LRT", reduced=~1)
+dds_res <- results(dds)
+dds_qval <- dds_res$padj 
+names(dds_qval) <- rownames(dds_res)
+genes_deseq <- names(which(dds_qval<1e-2))
+gene_marks <- genes_deseq
+genes_high <- names(which(apply(norm_mt, 1, function(x) sort(x,decreasing = T)[2])>1.8))
+gene_marks <- intersect(genes_high, genes_deseq)
+```
+
+Select number of clusters for genes
+
+```{r fig.width=10, fig.height=6}
+set.seed(1950)
+
+# determine k for kmeans
+ks <- 1:30
+tot_withinss <- sapply(ks,  function(k) {
+  cl <- kmeans(norm_mt[gene_marks,], k)
+  cl$tot.withinss
+})
+elbow_dt <- data.table(k = ks, tot_withinss = tot_withinss)
+elbow_gp <- ggplot(elbow_dt, aes(x = k, y = tot_withinss)) +
+  geom_line() + geom_point() +
+  scale_x_continuous(breaks = ks) + 
+  theme(panel.grid.major = element_line(size = 0.5))
+elbow_gp
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "kmeans_elbow.pdf"), width=8, height=6)
+elbow_gp
+dev.off()
+```
+
+Cluster genes
+
+```{r}
+set.seed(1950)
+
+# kmeans
+k <- 20
+cl <- kmeans(norm_mt[gene_marks,], k)
+gene_order_list <- tapply(names(cl$cluster), cl$cluster, function(gs) {
+  cor_genes <- cor(t(norm_mt[gs,]))
+  hclust_genes <- hclust(as.dist(1-cor(cor_genes)),method="ward.D2")
+  rownames(cor_genes)[hclust_genes$order]
+})
+names(gene_order_list) <- unique(cl$cluster)
+gene_order_list <- gene_order_list[as.character(seq_along(gene_order_list))]
+
+# cluster clusters
+cluster_order <- hclust(dist(cor(t(cl$centers)),method="euclidean"),method="ward.D2")$order
+gene_order_list <- gene_order_list[as.character(cluster_order)]
+gene_order <- unname(unlist(gene_order_list[cluster_order]))
+clusters_dt <- data.table(
+  gene = unlist(gene_order_list),
+  clusters = as.character(rep(names(gene_order_list), sapply(gene_order_list, length)))
+)
+
+# group clusters (manually)
+clusters_dt[clusters %in% c(9,20,14,15,7), group:=1] # Elav
+clusters_dt[clusters %in% c(17,4,13), group:=2] # Elav + Fox
+clusters_dt[clusters %in% c(11,1), group:=3] # Fox
+clusters_dt[clusters %in% c(19), group:=4] # Fox + Ncol
+clusters_dt[clusters %in% c(10,18), group:=5] # Elav + Ncol
+clusters_dt[clusters %in% c(16,12), group:=6] # Ncol
+clusters_dt[clusters %in% c(5,2,3), group:=7]
+clusters_dt[clusters %in% c(6), group:=8] 
+clusters_dt[clusters %in% c(8), group:=9] 
+setorder(clusters_dt, group)
+gene_order <- clusters_dt$gene
+
+# save
+fwrite(clusters_dt, file.path(res_dir, "genes_clusters.tsv"), sep="\t")
+```
+
+Heatmap of markers
+
+```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
+# order rows and columns
+samples_order <- col_dt[order(condition,reporterline)]$sample
+plot_mt <- norm_mt[gene_order,samples_order]
+
+# center at 0
+plot_min <- quantile(abs(range(plot_mt)),0.75)
+plot_mt <- pmin(pmax(plot_mt,-plot_min),plot_min) 
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11,'BrBG'))(1000)
+col_fun <- circlize::colorRamp2(seq(-plot_min, plot_min, length.out = length(col_vec)), col_vec)
+
+# color annotations
+col_ann <- HeatmapAnnotation(
+    which = "column", border = TRUE,
+    "reporterline" = as.character(col_dt[match(colnames(plot_mt),sample)]$reporterline),
+    "condition" = as.character(col_dt[match(colnames(plot_mt),sample)]$condition), 
+    col = list("reporterline" = line_cols, "condition" = condition_cols)
+)
+
+# gene module annotations
+clann <- clusters_dt[match(rownames(plot_mt),gene)]$clusters
+clann_lab <- unique(clusters_dt[match(rownames(plot_mt),gene)]$clusters)
+clann <- factor(clann, levels=clann_lab)
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "cluster" = anno_block(
+      labels = clann_lab,
+      gp = gpar(col=NA)
+    )
+)
+row_split <- clann
+  
+# gene module annotations (manual groups)
+grann <- clusters_dt[match(rownames(plot_mt),gene)]$group
+grann_lab <- unique(clusters_dt[match(rownames(plot_mt), gene)]$group)
+grann <- factor(grann, levels = grann_lab)
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "group" = anno_block(
+      labels = grann_lab,
+      gp = gpar(col = NA)
+    )
+)
+row_split <- grann
+
+# genes annotations
+marks_gold <- fread(
+  file.path("annotation", "golden-marks-230116.tsv"), 
+  fill = TRUE
+)[,1:2]
+setnames(marks_gold, c("gene", "name"))
+marks_gold[,name:=str_remove(name, "^Nv")]
+
+tfs_annt <- fread(
+  file.path("annotation","curated_TFh_Nvec_DToL_names.tsv"), 
+  header = FALSE
+)
+setnames(tfs_annt, c("gene", "pfam", "og"))
+
+marks_tfs <- merge.data.table(tfs_annt, marks_gold, by="gene", all=TRUE, sort=FALSE)
+marks_tfs[is.na(marks_tfs)] <- ""
+marks_tfs <- marks_tfs[gene %in% rownames(plot_mt)]
+marks_tfs <- marks_tfs[name!=""]
+
+row_labels_marks_ids <- match(marks_tfs$gene, rownames(plot_mt))
+row_labels_marks <- marks_tfs[match(rownames(plot_mt)[row_labels_marks_ids], gene)]$name
+mark_ann <- HeatmapAnnotation(
+  which = "row", 
+  marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
+  show_legend = FALSE
+)
+
+# heatmap
+hm <- Heatmap(
+  plot_mt, name = "normalized\nexpression",  
+  col = col_fun,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = FALSE, show_column_names = TRUE,
+  row_title = "genes", 
+  row_split = row_split, 
+  cluster_row_slices = FALSE,
+  top_annotation = col_ann, right_annotation = mark_ann, 
+  left_annotation = module_ann,
+  border = TRUE
+)
+hm
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "clustering_heatmap.pdf"), width=8, height=10)
+draw(hm)
+dev.off()
+```
+
+## Gene classification
+
+Train a model to classify genes in one of the groups defined above.  
+
+First prepare input data.
+
+```{r}
+require(caret)
+require(pROC)
+set.seed(1950)
+
+# input data
+norm_mt <- read.table(file.path(res_dir, "norm_expression.tsv"), header = TRUE)
+norm_dt <- as.data.table(norm_mt)[,gene := rownames(norm_mt)]
+clusters_dt <- fread(file.path(res_dir, "genes_clusters.tsv"))
+groups_dt <- merge.data.table(
+  norm_dt, clusters_dt,
+  by = "gene",
+  all = TRUE
+)
+groups_dt[,clusters:=NULL]
+
+# train test split
+# dt_test <- groups_dt[is.na(group)][,group:=NULL]
+# df_test <- as.data.frame(dt_test[,-1], row.names = dt_test$gene)
+
+dt_tt <- groups_dt[!is.na(group)]
+dt_tt[, group:=paste0("G", group)]
+dt_tt[, group:=factor(
+  group,
+  levels = paste0("G", seq_along(unique(dt_tt$group)))
+)]
+df_tt <- as.data.frame(dt_tt[, -1], row.names = dt_tt$gene)
+id_train <- sample(seq_len(nrow(df_tt)), round(nrow(df_tt) * 0.8))
+id_test <- setdiff(seq_len(nrow(df_tt)), id_train)
+df_train <- df_tt[id_train, ]
+df_test <- df_tt[id_test, ]
+
+# set up cross validation
+ctrl <- trainControl(method = "cv",  number = 10, classProbs = TRUE)
+```
+
+### Random forest
+
+```{r eval=FALSE}
+set.seed(1950)
+require(ranger)
+
+# parameter grid search
+hyper_grid <- expand.grid(
+  splitrule = "gini",
+  mtry = seq(2, 10, by = 2),
+  min.node.size = seq(5, 20, by = 5)
+)
+
+# train models
+rf_tree <- caret::train(
+  x = df_train[, -ncol(df_train)],
+  y = df_train[, "group"],
+  method = "ranger",
+  trControl = ctrl,
+  tuneGrid = hyper_grid,
+  num.trees =  500,
+  importance = "none"
+)
+rf_tree
+
+# predict
+rf_pred <- predict(rf_tree, df_test)
+rf_conf <- confusionMatrix(
+  data = rf_pred,
+  reference = df_test$group,
+  mode = "prec_recall"
+)
+rf_conf$overall
+# Accuracy : 0.8971808
+```
+
+```{r include=FALSE, eval=FALSE}
+# ROC
+rf_probs <- predict(rf_tree, df_test, type = "prob")
+rf_roc <- roc(
+  predictor = colnames(rf_probs)[apply(rf_probs, 1, which.max)],
+  response = df_test$group,
+  levels = levels(df_test$group)
+)
+rf_roc$auc
+plot(rf_roc, main = "RF ROC")
+```
+
+### GBM
+
+```{r eval=FALSE}
+set.seed(1950)
+
+# parameter grid search
+hyper_grid <- expand.grid(
+  interaction.depth = c(1, 2),
+  n.trees = c(200, 500, 1000),
+  shrinkage = c(0.01, 0.1),
+  n.minobsinnode = seq(5, 50, by = 5)
+)
+
+# train models
+gbm_tree <- train(
+  x = df_train[, -ncol(df_train)],
+  y = df_train[, "group"],
+  method = "gbm",
+  trControl = ctrl,
+  tuneGrid = hyper_grid,
+  metric = "ROC"
+)
+gbm_tree
+
+# predict
+gbm_pred <- predict(gbm_tree, df_test)
+gbm_conf <- confusionMatrix(
+  data = gbm_pred,
+  reference = df_test$group,
+  mode = "prec_recall"
+)
+gbm_conf$overall
+# Accuracy : 0.9021559
+```
+
+### XGBoost
+
+```{r eval=FALSE}
+set.seed(1950)
+require(xgboost)
+registerDoParallel(4,cores=4)
+getDoParWorkers()
+
+# parameter grid search
+hyper_grid <- expand.grid(
+  nrounds = 500,
+  max_depth = c(2, 6, 10),
+  eta = c(0.01, 0.1),
+  gamma = 0,
+  colsample_bytree = seq(0.5, 0.9, length.out = 5),
+  min_child_weight = 1,
+  subsample = 1
+)
+
+# train models
+xgb_tree <- train(
+  x = df_train[, -ncol(df_train)],
+  y = df_train[, "group"],
+  method = "xgbTree",
+  metric = "ROC",
+  trControl = ctrl,
+  tuneGrid = hyper_grid
+)
+xgb_tree$bestTune
+
+# predict
+xgb_pred <- predict(xgb_tree, df_test)
+xgb_conf <- confusionMatrix(
+  data = xgb_pred,
+  reference = df_test$group,
+  mode = "prec_recall"
+)
+xgb_conf$overall
+
+```
+
+## TFs
+
+Get expressed TFs
+
+```{r}
+# TF annotation
+tfs_annt <- fread(
+  file.path("annotation", "curated_TFh_Nvec_DToL_names.tsv"),
+  header = FALSE
+)
+setnames(tfs_annt, c("gene", "pfam", "og"))
+
+# expressed TFs
+expr_genes <- names(which(apply(con_mt, 1, function(x) sum(x) > 5) == TRUE))
+expr_tfs <- expr_genes[expr_genes %in% tfs_annt$gene]
+
+# motifs
+atac_dir <- "ATACSEQ/nucleosome_free_regions/results/"
+pwms_fnm <- file.path(
+  atac_dir,
+  "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms.rds"
+)
+pwms <- readRDS(pwms_fnm)
+dict_fnm <- file.path(
+  atac_dir, 
+  "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.dict"
+)
+dict <- fread(dict_fnm)
+
+mean(expr_tfs %in% dict$gene)
+```
+
+Get TFs for each group of marker peaks
+
+```{r}
+clusters_dt <- fread(file.path(res_dir, "genes_clusters.tsv"))
+
+tfs_annt <- fread(file.path("annotation","curated_TFh_Nvec_DToL_names.tsv"), header = FALSE)
+setnames(tfs_annt, c("gene","pfam","og"))
+
+marks_gold <- fread(file.path("annotation","golden-marks-230116.tsv"), fill=TRUE)[,1:2]
+setnames(marks_gold, c("gene","name"))
+marks_gold[,name:=str_remove(name,"^Nv")]
+
+tfs_mark <- merge.data.table(clusters_dt, tfs_annt, by="gene", all=FALSE, sort = FALSE)
+tfs_mark <- merge.data.table(tfs_mark, marks_gold, by="gene", all.x=TRUE, sort=FALSE)
+tfs_mark[is.na(name), name:=""]
+
+tfs_mark[,.N,group]
+tfs_mark[name!=""]
+
+```
+
