@@ -8,7 +8,7 @@ Nvec_vc1.1_XM_032376421.2	NvAth-like	progenitors
 Nvec_vc1.1_XM_032385706.2 	NvFoxQ2d	progenitors	
 Nvec_vc1.1_XM_048724864.1	NvElav1	neurons	
 Nvec_vc1.1_XM_032370984.2	NvAshA	neurons	
-Nvec_vc1.1_XM_032363992.2	NvBrain3/Pou4	neurons	
+Nvec_vc1.1_XM_032363992.2	Pou4	neurons	
 Nvec_vc1.1_XM_032364887.2	NvFoxL2	neurons	
 Nvec_vc1.1_XM_001638751.3	NvRFamide	neurons	
 Nvec_vc1.1_XM_001647471.3	NvOtxC	neurons	
@@ -16,12 +16,26 @@ Nvec_vc1.1_XM_032372264.2	NvSoxC	neurons
 Nvec_vc1.1_XM_032377897.2	NvPea3/Ets	neurons	
 Nvec_vc1.1_XM_032362713.2	NvIslet	neurons	
 Nvec_vc1.1_XM_032367288.2	NvGATA	neurons	
+Nvec_vc1.1_XM_001641617.3	GABA transporter	neurons	
+Nvec_vc1.1_XM_001634346.3	NvLWamide	neurons	
+Nvec_vc1.1_XM_048724673.1	Rpamide	neurons	
+Nvec_vc1.1_XM_032375468.2	Nav2.5 ion channel	neurons	
+Nvec_vc1.1_XM_032377132.2	Shak4 ion channel	neurons	
+Nvec_vc1.1_XM_048728569.1	Shak1 ion channel	neurons	
+Nvec_vc1.1_XM_048728976.1	NvZic-C 	neurons	
+Nvec_vc1.1_XM_048730161.1	Fos1	cnidocytes	
+Nvec_vc1.1_XM_032385896.2	Jun	cnidocytes	
 Nvec_vc1.1_XM_001639701.3	NvSox2	cnidocytes	
 Nvec_vc1.1_XM_001641129.3	NvZNF845	cnidocytes	
 Nvec_vc1.1_XM_001634328.3	NvNR12	cnidocytes	
 Nvec_vc1.1_XM_001631763.3	NvPaxA	cnidocytes	
-Nvec_vc1.1_XM_032363026.2	NvMinicollgen-3/NvNcol-3	cnidocytes
-v1g170524	NvtrypsinA 	secretory	old_id
+Nvec_vc1.1_XM_032363026.2	NvMinicollgen-3/NvNcol-3	cnidocytes	
+Nvec_vc1.1_XM_001629300.3	NvMinicollgen-1/NvNcol-1	cnidocytes	
+Nvec_vc1.1_XM_048723042.1	NvSpinalin	cnidocytes	
+Nvec_vc1.1_XM_048730215.1	Calmodulin	cnidocytes	
+Nvec_vc1.1_XM_001637223.3	Peptidase M13	cnidocytes	
+Nvec_vc1.1_XM_048721133.1	Nematogalectin-like	cnidocytes	
+v1g170524	NvtrypsinA 	secretory	old_id	
 v1g124644	NvtrypsinB 	secretory	old_id
 v1g105460	NvtrypsinC 	secretory	old_id
 v1g107265 	NvChitinaseA	secretory	old_id
@@ -51,11 +65,13 @@ Nvec_vc1.1_XM_032384965.2	BarH-Like3	muscle	circular
 Nvec_vc1.1_XM_032377358.2	VAx-EMX-Like	muscle	parietal
 NVE23841	NvSox3 	ectoderm	
 Nvec_vc1.1_XM_001634505.3	NvFoxA	patterning	
-Nvec_vc1.1_XM_032366733.2	Nvanthox1/NvAx1  	patterning	
+Nvec_vc1.1_XM_032366733.2	NvHoxF/Anthox1	patterning	
 Nvec_vc1.1_XM_032376421.2	NvAth-like		
 Nvec_vc1.1_XM_032375602.2	NvInsm1		
 Nvec_vc1.1_XM_032385745.2	NvPrdm14-like		
-Nvec_vc1.1_XM_032373618.2	Homeobox protein Nkx-2.2a		
-Nvec_vc1.1_XM_032380334.2	RFX:RFX4/RFX6/RFX8		
-Nvec_vc1.1_XM_032375228.2	RFX:RFX4/RFX6/RFX8		
-Nvec_vc1.1_XM_032365096.2	RFX:RFX4/RFX6/RFX8		
+Nvec_vc1.1_XM_032373618.2	Nkx-2.2a		
+Nvec_vc1.1_XM_032380334.2	RFX4/6/8	
+Nvec_vc1.1_XM_032375228.2	RFX4/6/8	
+Nvec_vc1.1_XM_032365096.2	RFX4/6/8	
+Nvec_vc1.1_XM_032384126.2	FoxL1
+Nvec_vc1.1_XM_001624716.3	NvSox1
