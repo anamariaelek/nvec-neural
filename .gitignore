@@ -1,6 +1,8 @@
+*_files
 ATACSEQ/*/bam
 ATACSEQ/*/bigwig
 ATACSEQ/*/consensus_peaks
 ATACSEQ/*/footprint
+ATACSEQ/nucleosome_free_regions/results/motifs-similarity-*.rds
 CisBP
 genome
