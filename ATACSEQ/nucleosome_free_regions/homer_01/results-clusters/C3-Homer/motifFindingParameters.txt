@@ -1,1 +1,0 @@
-cmd = ATACSEQ/nucleosome_free_regions/homer/peaks/peaks-C3-fg.bed genome/Nvec_vc1.1_gDNA.fasta ATACSEQ/nucleosome_free_regions/homer/results/3-Homer -size 250 -len 6,8,10,12 -bg ATACSEQ/nucleosome_free_regions/homer/peaks/peaks-C3-bg.bed
