@@ -140,6 +140,7 @@ gp_var <- ggplot(var_dt, aes(log10(var))) +
 gp_pch <- gp_exp / gp_var + plot_layout(heights = c(2,1))
 gp_pch
 ```
+
 ```{r include=FALSE, eval=TRUE}
 pdf(file.path(fig_dir, "genes_var.pdf"), width=8, height=6)
 gp_pch
@@ -337,17 +338,26 @@ clusters_dt[clusters %in% c(9,20,14,15,7), group := 1] # Elav
 clusters_dt[clusters %in% c(17,4,13), group := 2] # Elav + Fox
 clusters_dt[clusters %in% c(11,1), group := 3] # Fox
 clusters_dt[clusters %in% c(19), group := 4] # Fox + Ncol
-# group 5 Fox + Ncol + Elav
 clusters_dt[clusters %in% c(10,18), group := 6] # Elav + Ncol
 clusters_dt[clusters %in% c(16,12), group := 7] # Ncol
 clusters_dt[clusters %in% c(5,2,3), group := 7] # Ncol
-clusters_dt[clusters %in% c(6), group := 8] 
-clusters_dt[clusters %in% c(8), group := 9] 
+clusters_dt[clusters %in% c(6), group := 8]
+clusters_dt[clusters %in% c(8), group := 9]
 setorder(clusters_dt, group)
 gene_order <- clusters_dt$gene
+genes_5_1 <- names(which(apply(
+  norm_mt[clusters_dt[clusters == 18]$gene, grep("FoxPos", colnames(norm_mt))],
+  1, max
+) > 1))
+genes_5_2 <- names(which(apply(
+  norm_mt[clusters_dt[clusters == 19]$gene, grep("ElavPos", colnames(norm_mt))],
+  1, max
+) > 1))
+clusters_dt[gene %in% c(genes_5_1, genes_5_2), group := 5] # Fox + Ncol + Elav
+setorder(clusters_dt, group)
 
 # save
-fwrite(clusters_dt, file.path(res_dir, "genes_clusters.tsv"), sep="\t")
+fwrite(clusters_dt, file.path(res_dir, "genes_clusters.tsv"), sep = "\t")
 ```
 
 Heatmap of markers
