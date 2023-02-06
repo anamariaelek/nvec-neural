@@ -5,5 +5,6 @@ ATACSEQ/*/consensus_peaks
 ATACSEQ/*/footprint
 ATACSEQ/nucleosome_free_regions/results/motifs-similarity-*.rds
 ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot.tsv
+ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot-footprints.tsv.gz
 CisBP
 genome
