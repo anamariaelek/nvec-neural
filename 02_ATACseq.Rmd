@@ -1222,8 +1222,8 @@ Load Homer motifs
 
 ```{r}
 # load Homer motifs
-data_homer <- fread(file.path(hom_dir, "results","allResuls.txt"))
-pwms_homer <- readRDS(file.path(hom_dir,"results","allMotifs.RDS"))
+data_homer <- fread(file.path(hom_dir, "results", "allResuls.txt"))
+pwms_homer <- readRDS(file.path(hom_dir, "results", "allMotifs.RDS"))
 pwms_homer <- unlist(unname(pwms_homer))
 names(pwms_homer) <- sapply(pwms_homer, function(x) x@name)
 ```
@@ -1244,9 +1244,9 @@ data_cisbp[is.na(gene), gene:=""]
 data_cisbp[is.na(name), name:=""]
 setcolorder(
   data_cisbp, c(
-    "gene", 
-    setdiff(colnames(dt_cisbp),"ID_JGI_Vienna"), 
-    "ID_JGI_Vienna","ID_DToL","Percentage_overlap/Blast_ID","Source"
+    "gene",
+    setdiff(colnames(dt_cisbp), "ID_JGI_Vienna"),
+    "ID_JGI_Vienna", "ID_DToL", "Percentage_overlap/Blast_ID", "Source"
   )
 )
 setnames(data_cisbp,"gene","Gene_ID")
@@ -1257,7 +1257,7 @@ Load CisBP Nematostella motifs
 
 ```{r}
 # CisBP motifs + additionally transferred based on %ID
-pwms_files_cisbp <- file.path("annotation","CisBP_ident_transfered_motifs.RDS")
+pwms_files_cisbp <- file.path("annotation", "CisBP_ident_transfered_motifs.RDS")
 pwms_cisbp <- readRDS(pwms_files_cisbp) # 2382
 data_cisbp <- fread(str_replace(pwms_files_cisbp,"RDS","tsv"))
 gen_cisbp <- data_cisbp$Gene_ID
@@ -1271,20 +1271,66 @@ pwms_cisbp_nm <- lapply(seq_along(pwms_cisbp), function(i) {
 names(pwms_cisbp_nm) <- names(pwms_cisbp)
 ```
 
+Load other CisBP motifs
+```{r}
+require(universalmotif)
+require(monalisa)
+
+# motifs
+mots_dir <- file.path(
+  "..", "scATAC_nvec_v2", "clustering", "CisBP",
+  "motifs_cisbp_all_2022-03-09"
+)
+mots_fns <- list.files(
+  file.path(mots_dir, "pwms"),
+  full.names = TRUE
+) # 11491 motifs
+mots_ids <- str_remove(basename(mots_fns), ".txt")
+names(mots_fns) <- mots_ids
+
+# motifs annotation
+mots_all <- fread(file.path(mots_dir, "TF_Information_all_motifs.txt"))
+mots_all <- mots_all[Motif_ID != "."]
+mots_sps <- unique(mots_all$TF_Species)
+favo_sps <- c(
+  "Homo_sapiens",
+  "Mus_musculus",
+  "Rattus_norvegicus",
+  "Caenorhabditis_elegans",
+  "Xenopus_laevis",
+  "Xenopus_tropicalis",
+  "Danio_rerio",
+  "Drosophila_melanogaster"
+)
+mots_all[, TF_Species := factor(
+  TF_Species,
+  levels = c(favo_sps, setdiff(mots_sps, favo_sps))
+)]
+setorder(mots_all, "Motif_ID", "TF_Species")
+mots_ann <- mots_all[TF_Species %in% favo_sps]
+mots_ann <- mots_ann[, .SD[1], Motif_ID]
+ids <- mots_ann$Motif_ID
+
+# load motifs
+pwms_cisbp <- lapply(mots_fns[ids], mta_read_cisbp_mod)
+```
+
 Save all motifs
 
 ```{r}
-pwms <- c(pwms_homer,pwms_cisbp)
-saveRDS(pwms, file.path(res_dir,"motifs-all.rds"))
+pwms_cisbp <- pwms_cisbp[!names(pwms_cisbp) %in% names(pwms_cisbp_nm)]
+pwms <- c(pwms_homer, pwms_cisbp_nm, pwms_cisbp)
+pwms <- pwms[!sapply(pwms, is.null)]
+saveRDS(pwms, file.path(res_dir, "motifs-all.rds"))
 ```
 
 Parameters for similarity and archetyping
 
 ```{r}
 # motif similarity
-similarity = "PPM" 
-method = "PCC"
-normalise.scores = TRUE
+similarity <- "PPM" 
+method <- "PCC"
+normalise.scores <- TRUE
 if (normalise.scores == TRUE) {
   normalization  <- "norm"
 } else {
@@ -1303,7 +1349,7 @@ Calculate pairwise similarity
 
 ```{r eval=FALSE}
 # motifs
-pwms <- readRDS(file.path(res_dir,"motifs-all.rds"))
+pwms <- readRDS(file.path(res_dir, "motifs-all.rds"))
 
 # similarity
 sim_mat <- compare_motifs(
@@ -1315,7 +1361,9 @@ sim_mat <- compare_motifs(
   min.mean.ic = 0
 )
 rownames(sim_mat) <- colnames(sim_mat) <- names(pwms)
-saveRDS(sim_mat,file.path(res_dir,sprintf("motifs-similarity-%s-%s%s.rds",similarity,method,normalization)))
+saveRDS(sim_mat, file.path(res_dir, sprintf(
+  "motifs-similarity-%s-%s%s.rds", similarity, method,normalization
+)))
 
 ```
 
@@ -1325,8 +1373,11 @@ Choose the minimum cluster similarity appropriately so that clusters of motifs t
 
 ```{r message=FALSE, eval=FALSE}
 # motifs and similarity
-pwms <- readRDS(file.path(res_dir,"motifs-all.rds"))
-sim_mat <- readRDS(file.path(res_dir,sprintf("motifs-similarity-%s-%s%s.rds",similarity,method,normalization)))
+pwms <- readRDS(file.path(res_dir, "motifs-all.rds"))
+sim_mat <- readRDS(file.path(
+  res_dir,
+  sprintf("motifs-similarity-%s-%s%s.rds", similarity, method, normalization)
+))
 
 # ordering
 reclust_motifs <- TRUE
@@ -1337,20 +1388,24 @@ if (reclust_motifs) {
 }
 cuts <- seq(200,300,10)
 cuts_scores <- sapply(cuts, function(h) {
-  ctr <- cutree(hc, k=h)
+  ctr <- cutree(hc, k = h)
   cl_scores <- sapply(unique(ctr),function(x) {
-    ms <- names(ctr[ctr==x])
-    within_cl <- median(sim_mat[ms,ms], na.rm=TRUE)
-    between_cl <- median(unlist(sim_mat[!(rownames(sim_mat)%in%ms),ms]), unlist(sim_mat[ms,!(colnames(sim_mat)%in%ms)]), na.rm=TRUE)
+    ms <- names(ctr[ctr == x])
+    within_cl <- median(sim_mat[ms,ms], na.rm = TRUE)
+    between_cl <- median(
+      unlist(sim_mat[!(rownames(sim_mat) %in% ms),ms]),
+      unlist(sim_mat[ms, !(colnames(sim_mat) %in% ms)]),
+      na.rm = TRUE
+    )
     if (is.na(between_cl)) between_cl <- 1
     within_cl/between_cl
   })
-  mean(cl_scores, na.rm=TRUE)
+  mean(cl_scores, na.rm = TRUE)
 })
 k <- cuts[which.max(cuts_scores)]
 plot(cuts,cuts_scores)
-abline(v=k)
-ctr <- cutree(hc, k=k)
+abline(v = k)
+ctr <- cutree(hc, k = k)
 
 # archetyping
 arch <- mta_merge_archetype(
@@ -1368,8 +1423,11 @@ arch <- mta_merge_archetype(
   verbose = TRUE
 )
 # list of 1118 archetypes including 3276 motifs (131 archetype(s) fail filters)
-arch <- arch[sapply(arch, function(x) length(x)>0)]
-arch_file <- file.path(res_dir,sprintf("motif-archetypes-%s-%s%s-%s-IC%s-%sbp.rds",similarity,method,normalization,min_cluster_similarity,IC_threshold,len_threshold))
+arch <- arch[sapply(arch, function(x) length(x) > 0)]
+arch_file <- file.path(res_dir, sprintf(
+  "motif-archetypes-%s-%s%s-%s-IC%s-%sbp.rds",
+  similarity, method, normalization, min_cluster_similarity, IC_threshold, len_threshold
+))
 saveRDS(arch, arch_file)
 ```
 
@@ -1377,26 +1435,26 @@ Annotate archetype motifs (dictionary).
 
 ```{r eval=FALSE}
 # archetype motifs
-arch_file <- file.path(res_dir,"motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
+arch_file <- file.path(res_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
 arch <- readRDS(arch_file)
 
 # cisbp direct and inferred motifs for nematostella assigned to genes
-CisBP_ann_file <- file.path("annotation","CisBP_ident_transfered_motifs.tsv")
+CisBP_ann_file <- file.path("annotation", "CisBP_ident_transfered_motifs.tsv")
 cisbp_ann <- fread(CisBP_ann_file)
-setnames(cisbp_ann,c("Gene_ID","Motif_ID"),c("gene","motif"))
-cisbp_tfs <- cisbp_ann[,.(gene,motif)][]
-TF_motifs_file <- file.path(res_dir,"CisBP_ident_transfered_genes_to_motifs.tsv")
-fwrite(cisbp_tfs, TF_motifs_file, sep="\t")
+setnames(cisbp_ann, c("Gene_ID", "Motif_ID"), c("gene", "motif"))
+cisbp_tfs <- cisbp_ann[, .(gene, motif)][]
+TF_motifs_file <- file.path(res_dir, "CisBP_ident_transfered_genes_to_motifs.tsv")
+fwrite(cisbp_tfs, TF_motifs_file, sep = "\t")
 
 # cisbp family annotation for all direct TFs
-CisBP_family_annotation_file <- file.path("annotation","CisBP_2021_08_11_TF_Information.txt")
+CisBP_family_annotation_file <- file.path("annotation", "CisBP_2021_08_11_TF_Information.txt")
 
 # tf annotations
-TF_annotation_file <- file.path("annotation","curated_TFh_Nvec_DToL_names.tsv")
-TF_family_annotation_file <- file.path("annotation","gene_families_searchinfo.csv")
+TF_annotation_file <- file.path("annotation", "curated_TFh_Nvec_DToL_names.tsv")
+TF_family_annotation_file <- file.path("annotation", "gene_families_searchinfo.csv")
 
 # mapping between CisBP and our TF family annotations
-CisBP_TF_family_mapping_file <- file.path("annotation","CisBP_TF_mapping.tsv")
+CisBP_TF_family_mapping_file <- file.path("annotation", "CisBP_TF_mapping.tsv")
 
 # make dictionary
 dict <- mta_archetype_dictionary(
@@ -1409,25 +1467,34 @@ dict <- mta_archetype_dictionary(
 )
 
 # save dictonary
-fwrite(dict, str_replace(arch_file, ".rds$",".dict"), sep="\t", quote=FALSE, col.names = TRUE)
+fwrite(
+  dict,
+  str_replace(arch_file, ".rds$",".dict"),
+  sep="\t",
+  quote=FALSE,
+  col.names = TRUE
+)
 
 ```
 
 ```{r fig.width=6, fig.height=4, message=FALSE, warning=FALSE}
-arch_file <- file.path(res_dir,"motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
+arch_file <- file.path(res_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
 dict <- fread(str_replace(arch_file, ".rds$",".dict"))
-dict_nmot <- dict[,.(archetype_name,archetype_num_motifs)]
+dict_nmot <- dict[, .(archetype_name,archetype_num_motifs)]
 gp_nmot <- ggplot(dict_nmot, aes(archetype_num_motifs)) + 
-  geom_bar(color="white") +
-  scale_x_continuous(expand = expansion(mult=0.01), breaks = c(1,seq(10,100,10))) +
-  scale_y_continuous(expand = expansion(mult=c(0,0.01))) +
-  theme(panel.grid.major = element_line(size=0.5)) +
-  labs(x="number of motifs per archetype", y="number of archetypes")
+  geom_bar(color = "white") +
+  scale_x_continuous(expand = expansion(mult = 0.01), breaks = c(1,seq(10, 100, 10))) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
+  theme(panel.grid.major = element_line(size = 0.5)) +
+  labs(x = "number of motifs per archetype", y = "number of archetypes")
 gp_nmot
 ```
 
 ```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "motifs-archetypes-number.pdf"), width=6, height=4)
+pdf(
+  file.path(fig_dir, "motifs-archetypes-number.pdf"),
+  width = 6, height = 4
+)
 gp_nmot
 dev.off()
 ```
@@ -1443,11 +1510,12 @@ archetyping_file <- file.path(
 mta_plot_archetype(arch = arch, dict = dict, output_file = archetyping_file)
 
 # plot archetype logos
-pdf(file.path(fig_dir, basename(str_replace(arch_file, "\\.rds$", "-archetypes.pdf"))), width=8, height=3)
+pdf(file.path(
+  fig_dir, basename(str_replace(arch_file, "\\.rds$", "-archetypes.pdf"))
+), width = 8, height = 3)
 for (x in seq_along(arch)) {
-  message(x)
   motif <- arch[[x]]$ppm_consensus
-  motif@name <- dict[archetype_num==paste0("ARCH",x)]$archetype_name[1]
+  motif@name <- dict[archetype_num == paste0("ARCH", x)]$archetype_name[1]
   motif@alphabet <- "DNA"
   tryCatch({
     print(view_motifs(
@@ -1455,7 +1523,9 @@ for (x in seq_along(arch)) {
       relative_entropy = TRUE,
       normalise.scores = FALSE
     ) + labs(title = x))
-  }, error=function(e) message(sprintf("Failed to plot ARCH%s\n%s",x,e)))
+  }, error = function(e)
+      message(sprintf("Failed to plot ARCH%s\n%s",x,e))
+  )
 }
 dev.off()
 ```
@@ -1516,16 +1586,25 @@ arch <- readRDS(arch_file)
 dict <- fread(str_replace(arch_file, ".rds$",".dict"))
 names(arch) <- unique(dict$archetype_name)
 heatmap_file <- file.path(
-  fig_dir,
-  str_replace_all(basename(sim_mat_file), c("similarity"="similarity-archetypes", ".rds$"=".pdf"))
+  fig_dir, str_replace_all(
+    basename(sim_mat_file),
+    c("similarity"="similarity-archetypes", ".rds$"=".pdf")
+  )
 )
-mta_plot_archetype_heatmap(
+hm_mat <- mta_plot_archetype_heatmap(
   sim_mat = sim_mat,
   arch = arch,
   dict = dict,
   output_file = heatmap_file,
   height = 14,
-  width = 16
+  width = 16,
+  return_mat = TRUE
+)
+saveRDS(
+  hm_mat, str_replace_all(
+    basename(sim_mat_file),
+    c("similarity" = "similarity-archetypes", ".rds$"="-heatmap.rds")
+  )
 )
 ```
 
@@ -1542,9 +1621,13 @@ tfs_annt <- fread(
 setnames(tfs_annt, c("gene", "pfam", "og"))
 
 # groupped genes
-mark_dt <- fread(file.path("RNASEQ_QUANTIFICATION", "results", "genes_clusters.tsv"))
+mark_dt <- fread(file.path(
+  "RNASEQ_QUANTIFICATION", "results", "genes_clusters.tsv"
+))
 mark_dt[, group := paste0("G", group)]
-gene_dt <- fread(file.path("RNASEQ_QUANTIFICATION", "results", "genes_clusters_predicted.tsv"))
+gene_dt <- fread(file.path(
+  "RNASEQ_QUANTIFICATION", "results", "genes_clusters_predicted.tsv"
+))
 gene_dt[, group := group_xgb]
 group_dt <- rbindlist(list(
   clustered = mark_dt[, .(gene, group)],
@@ -1627,9 +1710,9 @@ arc_dt <- unique(dict[gene != ""][
 orp_arc <- unique(dict[!archetype_name %in% arc_dt$archetype_name]$archetype_name)
 gp_arc <- ggplot(arc_dt, aes(number_of_genes)) + 
   geom_bar(color="white") + 
-  scale_x_continuous(expand = expansion(mult=0.01)) +
-  scale_y_continuous(expand = expansion(mult=c(0,0.01))) +
-  theme(panel.grid.major = element_line(size=0.5)) +
+  scale_x_continuous(expand = expansion(mult = 0.01)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
+  theme(panel.grid.major = element_line(size = 0.5)) +
   labs(
     x = "number of TFs per archetype motif",
     y="number of archetype motifs",
@@ -1983,21 +2066,25 @@ gp_orp <- ggplot(orp_dtn, aes(tf_family)) +
   ) + 
   coord_flip() +
   scale_fill_manual(values = tf_fams_cols, limits = force) +
-  scale_y_continuous(limits = c(NA, NA), labels = abs) +
+  scale_y_continuous(
+    labels = abs,
+    limits = c(-50, 50),
+    oob = function(x, limits) x
+  ) +
   geom_hline(yintercept = 0, colour = "black", size = 0.25) +
   theme(
     legend.position = "none", 
     axis.line = element_blank(),
     panel.grid.major.x = element_line(size=0.5)
   ) +
-  labs(y = "TFs \t motifs", x = "TF family")
+  labs(y = "motifs \t TFs", x = "TF family")
 gp_orp
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "motifs-archetypes-tf-orphans-counts.pdf"),
-  width = 6, height = 8
+  width = 8, height = 10
 )
 gp_orp
 dev.off()
@@ -2133,7 +2220,7 @@ fwrite(
 
 Motif enrichment heatmap
 
-```{r fig.height=16, fig.width=12}
+```{r fig.height=26, fig.width=12}
 # enrichment scores
 dt <- fread(
   file.path(res_dir, "motif-enrich-archetypes-mona.tsv")
@@ -2303,7 +2390,11 @@ gp
 ```
 
 ```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "motifs_heatmap.pdf"), width=12, height=16)
+pdf(
+  file.path(fig_dir, "motifs_heatmap.pdf"),
+  width = 12,
+  height = 26
+)
 gp
 dev.off()
 ```
@@ -2974,6 +3065,22 @@ dev.off()
 
 ## Footprinting
 
+```{bash include=FALSE, eval=FALSE}
+# install TOBIAS
+cd /home/anamaria/bin/
+git clone https://github.com/loosolab/TOBIAS.git
+cd TOBIAS
+
+# conda env create -f tobias_env.yaml
+
+conda create -n tobias python=3.6
+conda install tobias -c bioconda
+
+# conda install pip
+# pip install cython
+# python setup.py install
+```
+
 Merge replicates per condition
 
 ```{bash eval=FALSE}
@@ -3245,8 +3352,7 @@ do
       ${bwg_dir}/${line}_neg_corrected.bw \
     --output ${plt_dir}/${line}_footprint_comparison_bound_peaks.pdf \
     --flank 125 \
-    --share_y sites \
-    --plot_boundaries
+    --share_y sites 
 done
 
 ```
