@@ -1508,11 +1508,11 @@ cisbp_tf_family_mapping_file <- file.path("annotation", "CisBP_TF_mapping.tsv")
 # make dictionary
 dict <- mta_archetype_dictionary(
   arch = arch,
-  tf_annotation_file = tf_annotation_file,
-  tf_motifs_file = tf_motifs_file,
-  tf_family_annotation_file = tf_family_annotation_file,
-  cisbp_family_annotation_file = cisbp_family_annotation_file,
-  cisbp_tf_family_mapping_file = cisbp_tf_family_mapping_file
+  TF_annotation_file = tf_annotation_file,
+  TF_motifs_file = tf_motifs_file,
+  TF_family_annotation_file = tf_family_annotation_file,
+  CisBP_family_annotation_file = cisbp_family_annotation_file,
+  CisBP_TF_family_mapping_file = cisbp_tf_family_mapping_file
 )
 
 # save dictonary
@@ -1610,7 +1610,7 @@ saveRDS(arch_list_nm, str_replace(arch_file, ".rds$", "-pwms.rds"))
 
 universalmotif::write_homer(
   motifs = arch_list_nm,
-  file = str_replace(arch_file, ".rds$", "-pwms.homer")
+  file = str_replace(arch_file, ".rds$", "-pwms.homer"),
   overwrite = TRUE
 )
 
@@ -1631,10 +1631,12 @@ Plot heatmap of similarity of all motifs used in archetyping (i.e. motifs after 
 ```{r eval=FALSE}
 require(ComplexHeatmap)
 
-pwms <- readRDS(file.path(res_dir,"motifs-all.rds"))
-sim_mat_file <- file.path(res_dir,"motifs-similarity-PPM-PCCnorm.rds")
+pwms <- readRDS(file.path(res_dir, "motifs-all.rds"))
+sim_mat_file <- file.path(res_dir, "motifs-similarity-PPM-PCCnorm.rds")
 sim_mat <- readRDS(sim_mat_file)
-arch_file <- file.path(res_dir,"motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds")
+arch_file <- file.path(
+  res_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.rds"
+)
 arch <- readRDS(arch_file)
 dict <- fread(str_replace(arch_file, ".rds$", ".dict"))
 names(arch) <- unique(dict$archetype_name)
@@ -1767,8 +1769,8 @@ orp_arc <- unique(
   dict[!archetype_name %in% arc_dt$archetype_name]$archetype_name
 )
 gp_arc <- ggplot(arc_dt, aes(number_of_genes)) +
-  geom_bar(color="white") +
-  scale_x_continuous(expand = expansion(mult = 0.01)) +
+  geom_bar(color = "white") +
+  scale_x_continuous(expand = expansion(mult = 0.01), breaks = seq(1, 100, 1)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
   theme(panel.grid.major = element_line(size = 0.5)) +
   labs(
@@ -1944,9 +1946,48 @@ We will focus on TFs used for clustering here.
 ```{r fig.height=5, fig.width=12, message=FALSE, warning=FALSE}
 # TF families
 tf_family_annotation_file <- file.path(
-  "annotation","gene_families_searchinfo.csv"
+  "annotation", "gene_families_searchinfo.csv"
 )
 tf_fams <- fread(tf_family_annotation_file)
+
+# tf classification
+tf_class_pattern <- paste(unlist(str_split(tf_fams[[2]], ",")), collapse = "|")
+tf_classes <- sort(str_split(tf_class_pattern, "\\|")[[1]])
+tf_classes <- sort(unique(c(
+  tf_classes,
+  # AP-2
+  "TFAP2",
+  # bZIP
+  "FOS", "JUN", "DBP", "HLF", "TEF",
+  # Doublesex_DM
+  "DMRTA",
+  # E2F_TDP
+  "E2F",
+  # Ets
+  "ETV",
+  # Forkhead
+  "FOXD", "FOXG", "FOXL", "FOXO",
+  # HLH
+  "ASCL", "ATOH", "MYC", "SCX", "TCF", "HES",
+  # GCM
+  "GCM",
+  # HMGbox_Sox"
+  "SOX",
+  # Homeodomains
+  "MEOX", "NKX6", "NOTO", "ANTP",
+  "ISL", "LIM",
+  "POU1", "POU4", "POU",
+  "CRX", "NOBOX", "OTX", "OTP", "PAX", "RAX", "VSX", "PRD",
+  # rfx
+  "RFX",
+  # zf
+  "INSM", "NR2C", "NR2F", "OVOL3", "PRDM", "SP", "NR2E", "GFI", "ZNF",
+  # more
+  "BAF", "bHLH", "ETF", "ETS", "HNF",
+  "Maf", "Myb", "Myc", "MADF", "Nrf1", "NDT80",
+  "PhoG", "STAT", "SANT", "DAMP1"
+)))
+tf_classes <- c(setdiff(tf_classes, c(tf_fams[[1]], "Homeodomain")))
 
 # clustering markers
 mark_dt <- fread(file.path(
@@ -1959,16 +2000,21 @@ mark_dt <- fread(file.path(
 orp_tfs_dt <- tfs_annt[gene %in% mark_dt$gene]
 orp_tfs_dt <- unique(orp_tfs_dt[gene %in% orp_tfs][, .SD[1], gene])
 # get family info from gene og
-orp_tfs_dt[og!="", tf_family := str_remove(og, "\\.(?<=\\.).+")]
+orp_tfs_dt[og != "", tf_family := str_remove(og, "\\.(?<=\\.).+")]
 orp_tfs_dt[, tf_family := str_replace_all(tf_family, "AP2", "AP-2")]
+# TFs class
+orp_tfs_dt[, tf_class := str_extract(
+  og, paste(tf_classes, collapse = "|")
+)]
+orp_tfs_dt[is.na(tf_class), tf_class := tf_family]
 # summarize
-orp_tfs_dtn <- orp_tfs_dt[, .N,tf_family][
+orp_tfs_dtn <- orp_tfs_dt[, .N, tf_family][
   , prop := N / sum(N)][
     order(-N)]
 orp_tfs_dtn_plot <- copy(orp_tfs_dtn)
 orp_tfs_dtn_plot <- unique(orp_tfs_dtn_plot)
 orp_tfs_dtn_plot[, tf_family := factor(
-  tf_family, 
+  tf_family,
   levels = orp_tfs_dtn_plot$tf_family
 )]
 
@@ -1998,7 +2044,7 @@ grep_list2 <- list(
 )
 nms <- unlist(strsplit(tf_fams[[2]], ","))
 fms <- unname(unlist(lapply(1:nrow(tf_fams), function(i)
-  rep(tf_fams[i,1], length(strsplit(as.character(tf_fams[i,2]), ",")[[1]]))
+  rep(tf_fams[i, 1], length(strsplit(as.character(tf_fams[i, 2]), ",")[[1]]))
 )))
 grep_list1 <- fms; names(grep_list1) <- nms
 grep_list <- c(grep_list1, grep_list2)
@@ -2007,7 +2053,36 @@ for (gp in names(grep_list)) {
   tf_family := grep_list[[gp]]]
 }
 orp_arc_dt[, tf_family := str_replace_all(tf_family, "AP2", "AP-2")]
+# get family info from tf guessed class
+orp_arc_dt[, tf_class := str_extract(
+  archetype_name, tf_class_pattern
+)]
+for (fp in tf_classes) {
+  orp_arc_dt[
+    is.na(tf_family) & grepl(fp, tf_name, ignore.case = TRUE),
+    tf_class := fp
+  ]
+}
+orp_arc_dt[
+  is.na(tf_family) & !is.na(tf_class),
+  tf_family := tf_fams[grep(tf_class, V2, ignore.case = TRUE)[1]]$V1
+]
+orp_arc_dt[
+  is.na(tf_family) & grepl("HOX", tf_name, ignore.case = TRUE),
+  tf_family := "Homeodomains"
+]
+orp_arc_dt[
+  is.na(tf_family) & grepl("FOX", tf_name, ignore.case = TRUE),
+  tf_family := "Forkhead"
+]
+orp_arc_dt[
+  tf_family == "Forkhead",
+  tf_class := str_extract(tf_name, "FOX[A-Z]")
+]
+orp_arc_dt[tf_family == "Forkhead" & is.na(tf_class), tf_class := "Frokhead"]
+# the rest is unknown
 orp_arc_dt[is.na(tf_family), tf_family := "unknown"]
+orp_arc_dt[is.na(tf_class), tf_class := tf_family]
 orp_arc_dtn <- unique(orp_arc_dt[, .(archetype, tf_family)])
 # summarize with unknown
 orp_arc_dtn_1 <- orp_arc_dt[
@@ -2020,7 +2095,9 @@ orp_arc_dtn_1[, tf_family := factor(
 orp_arc_dtn_2 <- orp_arc_dt[tf_family != "unknown"][
   , .N, tf_family][
     , prop := N / sum(N)][order(-N)]
-orp_arc_dtn_2[, tf_family := factor(tf_family, levels = orp_arc_dtn_2$tf_family)]
+orp_arc_dtn_2[, tf_family := factor(
+  tf_family, levels = orp_arc_dtn_2$tf_family
+)]
 
 # colors
 tf_fams <- unique(sort(c(tf_fams[[1]], unique(orp_tfs_dt$tf_family))))
@@ -2031,7 +2108,7 @@ tf_fams <- tf_fams[tf_fams %in% c(
 tf_fams <- str_replace_all(tf_fams, "AP2", "AP-2")
 tf_fams_cols <- structure(
   c(
-    colorRampPalette(RColorBrewer::brewer.pal(8,'Paired'))(length(tf_fams)),
+    colorRampPalette(RColorBrewer::brewer.pal(8, "Paired"))(length(tf_fams)),
     "khaki", "grey"
   ),
   names = c(tf_fams, "other", "unknown")
@@ -2042,7 +2119,7 @@ tf_fams_cols <- structure(
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 gp_orp_tfs <- ggplot(orp_tfs_dtn_plot, aes("", N, fill = tf_family)) +
   geom_bar(stat = "identity", width = 1, color = "black") +
-  coord_polar("y", start=0) +
+  coord_polar("y", start = 0) +
   scale_fill_manual(values = tf_fams_cols, limits = force) +
   geom_text(
     aes(label = ifelse(
@@ -2058,7 +2135,7 @@ gp_orp_tfs <- ggplot(orp_tfs_dtn_plot, aes("", N, fill = tf_family)) +
   theme(legend.position = "none")
 
 gp_orp_arc_1 <- ggplot(orp_arc_dtn_1, aes("", N, fill = tf_family)) +
-  geom_bar(stat="identity", width = 1, color = "black") +
+  geom_bar(stat = "identity", width = 1, color = "black") +
   coord_polar("y", start = 0) +
   scale_fill_manual(values = tf_fams_cols, limits = force) +
   geom_text(
@@ -2075,7 +2152,7 @@ gp_orp_arc_1 <- ggplot(orp_arc_dtn_1, aes("", N, fill = tf_family)) +
   theme(legend.position = "none")
 
 gp_orp_arc_2 <- ggplot(orp_arc_dtn_2, aes("", N, fill = tf_family)) +
-  geom_bar(stat="identity", width = 1, color = "black") +
+  geom_bar(stat = "identity", width = 1, color = "black") +
   coord_polar("y", start = 0) +
   scale_fill_manual(values = tf_fams_cols, limits = force) +
   geom_text(
@@ -2310,7 +2387,7 @@ write.table(
 
 # log2fc
 dat_fc <- dcast.data.table(
-  unique(dt[,.(motif, group, fc)]), motif ~ group, value.var = "fc"
+  unique(dt[, .(motif, group, fc)]), motif ~ group, value.var = "fc"
 )
 mat_fc <- data.matrix(dat_fc)[,-1]
 mat_fc[is.na(mat_fc)] <- 0
@@ -2321,8 +2398,8 @@ write.table(
   sep = "\t", quote = FALSE
 )
 
-# convert to numeric (replacing , with .) and multiply with -1 (so that highly significant = higher value)
-dt[, minuslog10qval := -1*log10(padj)]
+# highly significant higher value
+dt[, minuslog10qval := -1 * log10(padj)]
 
 # filtering
 ids <- apply(mat_fc, 1, function(x) max(x) > 1) &
@@ -2345,10 +2422,10 @@ dict <- fread(file.path(
   res_dir,
   "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp.dict"
 ))
-dc <- unique(dict[,.(archetype_name, gene)])
+dc <- unique(dict[, .(archetype_name, gene)])
 setnames(dc, "archetype_name", "motif")
 mt_dt <- merge.data.table(
-  ds, dc, 
+  ds, dc,
   by = "motif",
   all.x = TRUE
 )
@@ -2424,10 +2501,12 @@ gp <- ggplot(mt_marks_dt, aes(group, motif, label = label)) +
     aes(size = minuslog10qval, fill = fc),
     shape = 21,
     color = "black"
-  ) + 
+  ) +
   scale_fill_gradientn(
     name = "enrichmnet\nfold change",
-    colours = c("white","#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15", "#7a0105"),
+    colours = c(
+      "white","#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15", "#7a0105"
+    ),
     breaks = c(0, 2, 4, 6)
   ) +
   scale_size_continuous(
@@ -2495,17 +2574,29 @@ tfs_df[, group := tfs_vct[gene]]
 mot_mat <- read.table(
   file.path(res_dir, "motif-enrich-archetypes-mona-fc.tsv")
 )
+rownames(mot_mat) <- str_extract(rownames(mot_mat), "ARCH\\d+")
 mot_vct <- apply(mot_mat, 1, function(x) colnames(mot_mat)[which.max(x)])
 mot_enr <- apply(mot_mat, 1, max)
-mot_df[, group := mot_vct[archetype_name]]
-mot_df[, fc := mot_enr[archetype_name]]
+mot_df[, archetype_num := paste0("ARCH", as.character(archetype_num))]
+mot_df[, group := mot_vct[as.character(archetype_num)]]
+mot_df[, fc := mot_enr[as.character(archetype_num)]]
 
 # matching
 tfs_mot_map <- function(tfs_df, mot_df) {
   tfs <- tfs_df$gene
   mts <- sapply(tfs, function(g) {
     tfs_dg <- tfs_df[gene == g]
+    # match TF by family
     mot_dg_fam <- mot_df[tf_family == tfs_dg$tf_family]
+    # try to match TF by class
+    if (!is.na(tfs_dg$tf_class)) {
+      if (tfs_dg$tf_class %in% mot_dg_fam$tf_class) {
+        mot_dg_fam <- mot_dg_fam[tf_class == tfs_dg$tf_class]
+      } else if (any(grepl(tfs_dg$tf_class, mot_dg_fam$tf_class))) {
+        mot_dg_fam <- mot_dg_fam[grep(tfs_dg$tf_class, tf_class)]
+      }
+    }
+    # match group
     mot_dg_grp <- mot_dg_fam[group == tfs_dg$group]
     if (!nrow(mot_dg_grp) > 0) {
       NA
@@ -2600,7 +2691,7 @@ group_dt[, group := factor(
 # expressed genes
 con_mt <- read.table(
   file.path("RNASEQ_QUANTIFICATION", "raw_counts_rnaseq.tsv"),
-  header=TRUE, row.names = 1
+  header = TRUE, row.names = 1
 )
 expr_genes <- names(which(apply(con_mt, 1, function(x) sum(x) > 10) == TRUE))
 expr_tfs <- expr_genes[expr_genes %in% tfs_annt$gene]
@@ -2634,7 +2725,7 @@ tfs_dt <- unique(dict[gene != ""][
       order(number_of_motifs)]
 orp_tfs <- unique(tf_exp[!gene %in% dict$gene]$gene)
 gp_tfs <- ggplot(tfs_dt, aes(number_of_motifs)) +
-  geom_bar(color = "white") + 
+  geom_bar(color = "white") +
   scale_x_continuous(
     expand = expansion(mult = 0.01),
     breaks = c(1, seq(10, 100, 10))
@@ -2643,7 +2734,7 @@ gp_tfs <- ggplot(tfs_dt, aes(number_of_motifs)) +
   theme(panel.grid.major = element_line(size = 0.5)) +
   labs(
     x = "number of archetype motifs per TF",
-    y="number of TFs",
+    y = "number of TFs",
     caption = sprintf(
       "%s TFs with motif(s); %s TFs without a motif",
       nrow(tfs_dt), length(orp_tfs)
@@ -2659,13 +2750,13 @@ orp_arc <- unique(
   dict[!archetype_name %in% arc_dt$archetype_name]$archetype_name
 )
 gp_arc <- ggplot(arc_dt, aes(number_of_genes)) +
-  geom_bar(color="white") +
-  scale_x_continuous(expand = expansion(mult=0.01)) +
-  scale_y_continuous(expand = expansion(mult=c(0,0.01))) +
-  theme(panel.grid.major = element_line(size=0.5)) +
+  geom_bar(color = "white") +
+  scale_x_continuous(expand = expansion(mult = 0.01), breaks = seq(1, 100, 1)) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
+  theme(panel.grid.major = element_line(size = 0.5)) +
   labs(
     x = "number of TFs per archetype motif",
-    y="number of archetype motifs",
+    y = "number of archetype motifs",
     caption = sprintf(
       "%s motifs with gene(s); %s motifs without a gene",
       nrow(arc_dt), length(orp_arc)
@@ -2677,7 +2768,7 @@ gp_tfs / gp_arc
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs-archetypes-tf-mapping-2.pdf"),
+  file.path(fig_dir, "motifs-archetypes-tf-mapping-mapped.pdf"),
   width = 6, height = 8
 )
 gp_tfs / gp_arc
@@ -2755,240 +2846,23 @@ gp_ft
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs-tfs-groups-2.pdf"),
+  file.path(fig_dir, "motifs-tfs-groups-mapped.pdf"),
   width = 5, height = 7
 )
 gp_ft
 dev.off()
 ```
 
-To match missing TFs and motifes, we classified them in TF families. 
-We will focus on TFs used for clustering here.
-
-```{r fig.height=5, fig.width=12, message=FALSE, warning=FALSE}
-# TF families
-tf_family_annotation_file <- file.path(
-  "annotation","gene_families_searchinfo.csv"
-)
-tf_fams <- fread(tf_family_annotation_file)
-
-# clustering markers
-mark_dt <- fread(file.path(
-  "RNASEQ_QUANTIFICATION", "results", "genes_clusters.tsv"
-))
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# missing TFs
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-orp_tfs_dt <- tfs_annt[gene %in% mark_dt$gene]
-orp_tfs_dt <- unique(orp_tfs_dt[gene %in% orp_tfs][, .SD[1], gene])
-# get family info from gene og
-orp_tfs_dt[og!="", tf_family := str_remove(og, "\\.(?<=\\.).+")]
-orp_tfs_dt[, tf_family := str_replace_all(tf_family, "AP2", "AP-2")]
-# summarize
-orp_tfs_dtn <- orp_tfs_dt[, .N,tf_family][
-  , prop := N / sum(N)][
-    order(-N)]
-orp_tfs_dtn_plot <- copy(orp_tfs_dtn)
-orp_tfs_dtn_plot <- unique(orp_tfs_dtn_plot)
-orp_tfs_dtn_plot[, tf_family := factor(
-  tf_family,
-  levels = orp_tfs_dtn_plot$tf_family
-)]
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# missing motifs
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-orp_arc_dt <- unique(dict[archetype_name %in% orp_arc])
-# get family info from archetype name
-orp_arc_dt[tf_family == "", tf_family := str_extract(
-  archetype_name, paste(tf_fams[[1]], collapse = "|")
-)]
-# get family info from motifs names
-orp_arc_na <- orp_arc_dt[is.na(tf_family), ][
-  , tf_family := str_extract(motif,paste(tf_fams[[1]],collapse="|"))][
-    , .(archetype,tf_family)][
-      !is.na(tf_family)]
-orp_arc_vc <- structure(orp_arc_na$tf_family, names = orp_arc_na$archetype)
-orp_arc_dt[archetype %in% names(orp_arc_vc), tf_family := orp_arc_vc[archetype]]
-# guess family info from archetype names
-grep_list2 <- list(
-  "fox" = "Forkhead",
-  "hox" = "Homeodomains",
-  "sox" = "HMGbox_Sox",
-  "runx|runt" = "Runt_Runx",
-  "mads|srf" = "MADS-box_SRF",
-  "Myb_DNA-bind" = "Myb"
-)
-nms <- unlist(strsplit(tf_fams[[2]], ","))
-fms <- unname(unlist(lapply(1:nrow(tf_fams), function(i)
-  rep(tf_fams[i,1], length(strsplit(as.character(tf_fams[i,2]), ",")[[1]]))
-)))
-grep_list1 <- fms; names(grep_list1) <- nms
-grep_list <- c(grep_list1, grep_list2)
-for (gp in names(grep_list)) {
-  orp_arc_dt[is.na(tf_family) & grepl(gp, archetype, ignore.case = TRUE),
-  tf_family := grep_list[[gp]]]
-}
-orp_arc_dt[, tf_family := str_replace_all(tf_family, "AP2", "AP-2")]
-orp_arc_dt[is.na(tf_family), tf_family := "unknown"]
-orp_arc_dtn <- unique(orp_arc_dt[, .(archetype, tf_family)])
-# summarize with unknown
-orp_arc_dtn_1 <- orp_arc_dt[
-  , .N, tf_family][
-    , prop := N / sum(N)][order(-N)]
-orp_arc_dtn_1[, tf_family := factor(
-  tf_family,
-  levels = orp_arc_dtn_1$tf_family
-)]
-# summarize without unknown
-orp_arc_dtn_2 <- orp_arc_dt[tf_family != "unknown"][
-  , .N, tf_family][
-    , prop := N / sum(N)][order(-N)]
-orp_arc_dtn_2[, tf_family := factor(
-  tf_family,
-  levels = orp_arc_dtn_2$tf_family
-)]
-
-# colors
-tf_fams <- unique(sort(c(tf_fams[[1]], unique(orp_tfs_dt$tf_family))))
-tf_fams <- tf_fams[tf_fams %in% c(
-  as.character(orp_tfs_dtn$tf_family),
-  as.character(orp_arc_dt$tf_family)
-)]
-tf_fams <- str_replace_all(tf_fams, "AP2", "AP-2")
-tf_fams_cols <- structure(
-  c(
-    colorRampPalette(RColorBrewer::brewer.pal(8,'Paired'))(length(tf_fams)),
-    "khaki", "grey"
-  ),
-  names = c(tf_fams, "other", "unknown")
-)
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# plots
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-gp_orp_tfs <- ggplot(orp_tfs_dtn_plot, aes("", N, fill = tf_family)) +
-  geom_bar(stat = "identity", width = 1, color = "black") +
-  coord_polar("y", start=0) +
-  scale_fill_manual(values = tf_fams_cols, limits = force) +
-  geom_text(
-    aes(label = ifelse(
-      N < 1,
-      "",
-      sprintf("%s (%s)", tf_family, N)
-    ), x = 1.4),
-    position = position_stack(vjust = 0.5),
-    color = "black"
-  ) +
-  labs(title = "orphan TFs") +
-  theme_void() +
-  theme(legend.position = "none")
-
-gp_orp_arc_1 <- ggplot(orp_arc_dtn_1, aes("", N, fill = tf_family)) +
-  geom_bar(stat="identity", width = 1, color = "black") +
-  coord_polar("y", start = 0) +
-  scale_fill_manual(values = tf_fams_cols, limits = force) +
-  geom_text(
-    aes(label = ifelse(
-      N < 10,
-      "",
-      sprintf("%s (%s)", tf_family, N)
-    ), x = 1.4),
-    position = position_stack(vjust = 0.5),
-    color = "black"
-  ) +
-  labs(title = "orphan motif archetypes") +
-  theme_void() +
-  theme(legend.position = "none")
-
-gp_orp_arc_2 <- ggplot(orp_arc_dtn_2, aes("", N, fill = tf_family)) +
-  geom_bar(stat="identity", width = 1, color = "black") +
-  coord_polar("y", start = 0) +
-  scale_fill_manual(values = tf_fams_cols, limits = force) +
-  geom_text(
-    aes(label = ifelse(
-      N < 1,
-      "",
-      sprintf("%s (%s)", tf_family, N)
-    ), x = 1.4),
-    position = position_stack(vjust = 0.5),
-    color = "black"
-  ) +
-  theme_void() +
-  labs(title = "(without unknown)") +
-  theme(legend.position = "none")
-
-# save
-unmatched_lst <- list(
-  tfs = orp_tfs_dt,
-  motifs = orp_arc_dt
-)
-saveRDS(unmatched_lst, file.path(
-  res_dir, "unmatched-tfs-motifs-2.rds"
-))
-
-# plot
-gp_orp_tfs + gp_orp_arc_1 + gp_orp_arc_2
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(
-  file.path(fig_dir, "motifs-archetypes-tf-orphans-2.pdf"),
-  width = 12, height = 4
-)
-gp_orp_tfs + gp_orp_arc_1 + gp_orp_arc_2
-dev.off()
-```
-
-```{r fig.height=10, fig.width=8}
-orp_dtn <- rbindlist(list(
-  "TFs" = orp_tfs_dtn,
-  "archetypes" = orp_arc_dtn_1
-), idcol = "variable")
-orp_dtn <- orp_dtn[tf_family != "unknown"]
-
-gp_orp <- ggplot(orp_dtn, aes(tf_family)) +
-  geom_bar(
-    data = subset(orp_dtn, variable == "TFs"),
-    aes(y = N, fill = tf_family),
-    stat = "identity",
-    position = "dodge") +
-  geom_bar(
-    data = subset(orp_dtn, variable == "archetypes"),
-    aes(y = -N, fill = tf_family),
-    stat = "identity",
-    position = "dodge"
-  ) +
-  coord_flip() +
-  scale_fill_manual(values = tf_fams_cols, limits = force) +
-  scale_y_continuous(
-    labels = abs,
-    limits = c(-50, 25),
-    oob = function(x, limits) x
-  ) +
-  geom_hline(yintercept = 0, colour = "black", size = 0.25) +
-  theme(
-    legend.position = "none",
-    axis.line = element_blank(),
-    panel.grid.major.x = element_line(size=0.5)
-  ) +
-  labs(y = "motifs \t TFs", x = "TF family")
-gp_orp
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(
-  file.path(fig_dir, "motifs-archetypes-tf-orphans-counts-2.pdf"),
-  width = 8, height = 10
-)
-gp_orp
-dev.off()
-```
-
 Motif enrichment heatmap
 
 ```{r fig.height=24, fig.width=12}
+# archetype dictionary
+dict_fnm <- file.path(
+  res_dir,
+  "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
+)
+dict <- fread(dict_fnm)
+
 # enrichment scores
 dt <- fread(
   file.path(res_dir, "motif-enrich-archetypes-mona.tsv")
@@ -3010,9 +2884,9 @@ write.table(
 
 # log2fc
 dat_fc <- dcast.data.table(
-  unique(dt[,.(motif, group, fc)]), motif ~ group, value.var = "fc"
+  unique(dt[, .(motif, group, fc)]), motif ~ group, value.var = "fc"
 )
-mat_fc <- data.matrix(dat_fc)[,-1]
+mat_fc <- data.matrix(dat_fc)[, -1]
 mat_fc[is.na(mat_fc)] <- 0
 rownames(mat_fc) <- dat_fc$motif
 write.table(
@@ -3022,7 +2896,7 @@ write.table(
 )
 
 # significance
-dt[, minuslog10qval := -1*log10(padj)]
+dt[, minuslog10qval := -1 * log10(padj)]
 
 # filtering
 ids <- apply(mat_fc, 1, function(x) max(x) > 1) &
@@ -3035,17 +2909,13 @@ ds[, motif := factor(motif, levels = rev(rownames(mat_fc)[ids]))]
 
 # ordering
 mord <- order(apply(mat_fc[ids,], 1, which.max))
-ds[, motif := factor(motif, levels=rev(rownames(mat_fc[ids,])[mord]))]
+ds[, motif := factor(motif, levels = rev(rownames(mat_fc[ids, ])[mord]))]
 
 # limit -log10FDR range
 ds[, minuslog10qval := pmin(minuslog10qval, 20)]
 
 # add archetype gene annotations
-dict <- fread(file.path(
-  res_dir,
-  "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
-))
-dc <- unique(dict[,.(archetype_name, gene)])
+dc <- unique(dict[, .(archetype_name, gene)])
 setnames(dc, "archetype_name", "motif")
 mt_dt <- merge.data.table(
   ds, dc,
@@ -3088,7 +2958,7 @@ mt_marks_dt[, motif := factor(motif, levels = levels(ds$motif))]
 mt_marks_dt[, label := str_extract(name, "(?<=BestGuess_).+")]
 mt_marks_dt[is.na(label), label := str_extract(name, "(?<=ARCH\\d{1,3}_).+")]
 mt_marks_dt[is.na(label), label := name]
-mt_marks_dt[!(pval < 1e5 & fc > 4), label := NA]
+mt_marks_dt[!(pval < 1e3 & fc > 2), label := NA]
 
 # filter labels by RNA plot labels
 labels_dt <- marks_tfs[name != ""][, .(name, gene)]
@@ -3131,7 +3001,7 @@ gp <- ggplot(mt_marks_dt, aes(group, motif, label = label)) +
   scale_fill_gradientn(
     name = "enrichmnet\nfold change",
     colours = c(
-      "white","#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15", "#7a0105"
+      "white", "#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15", "#7a0105"
     ),
     breaks = c(0, 2, 4, 6)
   ) +
@@ -3139,34 +3009,18 @@ gp <- ggplot(mt_marks_dt, aes(group, motif, label = label)) +
     name = "-log10 FDR", 
     breaks = c(0, 10, 20)
   ) +
-  #scale_y_discrete(
-  #  breaks = labels_p(
-  #    data = mt_marks_dt,
-  #    column_name = "motif",
-  #    padj_thrs = 1e-3,
-  #    fc_thrs = 2,
-  #    operation = "&"
-  #  )
-  #) +
-  geom_text_repel(
-    force = 0.5,
-    nudge_x = -0.25,
-    direction = "y",
-    hjust = 1,
-    segment.size = 0.2
-  ) +
   theme(
     panel.grid.major = element_line(size = 0.25),
-    axis.text.y = element_text(size = 8)
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 10),
+    axis.ticks = element_blank()
   )
-gp
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs_heatmap-2.pdf"),
-  width = 12,
-  height = 24
+  file.path(fig_dir, "motifs_heatmap-mapped.pdf"),
+  width = 18, height = 32
 )
 gp
 dev.off()
@@ -3174,7 +3028,7 @@ dev.off()
 
 Heatmap of motifs for RNA markers
 
-```{r}
+```{r fig.height=12, fig.width=10}
 # dictionary
 dict <- fread(file.path(
   res_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
@@ -3255,12 +3109,29 @@ ds[, minuslog10qval := pmin(minuslog10qval, 20)]
 # limit FC
 ds[, fc := pmin(fc, 8)]
 
+# keep only one label entry per motif
+mult_mots <- as.character(ds[, .N, motif][N > 9]$motif)
+mult_modt <- unique(
+  ds[motif %in% mult_mots][, .(gene, motif, name)]
+)
+name_modt <- mult_modt[name != ""]
+nul1_modt <- mult_modt[name == "" & name %in% mult_modt$name]
+empt_modt <- mult_modt[!motif %in% name_modt$motif][, .SD[1], gene]
+nul2_modt <- mult_modt[!motif %in% name_modt$motif][!gene %in% empt_modt]
+ds <- ds[!gene %in% c(nul1_modt$gene, nul2_modt$gene)]
+ds[, gene := NULL]
+ds <- unique(ds)
+
 # filter labels by RNA plot labels
 ds[, label := name]
 setorder(ds,  -minuslog10qval)
-ds[, i:=1:.N, .(gene,motif)]
+ds[, i := 1:.N, .(gene, motif)]
 ds[i > 1, label := NA]
 ds[label == "", label := NA]
+
+# manually reassign some labels
+ds[grep("POU4", name, ignore.case = TRUE), name := ""]
+ds[grep("POU4", motif, ignore.case = TRUE), name := "Pou4"]
 
 # plot
 gp <- ggplot(ds, aes(group, motif)) +
@@ -3272,7 +3143,7 @@ gp <- ggplot(ds, aes(group, motif)) +
   scale_fill_gradientn(
     name = "enrichmnet\nfold change",
     colours = c(
-      "white","#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15", "#7a0105"
+      "white", "#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15", "#7a0105"
     ),
     breaks = c(0, 2, 4, 6)
   ) +
@@ -3283,18 +3154,21 @@ gp <- ggplot(ds, aes(group, motif)) +
   theme(
     panel.grid.major = element_line(size = 0.25),
     axis.text.y = element_text(size = 8),
-    axis.text.x = element_text(size = 10),
+    axis.text.x = element_text(size = 8),
     axis.ticks = element_blank()
   )
-ds_r <- copy(ds)[is.na(label), label := ""]
+ds_r <- unique(copy(ds[, .(motif, name)]))
+ds_r[is.na(name), name := ""]
 gp_r <- ggplot(ds_r, aes("x", motif)) +
   scale_y_discrete(
     position = "left",
-    labels = ds_r$label
+    breaks = ds_r$motif,
+    labels = ds_r$name
   ) +
   scale_x_discrete(
     expand = c(0, 0)
-  ) + theme(
+  ) +
+  theme(
     axis.line.x = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_text(size = 8, hjust = 0),
@@ -3306,14 +3180,13 @@ gp_r <- ggplot(ds_r, aes("x", motif)) +
   )
 gp_h <- (gp  + gp_r) +
   plot_layout(widths = c(3, 1), guides = "collect")
-
+gp_h
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "motifs_heatmap-expression-order.pdf"),
-  width = 10,
-  height = 12
+  width = 16, height = 12
 )
 gp_h
 dev.off()
