@@ -1561,15 +1561,31 @@ archetyping_file <- file.path(
   fig_dir,
   basename(file.path(str_replace(arch_file, "\\.rds$", "-archetyping.pdf")))
 )
-mta_plot_archetype(arch = arch, dict = dict, output_file = archetyping_file)
+names(arch) <- paste0("ARCH", seq_along(arch))
+
+arch_list <- lapply(names(arch), function(x) {
+  a <- arch[[x]]
+  mn <- dict[
+    archetype_num == as.integer(str_remove(x, "ARCH"))
+  ]$archetype_name[1]
+  message(mn)
+  a$ppm_consensus@name <- mn
+  a$ic_consensus@name <- mn
+  a
+})
+mta_plot_archetype(
+  arch = arch_list,
+  dict = dict,
+  type = "PWM",
+  output_file = archetyping_file
+)
 
 # plot archetype logos
 pdf(file.path(
   fig_dir, basename(str_replace(arch_file, "\\.rds$", "-archetypes.pdf"))
 ), width = 8, height = 3)
-for (x in seq_along(arch)) {
+for (x in seq_along(arch_list)) {
   motif <- arch[[x]]$ppm_consensus
-  motif@name <- dict[archetype_num == paste0("ARCH", x)]$archetype_name[1]
   motif@alphabet <- "DNA"
   tryCatch({
     print(view_motifs(
@@ -3199,15 +3215,10 @@ dev.off()
 cd /home/anamaria/bin/
 git clone https://github.com/loosolab/TOBIAS.git
 cd TOBIAS
-
-# conda env create -f tobias_env.yaml
-
-conda create -n tobias python=3.6
+# include python version (python==3.7) in env file > tobias.yaml
+conda env create -f tobias.yaml
+conda activate TOBIAS_ENV
 conda install tobias -c bioconda
-
-# conda install pip
-# pip install cython
-# python setup.py install
 ```
 
 Merge replicates per condition
@@ -3303,6 +3314,59 @@ TOBIAS PlotAggregate --TFBS ${peaks} \
 
 Combine motif scores and footprint scores to determine motif binding. 
 
+```{bash eval=FALSE}
+conda activate TOBIAS_ENV
+bwg_dir="ATACSEQ/nucleosome_free_regions/bigwig/"
+out_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetect"
+mkdir ${out_dir}
+peaks="ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks.bed"
+motifs="ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms.meme"
+motifs="ATACSEQ/nucleosome_free_regions/results/motif-archetypes-Pou4.meme"
+genome="genome/Nvec_vc1.1_gDNA.fasta"
+nth=12
+
+for line in Fox Elav Ncol
+do
+  
+  mkdir ${out_dir}/${line}
+  echo $(date) "- Starting BINDetect for" ${line} 
+
+  TOBIAS BINDetect \
+    --motifs ${motifs} \
+    --signals \
+      ${bwg_dir}/${line}_pos_corrected.bw \
+      ${bwg_dir}/${line}_neg_corrected.bw \
+    --genome ${genome} \
+    --peaks ${peaks} \
+    --outdir ${out_dir}/${line} \
+    --cond_names ${line}_pos ${line}_neg \
+    --cores ${nth}
+
+done
+
+mot="ARCH2465_POU1F1_POU4F3_POU4F2"
+mot="ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3"
+
+cond="pos"
+line1="Elav"
+line2="Fox"
+line3="Ncol"
+line=${line1}
+TOBIAS PlotAggregate \
+  --TFBS \
+    ${out_dir}/${line}/_${mot}/beds/_${mot}_${line}_${cond}_bound.bed \
+    ${out_dir}/${line}/_${mot}/beds/_${mot}_${line}_${cond}_unbound.bed \
+  --signals \
+    ${bwg_dir}/${line1}_pos_corrected.bw \
+    ${bwg_dir}/${line2}_pos_corrected.bw \
+    ${bwg_dir}/${line3}_pos_corrected.bw \
+  --output ${out_dir}/${line}/_${mot}_footprint_comparison_bound_peaks.pdf \
+  --flank 60 \
+  --share_y sites \
+  --plot_boundaries
+
+
+```
 ```{r eval=FALSE}
 mts_fn <- file.path(res_dir, "motif-scores-archetypes-mona-annot.tsv")
 ftp_fn <- list.files(ftp_dir, pattern = "bw$", full.names = TRUE)
@@ -3326,6 +3390,7 @@ fwrite(
 )
 
 bkg_dist <- bin_det$background_dist
+names(bkg_dist) <- str_remove(names(bkg_dist), "_footprints")
 bkg_dt <- rbindlist(lapply(names(bkg_dist), function(smp) {
   x <- bkg_dist[[smp]]
   y <- bnd_dt[sample == smp]$ftp_threshold[1]
@@ -3352,8 +3417,8 @@ gp_bckg <- ggplot(bkg_dt, aes(x, color = reporterline)) +
   scale_color_manual(values = line_cols) +
   scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
   geom_vline(
-    data = unique(bkg_dt[,.(threshold, sample, reporterline)]),
-    aes(xintercept = threshold, color = reporterline), 
+    data = unique(bkg_dt[, .(threshold, sample, reporterline)]),
+    aes(xintercept = threshold, color = reporterline),
     size = 2, alpha = 0.2
   ) +
   labs(x = "background footprint scores") +
@@ -3373,7 +3438,7 @@ gp_frwd <- ggplot(bnd_dt, aes(ftp_score, color = reporterline)) +
   scale_x_continuous(limits = c(NA, 200), oob = function(x, limits) x) +
   geom_vline(
     data = unique(bnd_dt[,.(ftp_threshold, sample, reporterline)]),
-    aes(xintercept = ftp_threshold, color = reporterline), 
+    aes(xintercept = ftp_threshold, color = reporterline),
     size = 2, alpha = 0.2
   ) +
   labs(x = "foreground footprint scores") +
@@ -3381,7 +3446,7 @@ gp_frwd <- ggplot(bnd_dt, aes(ftp_score, color = reporterline)) +
     legend.position = "bottom"
   ) +
   facet_grid(bound ~ ., scales = "free_y", labeller = as_labeller(bnd_lab))
-gp_bnd <- (gp_bckg / gp_frwd & theme(legend.position = "bottom")) + 
+gp_bnd <- (gp_bckg / gp_frwd & theme(legend.position = "bottom")) +
   plot_layout(guides = "collect", heights = c(1, 2))
 gp_bnd
 ```
@@ -3414,22 +3479,21 @@ for (smp in unique(bnd_dt$sample)) {
   fwrite(
     unique(bnd_smp[, ..bed_cols]),
     file.path(bin_dir, smp, sprintf("%s_all.bed", smp)),
-    col.names = FALSE, sep ="\t"
+    col.names = FALSE, sep = "\t"
   )
   # all bound motif sites
   fwrite(
     unique(bnd_smp[bound == TRUE][, ..bed_cols]),
     file.path(bin_dir, smp, sprintf("%s_all_bound.bed", smp)),
-    col.names = FALSE, sep ="\t"
+    col.names = FALSE, sep = "\t"
   )
   # all unbound motif sites
   fwrite(
     unique(bnd_smp[bound == FALSE][, ..bed_cols]),
     file.path(bin_dir, smp, sprintf("%s_all_unbound.bed", smp)),
-    col.names = FALSE, sep ="\t"
+    col.names = FALSE, sep = "\t"
   )
   for (mot in unique(bnd_smp$motif)) {
-    # message(mot)
     bmt_dt <- bnd_smp[motif == mot]
     mot <- str_replace_all(mot, c("/" = "_"))
     dir.create(file.path(bin_dir, smp, mot), showWarnings = FALSE)
@@ -3437,19 +3501,19 @@ for (smp in unique(bnd_dt$sample)) {
     fwrite(
       unique(bmt_dt[, ..bed_cols]),
       file.path(bin_dir, smp, mot, sprintf("%s_%s_all.bed", smp, mot)),
-      col.names = FALSE, sep ="\t"
+      col.names = FALSE, sep = "\t"
     )
     # all bound motif sites
     fwrite(
       unique(bmt_dt[bound == TRUE][, ..bed_cols]),
       file.path(bin_dir, smp, mot, sprintf("%s_%s_all_bound.bed", smp, mot)),
-      col.names = FALSE, sep ="\t"
+      col.names = FALSE, sep = "\t"
     )
     # all unbound motif sites
     fwrite(
       unique(bmt_dt[bound == FALSE][, ..bed_cols]),
       file.path(bin_dir, smp, mot, sprintf("%s_%s_all_unbound.bed", smp, mot)),
-      col.names = FALSE, sep ="\t"
+      col.names = FALSE, sep = "\t"
     )
   }
 }
@@ -3487,12 +3551,14 @@ Plot the same for selected motifs
 conda activate TOBIAS_ENV
 bam_dir="ATACSEQ/nucleosome_free_regions/bam/"
 bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/ATACorrect"
-bed_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetect"
+bed_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetectR"
 plt_dir="ATACSEQ/nucleosome_free_regions/footprint/plots"
 mkdir ${plt_dir}
 
 
-mot="ARCH4_GATA3"
+mot="ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3"
+mot="ARCH2465_POU1F1_POU4F3_POU4F2"
+
 cond="pos"
 line1="Elav"
 line2="Fox"
@@ -3507,7 +3573,7 @@ TOBIAS PlotAggregate \
     ${bwg_dir}/${line2}_pos_corrected.bw \
     ${bwg_dir}/${line3}_pos_corrected.bw \
   --output ${plt_dir}/${line}_${mot}_footprint_comparison_bound_peaks.pdf \
-  --flank 125 \
+  --flank 60 \
   --share_y sites \
   --plot_boundaries
 
