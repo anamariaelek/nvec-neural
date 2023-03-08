@@ -40,6 +40,7 @@ library(universalmotif)
 library(monaLisa)
 library(rtracklayer)
 source("../motif-analysis/mta_downstream_functions.R")
+source("functions.R")
 ```
 
 Directories and colors
@@ -740,9 +741,9 @@ Inspect peak assignment results
 assign <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
 
 max_assign_peaks_per_gene <- unique(
-  assign[, .(peak,gene)][!is.na(gene)]
+  assign[, .(peak, gene)][!is.na(gene)]
 )[, .N, gene]
-gb1 <- ggplot(max_assign_peaks_per_gene, aes(N)) + 
+gb1 <- ggplot(max_assign_peaks_per_gene, aes(N)) +
   geom_bar() +
   labs(x = "peaks per gene", y = "genes") +
   scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
@@ -751,7 +752,7 @@ gb1 <- ggplot(max_assign_peaks_per_gene, aes(N)) +
   )
 
 max_assign_gene_per_peak <- unique(
-  assign[, .(peak,gene)][!is.na(gene)]
+  assign[, .(peak, gene)][!is.na(gene)]
 )[, .N, peak]
 gb2 <- ggplot(max_assign_gene_per_peak, aes(N)) +
   geom_bar() +
@@ -3316,7 +3317,7 @@ Combine motif scores and footprint scores to determine motif binding.
 
 ```{bash eval=FALSE}
 conda activate TOBIAS_ENV
-bwg_dir="ATACSEQ/nucleosome_free_regions/bigwig/"
+bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/"
 out_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetect"
 mkdir ${out_dir}
 peaks="ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks.bed"
@@ -3334,8 +3335,8 @@ do
   TOBIAS BINDetect \
     --motifs ${motifs} \
     --signals \
-      ${bwg_dir}/${line}_pos_corrected.bw \
-      ${bwg_dir}/${line}_neg_corrected.bw \
+      ${bwg_dir}/${line}_pos_footprints.bw \
+      ${bwg_dir}/${line}_neg_footprints.bw \
     --genome ${genome} \
     --peaks ${peaks} \
     --outdir ${out_dir}/${line} \
@@ -3344,104 +3345,176 @@ do
 
 done
 
-mot="ARCH2465_POU1F1_POU4F3_POU4F2"
-mot="ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3"
 
-cond="pos"
-line1="Elav"
-line2="Fox"
-line3="Ncol"
-line=${line1}
-TOBIAS PlotAggregate \
-  --TFBS \
-    ${out_dir}/${line}/_${mot}/beds/_${mot}_${line}_${cond}_bound.bed \
-    ${out_dir}/${line}/_${mot}/beds/_${mot}_${line}_${cond}_unbound.bed \
-  --signals \
-    ${bwg_dir}/${line1}_pos_corrected.bw \
-    ${bwg_dir}/${line2}_pos_corrected.bw \
-    ${bwg_dir}/${line3}_pos_corrected.bw \
-  --output ${out_dir}/${line}/_${mot}_footprint_comparison_bound_peaks.pdf \
-  --flank 60 \
-  --share_y sites \
-  --plot_boundaries
+bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/ATACorrect"
+line=Elav
+mots="ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3 ARCH2465_POU1F1_POU4F3_POU4F2"
 
+for mot in ${mots}
+do
+  TOBIAS PlotAggregate \
+    --TFBS \
+      ${out_dir}/${line}/_${mot}/beds/_${mot}_${line}_pos_bound.bed \
+      ${out_dir}/${line}/_${mot}/beds/_${mot}_${line}_pos_unbound.bed \
+    --signals \
+      ${bwg_dir}/Elav_pos_corrected.bw \
+      ${bwg_dir}/Fox_pos_corrected.bw \
+      ${bwg_dir}/Ncol_pos_corrected.bw \
+    --output ${out_dir}/${line}/_${mot}_footprint_comparison_bound_peaks.pdf \
+    --flank 60 \
+    --share_y sites \
+    --plot_boundaries
+done
 
 ```
+
+Use quantile based motif scores (instead of motif scoring inplemented in TOBIAS BINDetect) to determine motif binding.
+
 ```{r eval=FALSE}
 mts_fn <- file.path(res_dir, "motif-scores-archetypes-mona-annot.tsv")
 ftp_fn <- list.files(ftp_dir, pattern = "bw$", full.names = TRUE)
+names(ftp_fn) <- str_remove(names(ftp_fn), "_footprints")
 
 bin_det <- mta_binding_detect(
   mts_fn = mts_fn,
   ftp_fn = ftp_fn,
   pks_smpl = 1e6,
-  pval = 1e-3,
+  pval = 1e-2,
   seed = 1950
 )
+saveRDS(bin_det, file.path(
+  res_dir,
+  "motif-binding-scores-archetypes-mona-annot-footprints.rds"
+))
 
+# binding
 bnd_dt <- bin_det$motifs_df
-bnd_dt[, sample := str_remove(sample, "_footprints")]
 bnd_gr <- makeGRangesFromDataFrame(bnd_dt, keep.extra.columns = TRUE)
 bnd_gr_r <- GenomicRanges::restrict(bnd_gr)
 bnd_dt <- as.data.table(bnd_gr_r)
-fwrite(
-  bnd_dt,
-  file.path(res_dir, "motif-scores-archetypes-mona-annot-footprints.tsv.gz")
-)
+bnd_dt[, reporterline := str_extract(sample, "Elav|Fox|Ncol")]
+fwrite(bnd_dt, file.path(
+  res_dir,
+  "motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz"
+))
 
+# background
+bkg_dt <- bin_det$background_dt
 bkg_dist <- bin_det$background_dist
-names(bkg_dist) <- str_remove(names(bkg_dist), "_footprints")
-bkg_dt <- rbindlist(lapply(names(bkg_dist), function(smp) {
-  x <- bkg_dist[[smp]]
-  y <- bnd_dt[sample == smp]$ftp_threshold[1]
-  z <- str_remove(smp, "_footprint")
-  data.table(
-    x = rnorm(1e3, mean = x$estimate[1], sd = x$estimate[2])
-  )[, threshold := y][, sample := z]
-}))
-bkg_dt[, reporterline := str_extract(sample, "Elav|Fox|Ncol")]
+bkg_dt <- data.table(
+  ftp_score = rnorm(
+    1e3,
+    mean = bin_det$background_dist$estimate[1],
+    sd = bin_det$background_dist$estimate[2]
+  )
+)
+bkg_dt[, threshold := bnd_dt$ftp_threshold[1]]
 fwrite(
   bkg_dt,
-  file.path(res_dir, "motif-footprints-background.tsv.gz")
+  file.path(res_dir, "motif-binding-scores-background.tsv.gz")
 )
+
 ```
 
+Differential binding
+
+```{r}
+# load binding scores
+bin_det <- readRDS(file.path(
+  res_dir,
+  "motif-binding-scores-archetypes-mona-annot-footprints.rds"
+))
+
+# differntial binding
+comparas <- mta_binding_compara(
+  motifs_df = bin_det$motifs_df, 
+  background_dt = bin_det$background_dt,
+  comparisons = c(
+    "Elav_pos_vs_Elav_neg",
+    "Fox_pos_vs_Fox_neg",
+    "Ncol_pos_vs_Ncol_neg",
+    "Elav_pos_vs_Fox_pos",
+    "Elav_pos_vs_Ncol_pos",
+    "Fox_pos_vs_Ncol_pos"
+  )
+)
+
+# volcano plots
+gpv_list <- lapply(names(comparas), function(x) {
+  dt <- unique(comparas[[x]][, .(motif, diff_bind_score, diff_bind_pval)])
+  setnames(
+    dt,
+    c("diff_bind_score", "diff_bind_pval"),
+    c("log2FoldChange", "padj")
+  )
+  ggplotVolcano(
+    dt,
+    padj_thr = 0.01,
+    sign_col = c("red", "blue"),
+    lims_fc = c(-0.5, 0.5),
+    lims_sig = c(0, 10),
+    title = x,
+    xlab = "differential binding score",
+    y = "-log10(p value)",
+    legend_name = "p value"
+  )
+})
+
+gpv <- wrap_plots(gpv_list, nrow = 2)
+gpv
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "motifs-footprint-diff.pdf"),
+  width = 18, height = 12
+)
+gpv
+dev.off()
+```
 Motif hits are labeled as bound or unbouned based on threshold determined from 
 background distribution of footprint scores (p value of normal fit to background = 0.001).
 
 ```{r fig.width=6, fig.height=8}
 # background footprint scores
-bkg_dt <- fread(file.path(res_dir, "motif-footprints-background.tsv.gz"))
-gp_bckg <- ggplot(bkg_dt, aes(x, color = reporterline)) +
+bkg_dt <- fread(
+  file.path(res_dir, "motif-binding-scores-background.tsv.gz")
+)
+bnd_dt <- fread(file.path(
+  res_dir,
+  "motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz"
+))
+fp_max <- quantile(c(bnd_dt$ftp_score, bkg_dt$ftp_score), 0.999)
+fp_min <- min(c(bnd_dt$ftp_score, bkg_dt$ftp_score))
+
+gp_bckg <- ggplot(bkg_dt, aes(ftp_score)) +
   geom_density() +
-  scale_color_manual(values = line_cols) +
-  scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
+  scale_x_continuous(
+    limits = c(fp_min, fp_max),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = c(0, 0.01))
+  ) +
   geom_vline(
-    data = unique(bkg_dt[, .(threshold, sample, reporterline)]),
-    aes(xintercept = threshold, color = reporterline),
-    size = 2, alpha = 0.2
+    xintercept = unique(bkg_dt$threshold),
+    size = 1, color = "grey", alpha = 0.2
   ) +
   labs(x = "background footprint scores") +
   theme(
     legend.position = "bottom"
   )
 # foreground footprint scores
-bnd_dt <- fread(
-  file.path(res_dir, "motif-scores-archetypes-mona-annot-footprints.tsv.gz")
-)
-bnd_dt[, reporterline := str_extract(sample, "Elav|Fox|Ncol")]
 bnd_lab <- c("TRUE" = "bound", "FALSE" = "unbound")
 gp_frwd <- ggplot(bnd_dt, aes(ftp_score, color = reporterline)) +
   geom_density() +
   scale_color_manual(values = line_cols) +
-  scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
-  scale_x_continuous(limits = c(NA, 200), oob = function(x, limits) x) +
-  geom_vline(
-    data = unique(bnd_dt[,.(ftp_threshold, sample, reporterline)]),
-    aes(xintercept = ftp_threshold, color = reporterline),
-    size = 2, alpha = 0.2
-  ) +
-  labs(x = "foreground footprint scores") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
+  scale_x_continuous(
+    expand = c(0, 0),
+    limits = c(fp_min, fp_max),
+    oob = function(x, limits) x) +
+  labs(x = "footprint scores") +
   theme(
     legend.position = "bottom"
   ) +
@@ -3463,13 +3536,21 @@ dev.off()
 Save bed files for bound and unbound sites
 
 ```{r eval=FALSE}
-bnd_dt <- fread(
-  file.path(res_dir, "motif-scores-archetypes-mona-annot-footprints.tsv.gz")
-)
+# load results of BINDetect (R)
+bnd_dt <- fread(file.path(
+  res_dir,
+  "motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz"
+))
 bnd_dt[, reporterline := str_extract(sample, "Elav|Fox|Ncol")]
-bin_dir <- file.path(ftp_dir, "BINDetect")
+
+# where to save the files
+bin_dir <- file.path(ftp_dir, "BINDetectR")
 dir.create(bin_dir, showWarnings = FALSE)
-bed_cols <- c("seqnames", "start", "end", "motif", "ftp_score", "strand")
+
+# save bed files
+bed_cols <- c(
+  "seqnames", "start", "end", "motif", "ftp_score", "strand", "peak", "gene"
+)
 for (smp in unique(bnd_dt$sample)) {
   message(smp)
   bnd_smp <- bnd_dt[sample == smp]
@@ -3525,7 +3606,7 @@ Plot difference in footprint for bound and unbound sites
 conda activate TOBIAS_ENV
 bam_dir="ATACSEQ/nucleosome_free_regions/bam/"
 bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/ATACorrect"
-bed_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetect"
+bed_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetectR"
 plt_dir="ATACSEQ/nucleosome_free_regions/footprint/plots"
 mkdir ${plt_dir}
 cond="pos"
@@ -3576,5 +3657,132 @@ TOBIAS PlotAggregate \
   --flank 60 \
   --share_y sites \
   --plot_boundaries
+
+```
+
+```{r include=FALSE, eval=FALSE}
+# compare motif hits from TOBIAS with our quantile based motif hits
+ln <- "Ncol_pos"
+mo <- "ARCH1682_POU4F3"
+bed_cols <- c("seqnames", "start", "end", "motif", "ftp_score", "strand")
+
+# quantile
+fn_q_b <- file.path(bin_dir, ln, mo, sprintf("%s_%s_all_bound.bed", ln, mo))
+fn_q_u <- file.path(bin_dir, ln, mo, sprintf("%s_%s_all_unbound.bed", ln, mo))
+dt_q <- rbindlist(
+  sapply(
+    list("bound" = fn_q_b, "unbound" = fn_q_u),
+    function(x) {fread(x)[, 1:6]},
+    simplify = FALSE, USE.NAMES = TRUE
+  ), idcol = "bound"
+)
+setnames(dt_q, c("bound", bed_cols))
+gr_q <- makeGRangesFromDataFrame(dt_q, keep.extra.columns = TRUE)
+
+# tobias
+fn_t_b <- file.path(
+  dat_dir, "footprint", "BINDetect", str_remove(ln, "_(pos|neg)"),
+  sprintf("_%s", mo), "beds", sprintf("_%s_%s_bound.bed", mo, ln)
+)
+fn_t_u <- file.path(
+  dat_dir, "footprint", "BINDetect", str_remove(ln, "_(pos|neg)"),
+  sprintf("_%s", mo), "beds",
+  sprintf("_%s_%s_unbound.bed", mo, ln)
+)
+dt_t <- rbindlist(sapply(
+  list("bound" = fn_t_b, "unbound" = fn_t_u),
+  function(x) fread(x)[, c(1:4, 13, 12)],
+  simplify = FALSE, USE.NAMES = TRUE
+), idcol = "bound")
+setnames(dt_t, c("bound", bed_cols))
+dt_t[, strand := "*"][, motif := str_remove(motif, "_")]
+gr_t <- makeGRangesFromDataFrame(dt_t, keep.extra.columns = TRUE)
+
+ovl <- findOverlaps(query = gr_t, subject = gr_q)
+mis_q <- setdiff(1:length(gr_t), queryHits(ovl))
+# all TOBIAS motif hits are in quantile-based hits
+mis_t <- setdiff(1:length(gr_q), subjectHits(ovl))
+# quantile-based hits that are not in TOBIAS hits
+
+ftp_dt <- data.table(
+  "seqnames" = as.character(seqnames(gr_t[queryHits(ovl)])),
+  "start" = as.character(start(gr_t[queryHits(ovl)])),
+  "end" = as.character(end(gr_t[queryHits(ovl)])),
+  "tobias" = gr_t[queryHits(ovl)]$ftp_score,
+  "bound_tobias" = gr_t[queryHits(ovl)]$bound,
+  "quantile" = gr_q[subjectHits(ovl)]$ftp_score,
+  "bound_quantile" = gr_q[subjectHits(ovl)]$bound
+)
+mis_dt <- data.table(
+  "seqnames" = as.character(seqnames(gr_q[mis_t])),
+  "start" = as.character(start(gr_q[mis_t])),
+  "end" = as.character(end(gr_q[mis_t])),
+  "quantile" = gr_q[mis_t]$ftp_score, 
+  "bound_quantile" = gr_q[mis_t]$bound
+)[, tobias := 0][, bound_tobias := "unbound"]
+dt <- rbindlist(list(ftp_dt, mis_dt), use.names = TRUE)
+
+ftp_gp <- ggplot(
+  dt,
+  aes(tobias, quantile, color = bound_quantile, fill = bound_tobias)
+) +
+  geom_point(shape = 21) +
+  scale_y_continuous(limits = c(NA, NA), oob = function(x, limits) x) +
+  theme(legend.position = "bottom", legend.direction = "vertical")
+
+pdf(
+  file.path(fig_dir, "footprint-scores-compara.pdf"),
+  width = 5, height = 5
+)
+ftp_gp
+dev.off()
+
+dt[tobias == 0][order(-quantile)]
+```
+
+TF-TF network
+
+```{r}
+# motif to gene assignment
+dict <- fread(file.path(
+  res_dir,
+  "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
+))
+dict <- unique(dict[gene != "", .(archetype_name, gene)])
+dict[, archetype_name := str_replace(archetype_name, "/", "_")]
+fwrite(
+  dict,
+  file.path(res_dir, "motif2gene-mapping.tsv"),
+  sep = "\t",
+  col.names = FALSE
+)
+# peak to gene assignment
+asgn <- fread(file.path(
+  res_dir,
+  "consensusSeekeR-peaks-gene-assignment.tsv"
+))
+asgn <- unique(asgn[, .(peak, gene)])
+# genes assignemts are already in bed files!
+```
+
+```{bash, eval=FALSE}
+conda activate TOBIAS_ENV
+bed_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetectR"
+res_dir="ATACSEQ/nucleosome_free_regions/results"
+out_dir="ATACSEQ/nucleosome_free_regions/footprint/network"
+
+cond="pos"
+line1="Elav"
+line2="Fox"
+line3="Ncol"
+line=${line1}
+
+# remove empty files that crash TOBIAS
+find  ${bed_dir}/${line}_${cond}/*/${line}_${cond}_*_all_bound.bed -size 0 -type f -exec rm {} +
+
+TOBIAS CreateNetwork\
+  --TFBS ${bed_dir}/${line}_${cond}/*/${line}_${cond}_*_all_bound.bed \
+  --origin ${res_dir}/motif2gene-mapping.tsv \
+  --outdir ${out_dir}
 
 ```
