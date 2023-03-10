@@ -4,6 +4,11 @@ output:
   html_document:
     theme: cosmo
     self_contained: true
+title: "ATACseq"
+output:
+  html_document:
+    theme: cosmo
+    self_contained: true
     toc: true
     toc_float: true
     toc-location: left
@@ -22,6 +27,10 @@ theme_py <- theme_light() + theme(
   panel.grid.major = element_blank(),
   panel.grid.minor = element_blank(),
   panel.border = element_rect(colour = "black", fill = NA),
+  text = element_text(size = 20),
+  strip.placement = "outside",
+  strip.text = element_text(size=20, color = "black"),
+  strip.background = element_rect(fill = "white")
   text = element_text(size = 20),
   strip.placement = "outside",
   strip.text = element_text(size=20, color = "black"),
@@ -45,12 +54,14 @@ source("functions.R")
 ```
 
 Directories and colors
+Directories and colors
 
 ```{r}
 dat_dir <- "ATACSEQ/nucleosome_free_regions/"
 pks_dir <- file.path(dat_dir, "macs2_peaks")
 cns_dir <- file.path(dat_dir, "consensus_peaks")
 hom_dir <- file.path(dat_dir, "homer")
+ftp_dir <- file.path(dat_dir, "footprint")
 ftp_dir <- file.path(dat_dir, "footprint")
 res_dir <- file.path(dat_dir, "results")
 fig_dir <- file.path(dat_dir, "plots")
@@ -122,6 +133,11 @@ nP_list <- lapply(names(pks_files), function(x) {
       extractRegions = TRUE,
       extractPeaks = TRUE
     )
+    nP <- readNarrowPeakFile(
+      pks_files[x],
+      extractRegions = TRUE,
+      extractPeaks = TRUE
+    )
     names(nP$narrowPeak) <- rep(x, length(nP$narrowPeak))
     names(nP$peak) <- rep(x, length(nP$peak))
     nP
@@ -135,6 +151,10 @@ names(peaks) <- names(pks_files)
 chrList <- Seqinfo(
     seqnames = seqnames(BSgenome.jaNemVect1.1.DToL.Assembly),
     seqlengths = seqlengths(BSgenome.jaNemVect1.1.DToL.Assembly),
+    isCircular = c(
+      rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly))-1),
+      TRUE
+    ),
     isCircular = c(
       rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly))-1),
       TRUE
@@ -154,8 +174,10 @@ results <- findConsensusPeakRegions(
     shrinkToFitPeakRegion = FALSE,
     minNbrExp = 2,
     nbrThreads = detectCores() - 1
+    nbrThreads = detectCores() - 1
 )
 message(Sys.time(), " Done calculating consensus")
+saveRDS(results, file.path(cns_dir, "consensusSeekeR-results.RDS"))
 saveRDS(results, file.path(cns_dir, "consensusSeekeR-results.RDS"))
 
 # resize peaks
@@ -165,6 +187,9 @@ ranges(pks_cns) <- IRanges(pks_mid,width=0)
 pks_scl <- promoters(pks_cns, upstream=125, downstream=125)
 
 # trim out-of-bound peaks
+seqlengths(pks_scl) <- seqlengths(
+  BSgenome.jaNemVect1.1.DToL.Assembly
+)[names(seqlengths(pks_scl))]
 seqlengths(pks_scl) <- seqlengths(
   BSgenome.jaNemVect1.1.DToL.Assembly
 )[names(seqlengths(pks_scl))]
@@ -198,8 +223,15 @@ bws_files <- list.files(
   full.names = TRUE
 )
 bws_names <- str_remove(basename(bws_files), ".mLb.clN.ncfree.bigwig")
+bws_files <- list.files(
+  file.path(dat_dir, "bigwig"),
+  pattern = ".bigwig",
+  full.names = TRUE
+)
+bws_names <- str_remove(basename(bws_files), ".mLb.clN.ncfree.bigwig")
 names(bws_files) <- bws_names
 bws_signal <- rbindlist(lapply(bws_names, function(smp){
+  as.data.table(import(bws_files[smp]))[, sample := smp][]
   as.data.table(import(bws_files[smp]))[, sample := smp][]
 }))
 
@@ -1060,6 +1092,18 @@ module_ann <- HeatmapAnnotation(
     )
 )
 row_split <- grann
+# gene module annotations (manual groups)
+grann <- clusters_dt[match(rownames(plot_mt), gene)]$group
+grann_lab <- unique(clusters_dt[match(rownames(plot_mt), gene)]$group)
+grann <- factor(grann, levels = grann_lab)
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "group" = anno_block(
+      labels = grann_lab,
+      gp = gpar(col = NA)
+    )
+)
+row_split <- grann
 
 # genes annotations
 marks_gold <- fread(
@@ -1461,6 +1505,7 @@ min_cluster_similarity <- 0.8
 hclust_method <- "complete"
 dist_method <- "euclidean"
 # archetyping threshold
+ic_threshold <- 0.5
 ic_threshold <- 0.5
 len_threshold <- 8
 ```
@@ -1893,6 +1938,8 @@ pdf(
 gp_tfs / gp_arc
 dev.off()
 ```
+dev.off()
+```
 
 How many TFs expressed in each group have motifs?
 
@@ -1972,6 +2019,8 @@ gp_ft
 dev.off()
 ```
 
+```{r eval=FALSE, echo=FALSE, include=FALSE}
+# Inspect those TFs for which there are motifs.
 ```{r eval=FALSE, echo=FALSE, include=FALSE}
 # Inspect those TFs for which there are motifs.
 

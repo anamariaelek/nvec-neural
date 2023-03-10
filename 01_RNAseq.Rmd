@@ -764,7 +764,29 @@ mark_ann <- HeatmapAnnotation(
   which = "row",
   marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
   show_legend = FALSE
+row_labels_marks_ids <- match(marks_tfs$gene, rownames(plot_mt))
+row_labels_marks <- marks_tfs[
+  match(rownames(plot_mt)[row_labels_marks_ids], gene)
+]$name
+mark_ann <- HeatmapAnnotation(
+  which = "row",
+  marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
+  show_legend = FALSE
 )
+
+# heatmap
+hm <- Heatmap(
+  plot_mt, name = "normalized\nexpression",
+  col = col_fun,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = FALSE, show_column_names = TRUE,
+  row_title = "genes",
+  row_split = row_split,
+  cluster_row_slices = FALSE,
+  top_annotation = col_ann,
+  right_annotation = mark_ann,
+  left_annotation = module_ann,
+  border = TRUE
 
 # heatmap
 hm <- Heatmap(
