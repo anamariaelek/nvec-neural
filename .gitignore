@@ -5,6 +5,7 @@ ATACSEQ/*/consensus_peaks
 ATACSEQ/*/footprint
 ATACSEQ/nucleosome_free_regions/results/motifs-similarity-PPM-PCCnorm.rds
 ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot.tsv
-ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot-footprints.tsv.gz
+ATACSEQ/nucleosome_free_regions/results/motif-binding-scores-archetypes-mona-annot-footprints*
+ATACSEQ/nucleosome_free_regions/results/diff-motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz
 CisBP
 genome

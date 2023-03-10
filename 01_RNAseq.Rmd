@@ -82,7 +82,7 @@ con_dt <- melt.data.table(
   value.name = "expr"
 )
 con_dt <- merge.data.table(
-  con_dt, col_dt, 
+  con_dt, col_dt,
   by = "sample",
   all.x = TRUE,
   sort = FALSE
@@ -153,15 +153,15 @@ Use normalized log-transformed expression data
 # normalize samples
 dds <- readRDS(file.path(res_dir, "dds.rds"))
 dds <- estimateSizeFactors(dds)
-norm_mt <- counts(dds, normalized=TRUE)
+norm_mt <- counts(dds, normalized = TRUE)
 # row normalize to bring genes to same range
-norm_mt <- (norm_mt+10)/apply(norm_mt+10,1,median) 
+norm_mt <- (norm_mt + 10) / apply(norm_mt + 10, 1, median) 
 norm_mt <- log2(norm_mt)
 # save
 write.table(
   norm_mt,
   file.path(res_dir, "norm_expression.tsv"),
-  sep="\t",
+  sep = "\t",
   row.names = TRUE,
   quote = FALSE
 )
@@ -785,6 +785,154 @@ hm
 
 ```{r include=FALSE, eval=TRUE}
 pdf(file.path(fig_dir, "clusters_prediction_heatmap.pdf"), width=8, height=10)
+draw(hm)
+dev.off()
+```
+
+## Heatmap of motif-based markers
+
+Plot heatmap for any set of genes
+
+```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
+# Motifs dictionary
+dict <- fread("ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict")
+dict_mot <- unique(dict[, .(archetype_name, gene)][gene != ""])
+setnames(dict_mot, c("motif", "gene"))
+# Diff motifs
+bnd_dt <- fread("ATACSEQ/nucleosome_free_regions/results/diff-motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz")
+pval_thr <- 0.05
+scor_thr <- 0.02
+bnd_dt <- bnd_dt[diff_bind_pval < 0.05][abs(diff_bind_score) > 0.01]
+bndg_dt <- merge.data.table(bnd_dt, dict_mot, by = "motif")
+bndg_dt[, lvl1 := strsplit(comparison, "_vs_")[[1]][1], by = 1:nrow(bndg_dt)]
+bndg_dt[, lvl2 := strsplit(comparison, "_vs_")[[1]][2], by = 1:nrow(bndg_dt)]
+bndg_dt[, group := paste(lvl1, lvl2, sep = " vs ")]
+bndg_dt[diff_bind_score < 0, group := paste(lvl2, lvl1, sep = " vs ")]
+#bndg_dt[, reporterline := str_extract(group, "Elav|Ncol|Fox")]
+#bndg_dt[, condition := str_extract(group, "pos|neg")]
+
+# Normalized expression matrix (for heatmap)
+norm_df <- read.table("RNASEQ_QUANTIFICATION/results/norm_expression.tsv")
+norm_mt <- as.matrix(norm_df)
+
+
+# cluster genes
+target_genes <- unique(bndg_dt$gene)
+gs <- target_genes[target_genes %in% rownames(norm_mt)]
+cor_genes <- cor(t(norm_mt[gs, ]))
+cor_genes[is.na(cor_genes)] <- 0
+hclust_genes <- hclust(as.dist(1 - cor_genes), method = "ward.D2")
+gene_order <- rownames(cor_genes)[hclust_genes$order]
+
+# order rows and columns for plotting
+samples_order <- col_dt[order(condition, reporterline)]$sample
+plot_mt <- norm_mt[gene_order, samples_order]
+
+# center at 0
+plot_min <- quantile(abs(range(plot_mt)), 0.75)
+plot_min <- 4
+plot_mt <- pmin(pmax(plot_mt, -plot_min), plot_min)
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000)
+col_fun <- circlize::colorRamp2(
+  seq(-plot_min, plot_min, length.out = length(col_vec)),
+  col_vec
+)
+
+# color annotations
+col_ann <- HeatmapAnnotation(
+    which = "column",
+    border = TRUE,
+    "reporterline" = as.character(
+      col_dt[match(colnames(plot_mt), sample)]$reporterline
+    ),
+    "condition" = as.character(
+      col_dt[match(colnames(plot_mt), sample)]$condition
+    ),
+    col = list("reporterline" = line_cols, "condition" = condition_cols)
+)
+
+# genes annotations
+marks_gold <- fread(
+  file.path("annotation", "golden-marks-230116.tsv"),
+  fill = TRUE
+)[, 1:2]
+setnames(marks_gold, c("gene", "name"))
+marks_gold[, name := str_remove(name, "^Nv")]
+marks_gold_v <- structure(marks_gold$name, names = marks_gold$gene)
+
+tfs_annt <- fread(
+  file.path("annotation", "curated_TFh_Nvec_DToL_names.tsv"),
+  header = FALSE
+)
+setnames(tfs_annt, c("gene", "pfam", "name"))
+
+gene_annt <- fread(
+  file.path("annotation", "Nvec_annotation_v3_2020-10-23_DToL_names"),
+  select = 1:3
+)
+setnames(gene_annt, c("gene", "pfam", "name"))
+
+gene_ann <- rbindlist(list(
+  gene_annt[!gene %in% tfs_annt$gene],
+  tfs_annt
+))
+gene_ann[gene %in% marks_gold$gene, name := marks_gold_v[gene]]
+gene_ann[, name := strtrim(name, 60)]
+gene_ann <- gene_ann[gene %in% rownames(plot_mt)]
+
+row_labels_marks_ids <- match(gene_ann$gene, rownames(plot_mt))
+row_labels_marks <- gene_ann[
+  match(rownames(plot_mt)[row_labels_marks_ids], gene)
+]$name
+
+mark_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE, show_legend = FALSE,
+    "Fox vs Elav" = rownames(plot_mt) %in% bndg_dt[group == "Fox_pos vs Elav_pos"]$gene,
+    "Fox vs Ncol" = rownames(plot_mt) %in% bndg_dt[group == "Fox_pos vs Ncol_pos"]$gene,
+    "Elav vs Fox" = rownames(plot_mt) %in% bndg_dt[group == "Elav_pos vs Fox_pos"]$gene,
+    "Elav vs Ncol" = rownames(plot_mt) %in% bndg_dt[group == "Elav_pos vs Ncol_pos"]$gene,
+    "Ncol vs Fox" = rownames(plot_mt) %in% bndg_dt[group == "Ncol_pos vs Fox_pos"]$gene,
+    "Ncol vs Elav" = rownames(plot_mt) %in% bndg_dt[group == "Ncol_pos vs Elav_pos"]$gene,
+    "marker" = anno_mark(
+      at = row_labels_marks_ids,
+      labels = row_labels_marks,
+      labels_gp = gpar(fontsize = 10)
+    ),
+    col = list(
+      "Fox vs Elav" = c("TRUE" = line_cols[["Fox"]], "FALSE" = "#d9d9d9"),
+      "Fox vs Ncol" = c("TRUE" = line_cols[["Fox"]], "FALSE" = "#d9d9d9"),
+      "Elav vs Fox" = c("TRUE" = line_cols[["Elav"]], "FALSE" = "#d9d9d9"),
+      "Elav vs Ncol" = c("TRUE" = line_cols[["Elav"]], "FALSE" = "#d9d9d9"),
+      "Ncol vs Fox" = c("TRUE" = line_cols[["Ncol"]], "FALSE" = "#d9d9d9"),
+      "Ncol vs Elav" = c("TRUE" = line_cols[["Ncol"]], "FALSE" = "#d9d9d9")
+    )
+)
+
+# heatmap
+hm <- Heatmap(
+  plot_mt, name = "normalized\nexpression",
+  col = col_fun,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = TRUE, show_column_names = TRUE,
+  row_names_side = "left",
+  row_title = "genes",
+  cluster_row_slices = FALSE,
+  top_annotation = col_ann,
+  right_annotation = mark_ann,
+  border = TRUE
+)
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, sprintf(
+    "gene_list_diff_motifs_heatmap_score%s_pval%s.pdf",
+    scor_thr, pval_thr
+  )),
+  width = 14, height = 24
+)
 draw(hm)
 dev.off()
 ```
