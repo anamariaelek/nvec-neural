@@ -21,10 +21,10 @@ theme_py <- theme_light() + theme(
   panel.grid.major = element_blank(),
   panel.grid.minor = element_blank(),
   panel.border = element_rect(colour = "black", fill = NA),
-  text = element_text(size=20),
-  strip.placement = "outside", 
-  strip.text = element_text(size=20, color="black"),
-  strip.background = element_rect(fill="white")
+  text = element_text(size = 20),
+  strip.placement = "outside",
+  strip.text = element_text(size = 20, color = "black"),
+  strip.background = element_rect(fill = "white")
 )
 theme_set(theme_py)
 library(patchwork)
@@ -54,12 +54,12 @@ Load expression data
 des_fn <- file.path(dat_dir, "design_table.tsv")
 des_dt <- fread(des_fn)
 setnames(des_dt, "reporter_line","reporterline") # DESeq factors have problems with _
-col_dt <- des_dt[,.(sample,reporterline,condition)]
-col_dt[,reporterline:=factor(reporterline, levels=c("Elav","Fox","Ncol"))]
-col_dt[,condition:=factor(condition, levels = c("negative","positive"))]
+col_dt <- des_dt[, .(sample, reporterline, condition)]
+col_dt[, reporterline := factor(reporterline, levels = c("Elav", "Fox", "Ncol"))]
+col_dt[, condition := factor(condition, levels = c("negative", "positive"))]
 setorder(col_dt, reporterline, condition)
 
-condition_cols <- c("positive"="blue","negative"="red") 
+condition_cols <- c("positive" = "blue", "negative" = "red") 
 line_cols = c("Elav" = "#ff7f00", "Fox" = "#984ea3", "Ncol" = "#4daf4a")
 
 col_df <- copy(col_dt)
@@ -176,25 +176,30 @@ set.seed(1950)
 pca_res <- prcomp(t(norm_mt), center = TRUE)
 
 # variance explained
-pca_var <- data.table(pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2))
-pca_var[,pct_cum:=cumsum(pct_var)]
-pca_var[,PC:=factor(1:.N)]
-gp_var <- ggplot(pca_var, aes(PC, pct_var)) + 
+pca_var <- data.table(
+  pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2) * 100), 2)
+)
+pca_var[,pct_cum := cumsum(pct_var)]
+pca_var[,PC := factor(1:.N)]
+gp_var <- ggplot(pca_var, aes(PC, pct_var)) +
   geom_bar(stat = "identity") +
-  geom_line(aes(y = pct_cum, group = 1)) + 
+  geom_line(aes(y = pct_cum, group = 1)) +
   geom_point(aes(y = pct_cum)) +
-  scale_y_continuous(expand = expansion(0.01,0)) +
+  scale_y_continuous(expand = expansion(0.01, 0)) +
   labs(y = "% of variance\nexplained", x = "PC") +
   theme(panel.grid.major.y = element_line(size = 0.5))
 
 pca_dt <- as.data.table(pca_res$x, keep.rownames = "sample")
-pca_dt <- merge.data.table(col_dt, pca_dt, by="sample", sort=FALSE)
+pca_dt <- merge.data.table(col_dt, pca_dt, by = "sample", sort = FALSE)
 
-gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=reporterline, shape=condition)) + 
+gp_bip <- ggplot(
+  pca_dt,
+  aes(PC1, PC2, fill = reporterline, shape = condition)
+) +
   geom_point(size=5) +
   scale_fill_manual(values = line_cols) +
   scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
-  guides(fill = guide_legend(override.aes=list(shape=21))) +
+  guides(fill = guide_legend(override.aes = list(shape = 21))) +
   geom_text_repel(aes(label = sample))
 
 gp_var / gp_bip 
@@ -764,29 +769,7 @@ mark_ann <- HeatmapAnnotation(
   which = "row",
   marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
   show_legend = FALSE
-row_labels_marks_ids <- match(marks_tfs$gene, rownames(plot_mt))
-row_labels_marks <- marks_tfs[
-  match(rownames(plot_mt)[row_labels_marks_ids], gene)
-]$name
-mark_ann <- HeatmapAnnotation(
-  which = "row",
-  marker = anno_mark(at = row_labels_marks_ids, labels = row_labels_marks),
-  show_legend = FALSE
 )
-
-# heatmap
-hm <- Heatmap(
-  plot_mt, name = "normalized\nexpression",
-  col = col_fun,
-  cluster_rows = FALSE, cluster_columns = FALSE,
-  show_row_names = FALSE, show_column_names = TRUE,
-  row_title = "genes",
-  row_split = row_split,
-  cluster_row_slices = FALSE,
-  top_annotation = col_ann,
-  right_annotation = mark_ann,
-  left_annotation = module_ann,
-  border = TRUE
 
 # heatmap
 hm <- Heatmap(
@@ -817,26 +800,37 @@ Plot heatmap for any set of genes
 
 ```{r fig.height=10, fig.width=8, warning=FALSE, message=FALSE}
 # Motifs dictionary
-dict <- fread("ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict")
+dict_fn <- file.path(
+  "ATACSEQ", "nucleosome_free_regions", "results",
+  "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
+)
+dict <- fread(dict_fn)
 dict_mot <- unique(dict[, .(archetype_name, gene)][gene != ""])
 setnames(dict_mot, c("motif", "gene"))
 # Diff motifs
-bnd_dt <- fread("ATACSEQ/nucleosome_free_regions/results/diff-motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz")
+bnd_fn <- file.path(
+  "ATACSEQ", "nucleosome_free_regions", "results",
+  "diff-motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz"
+)
+bnd_dt <- fread(bnd_fn)
 pval_thr <- 0.05
 scor_thr <- 0.02
 bnd_dt <- bnd_dt[diff_bind_pval < 0.05][abs(diff_bind_score) > 0.01]
 bndg_dt <- merge.data.table(bnd_dt, dict_mot, by = "motif")
-bndg_dt[, lvl1 := strsplit(comparison, "_vs_")[[1]][1], by = 1:nrow(bndg_dt)]
-bndg_dt[, lvl2 := strsplit(comparison, "_vs_")[[1]][2], by = 1:nrow(bndg_dt)]
+bndg_dt[
+  , lvl1 := strsplit(comparison, "_vs_")[[1]][1],
+  by = seq_len(nrow(bndg_dt))
+]
+bndg_dt[
+  , lvl2 := strsplit(comparison, "_vs_")[[1]][2],
+  by = seq_len(nrow(bndg_dt))
+]
 bndg_dt[, group := paste(lvl1, lvl2, sep = " vs ")]
 bndg_dt[diff_bind_score < 0, group := paste(lvl2, lvl1, sep = " vs ")]
-#bndg_dt[, reporterline := str_extract(group, "Elav|Ncol|Fox")]
-#bndg_dt[, condition := str_extract(group, "pos|neg")]
 
 # Normalized expression matrix (for heatmap)
 norm_df <- read.table("RNASEQ_QUANTIFICATION/results/norm_expression.tsv")
 norm_mt <- as.matrix(norm_df)
-
 
 # cluster genes
 target_genes <- unique(bndg_dt$gene)
@@ -911,12 +905,18 @@ row_labels_marks <- gene_ann[
 
 mark_ann <- HeatmapAnnotation(
     which = "row", border = TRUE, show_legend = FALSE,
-    "Fox vs Elav" = rownames(plot_mt) %in% bndg_dt[group == "Fox_pos vs Elav_pos"]$gene,
-    "Fox vs Ncol" = rownames(plot_mt) %in% bndg_dt[group == "Fox_pos vs Ncol_pos"]$gene,
-    "Elav vs Fox" = rownames(plot_mt) %in% bndg_dt[group == "Elav_pos vs Fox_pos"]$gene,
-    "Elav vs Ncol" = rownames(plot_mt) %in% bndg_dt[group == "Elav_pos vs Ncol_pos"]$gene,
-    "Ncol vs Fox" = rownames(plot_mt) %in% bndg_dt[group == "Ncol_pos vs Fox_pos"]$gene,
-    "Ncol vs Elav" = rownames(plot_mt) %in% bndg_dt[group == "Ncol_pos vs Elav_pos"]$gene,
+    "Fox vs Elav" = rownames(plot_mt) %in% 
+      bndg_dt[group == "Fox_pos vs Elav_pos"]$gene,
+    "Fox vs Ncol" = rownames(plot_mt) %in%
+      bndg_dt[group == "Fox_pos vs Ncol_pos"]$gene,
+    "Elav vs Fox" = rownames(plot_mt) %in%
+      bndg_dt[group == "Elav_pos vs Fox_pos"]$gene,
+    "Elav vs Ncol" = rownames(plot_mt) %in%
+      bndg_dt[group == "Elav_pos vs Ncol_pos"]$gene,
+    "Ncol vs Fox" = rownames(plot_mt) %in%
+      bndg_dt[group == "Ncol_pos vs Fox_pos"]$gene,
+    "Ncol vs Elav" = rownames(plot_mt) %in%
+      bndg_dt[group == "Ncol_pos vs Elav_pos"]$gene,
     "marker" = anno_mark(
       at = row_labels_marks_ids,
       labels = row_labels_marks,
