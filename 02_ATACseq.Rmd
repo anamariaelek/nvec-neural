@@ -2,12 +2,6 @@
 title: "ATACseq"
 output:
   html_document:
-    theme: cosmo
-    self_contained: true
-title: "ATACseq"
-output:
-  html_document:
-    theme: cosmo
     self_contained: true
     toc: true
     toc_float: true
@@ -31,10 +25,6 @@ theme_py <- theme_light() + theme(
   strip.placement = "outside",
   strip.text = element_text(size=20, color = "black"),
   strip.background = element_rect(fill = "white")
-  text = element_text(size = 20),
-  strip.placement = "outside",
-  strip.text = element_text(size=20, color = "black"),
-  strip.background = element_rect(fill = "white")
 )
 theme_set(theme_py)
 library(patchwork)
@@ -54,14 +44,12 @@ source("functions.R")
 ```
 
 Directories and colors
-Directories and colors
 
 ```{r}
 dat_dir <- "ATACSEQ/nucleosome_free_regions/"
 pks_dir <- file.path(dat_dir, "macs2_peaks")
 cns_dir <- file.path(dat_dir, "consensus_peaks")
 hom_dir <- file.path(dat_dir, "homer")
-ftp_dir <- file.path(dat_dir, "footprint")
 ftp_dir <- file.path(dat_dir, "footprint")
 res_dir <- file.path(dat_dir, "results")
 fig_dir <- file.path(dat_dir, "plots")
@@ -174,7 +162,6 @@ results <- findConsensusPeakRegions(
     shrinkToFitPeakRegion = FALSE,
     minNbrExp = 2,
     nbrThreads = detectCores() - 1
-    nbrThreads = detectCores() - 1
 )
 message(Sys.time(), " Done calculating consensus")
 saveRDS(results, file.path(cns_dir, "consensusSeekeR-results.RDS"))
@@ -187,9 +174,6 @@ ranges(pks_cns) <- IRanges(pks_mid,width=0)
 pks_scl <- promoters(pks_cns, upstream=125, downstream=125)
 
 # trim out-of-bound peaks
-seqlengths(pks_scl) <- seqlengths(
-  BSgenome.jaNemVect1.1.DToL.Assembly
-)[names(seqlengths(pks_scl))]
 seqlengths(pks_scl) <- seqlengths(
   BSgenome.jaNemVect1.1.DToL.Assembly
 )[names(seqlengths(pks_scl))]
@@ -431,12 +415,14 @@ set.seed(1950)
 pca_res <- prcomp(t(norm_mt), center = TRUE)
 
 # variance explained
-pca_var <- data.table(pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2))
+pca_var <- data.table(
+  pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2)
+)
 pca_var[,pct_cum:=cumsum(pct_var)]
 pca_var[,PC:=factor(1:.N)]
-gp_var <- ggplot(pca_var, aes(PC, pct_var)) + 
+gp_var <- ggplot(pca_var, aes(PC, pct_var)) +
   geom_bar(stat = "identity") +
-  geom_line(aes(y = pct_cum, group = 1)) + 
+  geom_line(aes(y = pct_cum, group = 1)) +
   geom_point(aes(y = pct_cum)) +
   scale_y_continuous(expand = expansion(0.01,0)) +
   labs(y = "% of variance\nexplained", x = "PC") +
@@ -444,14 +430,14 @@ gp_var <- ggplot(pca_var, aes(PC, pct_var)) +
 
 pca_dt <- as.data.table(pca_res$x, keep.rownames = "sample")
 pca_dt <- merge.data.table(col_dt, pca_dt, by="sample", sort=FALSE)
-gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=reporterline, shape=condition)) + 
-  geom_point(size=5) +
+gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=reporterline, shape=condition)) +
+  geom_point(size = 5) +
   scale_fill_manual(values = line_cols) +
   scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
   guides(fill = guide_legend(override.aes=list(shape=21))) +
   geom_text_repel(aes(label = sample))
 
-gp_pch <- gp_var / gp_bip 
+gp_pch <- gp_var / gp_bip
 gp_pch
 ```
 
@@ -467,17 +453,19 @@ PCA per cell line
 set.seed(1950)
 
 gp_l <- lapply(names(line_cols), function(cl) {
-  
+
   pca_res <- prcomp(t(norm_mt[,grep(cl,colnames(norm_mt))]), center = TRUE)
-  
+
   # variance explained
-  pca_var <- data.table(pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2))
+  pca_var <- data.table(
+    pct_var = round(((pca_res$sdev) ^ 2 / sum((pca_res$sdev) ^ 2)* 100), 2)
+  )
   pca_var <- pca_var[-nrow(pca_var)]
   pca_var[,pct_cum:=cumsum(pct_var)]
-  pca_var[,PC:=factor(1:.N-1)]
-  gp_var <- ggplot(pca_var, aes(PC, pct_var)) + 
+  pca_var[,PC:=factor(1:.N - 1)]
+  gp_var <- ggplot(pca_var, aes(PC, pct_var)) +
     geom_bar(stat = "identity") +
-    geom_line(aes(y = pct_cum, group = 1)) + 
+    geom_line(aes(y = pct_cum, group = 1)) +
     geom_point(aes(y = pct_cum)) +
     scale_y_continuous(expand = expansion(0.01,0)) +
     labs(y = "% of variance\nexplained", x = "PC") +
@@ -486,7 +474,7 @@ gp_l <- lapply(names(line_cols), function(cl) {
   # pca plot
   pca_dt <- as.data.table(pca_res$x, keep.rownames = "sample")
   pca_dt <- merge.data.table(col_dt, pca_dt, by="sample", sort=FALSE)
-  gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=condition, shape=condition)) + 
+  gp_bip <- ggplot(pca_dt, aes(PC1, PC2, fill=condition, shape=condition)) +
     geom_point(size=5) +
     scale_shape_manual(values = c("positive" = 21, "negative" = 24)) +
     scale_fill_manual(values = condition_cols) +
@@ -2021,8 +2009,6 @@ dev.off()
 
 ```{r eval=FALSE, echo=FALSE, include=FALSE}
 # Inspect those TFs for which there are motifs.
-```{r eval=FALSE, echo=FALSE, include=FALSE}
-# Inspect those TFs for which there are motifs.
 
 # motifs
 pwms_fnm <- file.path(
@@ -2464,6 +2450,67 @@ fwrite(
 
 ```
 
+Motif enrichment in cell types
+
+```{r eval=FALSE, echo=FALSE}
+# all peaks
+peaks <- fread(file.path(cns_dir, "consensusSeekeR-peaks.bed"))
+setnames(peaks, c("seqnames", "start", "end", "name", "score", "strand"))
+peaks_all <- makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
+
+# peaks assigned to genes
+peaks <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
+setnames(peaks, "peak", "name")
+peaks_gr <- makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
+
+# genes expressed in samples
+expr_mt <- read.table(
+  file.path("RNASEQ_QUANTIFICATION", "results", "norm_expression.tsv")
+)
+expr_genes <- apply(expr_mt, 2, function(x) rownames(expr_mt)[x > 1])
+
+# motif scores
+mta_scores_mona <- readRDS(
+  file.path(res_dir, "motif-scores-archetypes-mona.rds")
+)
+sites_gr <- mta_scores_mona$gw_scan
+sites_gr$name <- sites_gr$motif
+
+# calculate enrichment
+fg_samples <- grep("Pos", names(expr_genes), value = TRUE)
+bg_samples <- unlist(lapply(fg_samples, function(x) {
+  x <- str_replace_all(x, c("Pos" = "Neg"))
+  i <- as.integer(str_extract(x ,"\\d+"))
+  str_replace(x, as.character(i), as.character(i + 1))
+}))
+enr_list <- lapply(seq_along(fg_samples), function(i) {
+  peaks_fg <- peaks_gr[peaks_gr$gene %in% expr_genes[[fg_samples[i]]]]
+  peaks_bg <- peaks_gr[peaks_gr$gene %in% expr_genes[[bg_samples[i]]]]
+  enr_df <- mta_motif_enrichment_test(
+    sites_object = sites_gr,
+    peaks_object = peaks_all,
+    fg_list = peaks_fg$name,
+    # bg_list = peaks_bg$name,
+    bg_list = peaks_all[!peaks_all$name %in% peaks_fg$peak]$peak,
+    thresholds_vector = NULL, # mta_scores_mona$score_quantiles[,"0.95"],
+    label = fg_samples[i],
+    nthreads = 2,
+    pval_adjust = "BH"
+  )
+  setDT(enr_df)
+  enr_df
+
+})
+enr_dt <- rbindlist(enr_list)
+
+# save
+fwrite(
+  enr_dt,
+  file.path(res_dir, "motif-enrich-samples-archetypes-mona.tsv"),
+  sep = "\t"
+)
+```
+
 Motif enrichment in groups defined before
 
 ```{r eval=FALSE, echo=FALSE}
@@ -2515,9 +2562,11 @@ fwrite(
 Motif enrichment heatmap
 
 ```{r fig.height=26, fig.width=12}
+enr_group <- "samples"
+
 # enrichment scores
 dt <- fread(
-  file.path(res_dir, "motif-enrich-archetypes-mona.tsv")
+  file.path(res_dir, sprintf("motif-enrich-%s-archetypes-mona.tsv", enr_group))
 )
 setnames(dt, "label", "group")
 
@@ -2525,12 +2574,15 @@ setnames(dt, "label", "group")
 dat_qv <- dcast.data.table(
   unique(dt[, .(motif, group, padj)]), motif ~ group, value.var = "padj"
 )
-mat_qv <- data.matrix(dat_qv)[,-1]
+mat_qv <- data.matrix(dat_qv)[, -1]
 mat_qv[is.na(mat_qv)] <- 1
 rownames(mat_qv) <- dat_qv$motif
 write.table(
   mat_qv,
-  file.path(res_dir, "motif-enrich-archetypes-mona-qvalue.tsv"),
+  file.path(
+    res_dir,
+    sprintf("motif-enrich-%s-archetypes-mona-qvalue.tsv", enr_group)
+  ),
   sep = "\t", quote = FALSE
 )
 
@@ -2538,12 +2590,14 @@ write.table(
 dat_fc <- dcast.data.table(
   unique(dt[, .(motif, group, fc)]), motif ~ group, value.var = "fc"
 )
-mat_fc <- data.matrix(dat_fc)[,-1]
+mat_fc <- data.matrix(dat_fc)[, -1]
 mat_fc[is.na(mat_fc)] <- 0
 rownames(mat_fc) <- dat_fc$motif
 write.table(
   mat_fc,
-  file.path(res_dir, "motif-enrich-archetypes-mona-fc.tsv"),
+  file.path(
+    res_dir,
+    sprintf("motif-enrich-%s-archetypes-mona-fc.tsv", enr_group)),
   sep = "\t", quote = FALSE
 )
 
@@ -2561,9 +2615,9 @@ ds[, motif := factor(motif, levels = rev(rownames(mat_fc)[ids]))]
 
 # ordering
 mord <- order(apply(mat_fc[ids,], 1, which.max))
-ds[, motif := factor(motif, levels=rev(rownames(mat_fc[ids,])[mord]))]
+ds[, motif := factor(motif, levels = rev(rownames(mat_fc[ids, ])[mord]))]
 
-# limit -log10FDR range 
+# limit -log10FDR range
 ds[, minuslog10qval := pmin(minuslog10qval, 20)]
 
 # add archetype gene annotations
@@ -2653,13 +2707,13 @@ gp <- ggplot(mt_marks_dt, aes(group, motif, label = label)) +
   ) +
   scale_fill_gradientn(
     name = "enrichmnet\nfold change",
+    # breaks = c(0, 1, 2, 4, 6),
     colours = c(
-      "white","#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15", "#7a0105"
-    ),
-    breaks = c(0, 2, 4, 6)
+      "white", "#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15", "#7a0105"
+    )
   ) +
   scale_size_continuous(
-    name = "-log10 FDR", 
+    name = "-log10 FDR",
     breaks = c(0, 10, 20)
   ) +
   #scale_y_discrete(
@@ -2680,16 +2734,18 @@ gp <- ggplot(mt_marks_dt, aes(group, motif, label = label)) +
   ) +
   theme(
     panel.grid.major = element_line(size = 0.25),
-    axis.text.y = element_text(size = 8)
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust = 1),
+    legend.direction = "vertical"
   )
 gp
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs_heatmap.pdf"),
+  file.path(fig_dir, "motifs-groups-heatmap.pdf"),
   width = 12,
-  height = 26
+  height = 36
 )
 gp
 dev.off()
