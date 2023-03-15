@@ -2,6 +2,7 @@
 title: "RNAseq"
 output:
   html_document:
+    theme: cosmo
     self_contained: true
     toc: true
     toc_float: true
@@ -13,7 +14,7 @@ editor: visual
 
 Load packages
 
-```{r warning=FALSE, message=FALSE, results = FALSE}
+```{r warning=FALSE, message=FALSE, results=FALSE}
 library(data.table)
 library(stringr)
 library(ggplot2)
@@ -53,9 +54,11 @@ Load expression data
 # column data
 des_fn <- file.path(dat_dir, "design_table.tsv")
 des_dt <- fread(des_fn)
-setnames(des_dt, "reporter_line","reporterline") # DESeq factors have problems with _
+setnames(des_dt, "reporter_line","reporterline") # because of DESeq factors
 col_dt <- des_dt[, .(sample, reporterline, condition)]
-col_dt[, reporterline := factor(reporterline, levels = c("Elav", "Fox", "Ncol"))]
+col_dt[, reporterline := factor(
+  reporterline, levels = c("Elav", "Fox", "Ncol")  
+)]
 col_dt[, condition := factor(condition, levels = c("negative", "positive"))]
 setorder(col_dt, reporterline, condition)
 
@@ -69,80 +72,74 @@ rownames(col_df) <- col_df$sample
 # count matrix
 con_fn <- file.path(dat_dir, "raw_counts_rnaseq.tsv")
 con_df <- read.table(con_fn, header = TRUE)
-con_mt <- as.matrix(con_df[,rownames(col_df)])
+con_mt <- as.matrix(con_df[, rownames(col_df)])
 rownames(con_mt) <- con_df$transcript
-```
-
-```{r echo=FALSE, include=FALSE, fig.width=7, fig.height=5}
-con_dt <- as.data.table(con_mt, keep.rownames="gene")
-con_dt <- melt.data.table(
-  con_dt,
-  id.vars = "gene",
-  variable.name = "sample",
-  value.name = "expr"
-)
-con_dt <- merge.data.table(
-  con_dt, col_dt,
-  by = "sample",
-  all.x = TRUE,
-  sort = FALSE
-)
-ggplot(con_dt, aes(log10(expr + 1))) +
-  geom_density() +
-  facet_grid(condition ~ reporterline)
-```
-
-Data for differential expression analysis
-
-```{r eval=FALSE}
-require(DESeq2)
-dds <- DESeqDataSetFromMatrix(
-  countData = con_mt,
-  colData = col_df,
-  design = ~ condition + reporterline + condition:reporterline
-)
-saveRDS(dds, file.path(res_dir, "dds.rds"))
 ```
 
 Inspect genes expression distribution
 
 ```{r fig.width=8, fig.height=6, warning=FALSE, message=FALSE}
-# normalized accessibility distribution
-con_dt <- as.data.table(con_mt, keep.rownames = "gene")
-con_dt <- melt.data.table(
-  con_dt,
+# load gene lengths
+gtf <- as.data.table(
+    rtracklayer::import("genome/Nvec_v4_merged_annotation_sort.gtf")
+)
+gen_lens <- structure(gtf$width, names = gtf$transcript_id)
+
+# calculate TPMs
+tpm <- function(counts, len) {
+  x <- counts / len
+  return(t(t(x) * 1e6 / colSums(x)))
+}
+tpm_mt <- tpm(con_mt, gen_lens[rownames(con_mt)])
+
+# save
+write.table(
+  tpm_mt,
+  file.path(res_dir, "tpm_expression.tsv"),
+  sep = "\t",
+  row.names = TRUE,
+  quote = FALSE
+)
+
+# add metadata
+tpm_dt <- as.data.table(tpm_mt, keep.rownames = "gene")
+tpm_dt <- melt.data.table(
+  tpm_dt,
   id.vars = "gene",
   variable.name = "sample",
-  value.name = "norm_counts"
+  value.name = "TPM"
 )
-con_dt <- merge.data.table(con_dt, col_dt, by="sample")
-setorder(con_dt, gene, condition, reporterline)
-con_dt[,sample:=factor(sample, levels = unique(con_dt$sample))]
+tpm_dt <- merge.data.table(tpm_dt, col_dt, by = "sample")
+tpm_dt[, sample := factor(sample, levels = unique(tpm_dt$sample))]
 
-gp_exp <- ggplot(con_dt, aes(sample, log10(norm_counts), fill=reporterline)) +
+# plot
+gp_exp <- ggplot(tpm_dt, aes(sample, log10(TPM), fill = reporterline)) +
   geom_violin(scale = "width", alpha = 0.8, color = "black") +
   geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
   scale_fill_manual(values = line_cols, limits = force) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
   labs(x = "samples", y = "gene counts") +
   theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     legend.title = element_blank(), legend.position = "none"
   )
 
-var_dt <- con_dt[,.(var=var(norm_counts)),.(gene)]
-gp_var <- ggplot(var_dt, aes(log10(var))) + 
+var_dt <- tpm_dt[, .(var = var(TPM)), .(gene)]
+gp_var <- ggplot(var_dt, aes(log10(var))) +
   geom_density() +
   scale_x_continuous(limits=c(-4,NA)) +
-  scale_y_continuous(expand = expansion(mult = c(0,0.01))) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.01))) +
   labs(x = "log10(expression variance)")
 
-gp_pch <- gp_exp / gp_var + plot_layout(heights = c(2,1))
+gp_pch <- gp_exp / gp_var + plot_layout(heights = c(2, 1))
 gp_pch
 ```
 
 ```{r include=FALSE, eval=TRUE}
-pdf(file.path(fig_dir, "genes_var.pdf"), width=8, height=6)
+pdf(
+  file.path(fig_dir, "genes_var_TPM.pdf"),
+  width = 8, height = 6
+)
 gp_pch
 dev.off()
 ```
@@ -150,13 +147,23 @@ dev.off()
 Use normalized log-transformed expression data
 
 ```{r}
+require(DESeq2)
+dds <- DESeqDataSetFromMatrix(
+  countData = con_mt,
+  colData = col_df,
+  design = ~ condition + reporterline + condition:reporterline
+)
+saveRDS(dds, file.path(res_dir, "dds.rds"))
+
 # normalize samples
 dds <- readRDS(file.path(res_dir, "dds.rds"))
 dds <- estimateSizeFactors(dds)
 norm_mt <- counts(dds, normalized = TRUE)
+
 # row normalize to bring genes to same range
-norm_mt <- (norm_mt + 10) / apply(norm_mt + 10, 1, median) 
+norm_mt <- (norm_mt + 10) / apply(norm_mt + 10, 1, median)
 norm_mt <- log2(norm_mt)
+
 # save
 write.table(
   norm_mt,

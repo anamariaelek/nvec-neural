@@ -2,6 +2,7 @@
 title: "ATACseq"
 output:
   html_document:
+    theme: cosmo
     self_contained: true
     toc: true
     toc_float: true
@@ -13,7 +14,7 @@ editor: visual
 
 Load packages
 
-```{r warning=FALSE, message=FALSE, results = FALSE}
+```{r warning=FALSE, message=FALSE, results=FALSE}
 library(data.table)
 library(stringr)
 library(ggplot2)
@@ -107,20 +108,15 @@ require(parallel)
 # load peaks
 pks_files <- list.files(
   pks_dir,
-  pattern="narrowPeak",
-  recursive=FALSE,
-  full.names=TRUE
+  pattern = "narrowPeak",
+  recursive = FALSE,
+  full.names = TRUE
 )
 names(pks_files) <- str_remove(
   basename(pks_files),
   ".mLb.clN.ncfree_peaks.narrowPeak"
 )
 nP_list <- lapply(names(pks_files), function(x) {
-    nP <- readNarrowPeakFile(
-      pks_files[x],
-      extractRegions = TRUE,
-      extractPeaks = TRUE
-    )
     nP <- readNarrowPeakFile(
       pks_files[x],
       extractRegions = TRUE,
@@ -169,9 +165,9 @@ saveRDS(results, file.path(cns_dir, "consensusSeekeR-results.RDS"))
 
 # resize peaks
 pks_cns <- results$consensusRanges
-pks_mid <- start(pks_cns) + (end(pks_cns)-start(pks_cns))/2
-ranges(pks_cns) <- IRanges(pks_mid,width=0)
-pks_scl <- promoters(pks_cns, upstream=125, downstream=125)
+pks_mid <- start(pks_cns) + (end(pks_cns) - start(pks_cns)) / 2
+ranges(pks_cns) <- IRanges(pks_mid, width = 0)
+pks_scl <- promoters(pks_cns, upstream = 125, downstream = 125)
 
 # trim out-of-bound peaks
 seqlengths(pks_scl) <- seqlengths(
@@ -181,14 +177,14 @@ pks_scl <- trim(pks_scl)
 
 # save bed file
 pks_bed <- as.data.table(pks_scl)
-pks_bed[, name := paste0("peak",seq_len(.N))]
+pks_bed[, name := paste0("peak", seq_len(.N))]
 pks_bed[, width := NULL][, score := "."]
 setcolorder(pks_bed, c("seqnames", "start", "end", "name", "score", "strand"))
 fwrite(
   pks_bed,
-  file.path(cns_dir,"consensusSeekeR-peaks.bed"),
-  sep="\t",
-  col.names=FALSE
+  file.path(cns_dir, "consensusSeekeR-peaks.bed"),
+  sep = "\t",
+  col.names = FALSE
 )
 ```
 
@@ -1366,6 +1362,7 @@ saveRDS(mt_list, file.path(hom_dir, "results", "allMotifs.RDS"))
 ```
 
 ## Motif archetypes
+
 ### Create archetypes
 
 Previously we pulled together Nematostella direct and inferred motifs from CisBP, and motifs additionally transferred based on the DBD %ID. We load them now, together with motifs found by Homer, then we do motif clustering and archetyping.
@@ -1798,6 +1795,7 @@ saveRDS(
 
 ### Mapping archetpes and TFs
 
+
 We first identify expressed genes and TFs in groups that were defined by clustering.
 
 ```{r}
@@ -1924,8 +1922,6 @@ pdf(
   width = 6, height = 8
 )
 gp_tfs / gp_arc
-dev.off()
-```
 dev.off()
 ```
 
@@ -2396,16 +2392,16 @@ seqlvl <- c(seqdt[[1]], "ENA|OW052000|OW052000.1")
 
 # scanning
 mta_scores_mona <- mta_gw_motif_score_monalisa(
-  motifs = mona_lst, 
-	genome_object = genome,
-	index_object = seqdt,
-	bin_width = 250,
-	subsample_fraction = 0.10,
-	score_quantiles = c(0, 0.25, 0.5, 0.75, 0.95, 0.98, 0.99, 0.995, 0.999, 1.0),
-	score_quantile_thr = 0.95,
-	do_gw_scan = TRUE,
-	given_gr = peaks_gr,
-	nthreads = 16
+  motifs = mona_lst[[mo]],
+  genome_object = genome,
+  index_object = seqdt,
+  bin_width = 250,
+  subsample_fraction = 0.10,
+  score_quantiles = c(0, 0.25, 0.5, 0.75, 0.95, 0.98, 0.99, 0.995, 0.999, 1.0),
+  score_quantile_thr = 0.95,
+  do_gw_scan = TRUE,
+  given_gr = peaks_gr,
+  nthreads = 16
 )
 saveRDS(
   mta_scores_mona, 
@@ -2425,10 +2421,10 @@ assign <- fread(
   file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv")
 )[, .(peak, gene)]
 mta_data <- as.data.table(mta_scor)
-mta_data[,score := NULL]
+mta_data[, score := NULL]
 setnames(mta_data, c("name", "motif_score"), c("peak", "score"))
 mta_annt <- merge.data.table(
-  mta_data, assign, 
+  mta_data, assign,
   by = "peak",
   all.x = TRUE,
   allow.cartesian = TRUE
@@ -3583,7 +3579,7 @@ bin_det <- mta_binding_detect(
   mts_fn = mts_fn,
   ftp_fn = ftp_fn,
   pks_smpl = 1e6,
-  pval = 1e-2,
+  pval = 5e-2,
   seed = 1950
 )
 saveRDS(bin_det, file.path(
@@ -4325,3 +4321,6 @@ hmp_list <- sapply(names(bnd_list), function(mo) {
   
 })
 ```
+
+
+
