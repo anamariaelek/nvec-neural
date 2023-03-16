@@ -118,19 +118,19 @@ tpms_mt <- read.table(
 
 # motif enrichment scores
 motf_dt <- fread(
-  file.path(atac_dir, "motif-enrich-samples-archetypes-mona.tsv")
+  file.path(atac_dir, "motif-enrich-samples-v2-archetypes-mona.tsv")
 )
 setnames(motf_dt, "label", "group")
 
 # motif enrichment qvalue
 motf_qv <- read.table(
-  file.path(atac_dir, "motif-enrich-samples-archetypes-mona-qvalue.tsv"),
+  file.path(atac_dir, "motif-enrich-samples-v2-archetypes-mona-qvalue.tsv"),
   sep = "\t"
 )
 
 # motif enrichment log2fc
 motf_fc <- read.table(
-  file.path(atac_dir, "motif-enrich-samples-archetypes-mona-fc.tsv"),
+  file.path(atac_dir, "motif-enrich-samples-v2-archetypes-mona-fc.tsv"),
   sep = "\t"
 )
 
@@ -229,7 +229,9 @@ ds[, id := paste(motif, gene, sep = " | ")]
 dp <- ds[order(cor_qv)][, .SD[1], .(sample, motif)]
 
 # save
-fwrite(dp, file.path(res_dir, "motif-gene-correaltion-pairs.tsv"), sep = "\t")
+fwrite(dp, file.path(
+  res_dir, "motif-gene-correaltion-pairs-v2.tsv"
+), sep = "\t")
 
 # plot
 gp1 <- ggplot(dp, aes(
@@ -257,7 +259,7 @@ gp_cor
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs-genes-correaltion.pdf"),
+  file.path(fig_dir, "motifs-genes-correaltion-v2.pdf"),
   width = 8.5, height = 5
 )
 gp_cor
@@ -308,7 +310,7 @@ gp_dot <- ggplot(dp, aes(sample, id)) +
 ```
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs-genes-heatmap.pdf"),
+  file.path(fig_dir, "motifs-genes-heatmap-v2.pdf"),
   width = 18, height = 16
 )
 gp_dot
@@ -549,7 +551,7 @@ gp_mos <- ggplot(scores_ann_dt, aes_string("motif_score", color = i)) +
 ```
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, sprintf("motif-%s-scores-distribution.pdf", mo)),
+  file.path(fig_dir, sprintf("motif-%s-motif-scores-distribution.pdf", mo)),
   width = 8, height = 6
 )
 gp_mos
@@ -558,19 +560,7 @@ dev.off()
 
 ## Calculate TF-target gene interaction score
 
-Try this for one motif and one sample first
-
 ```{r}
-# sample
-sm <- "Fox_pos"
-
-# motif
-mo <- "ARCH1154_RFX_RFX2"
-
-# TF gene
-dp <- fread(file.path(res_dir, "motif-gene-correaltion-pairs.tsv"))
-mg <- as.character(unique(dp[motif == mo]$gene))
-
 # helper function to scale values between 1 and 0
 range_01 <- function(x, q_min = 0, q_max = 1) {
   x_min <- quantile(x, q_min, na.rm = TRUE)
@@ -593,7 +583,7 @@ smp_clusters <- list(
   "Fox_pos" = c("G2", "G3", "G4", "G5"),
   "Ncol_pos" = c("G4", "G5", "G6", "G7")
 )
-```max
+```
 
 ```{r include=FALSE, eval=FALSE}
 # consensus peaks
@@ -613,7 +603,7 @@ names(pks_files) <- str_remove(
   ".mLb.clN.ncfree_peaks.narrowPeak"
 )
 pks_list <- lapply(names(pks_files), function(x) {
-    np <- readNarrowPeakFile(
+    np <- consensusSeekeR::readNarrowPeakFile(
       pks_files[x],
       extractRegions = TRUE,
       extractPeaks = FALSE
@@ -627,11 +617,14 @@ length(
   setdiff(seq_len(length(cpeaks_gr)), sort(unique(subjectHits(ovl))))
 )
 cpeaks_gr$sample <- ""
-cpeaks_sm <- cpeaks_gr[subjectHits(ovl)] 
+cpeaks_sm <- cpeaks_gr[subjectHits(ovl)]
 cpeaks_sm$sample <- speaks_gr[queryHits(ovl)]$group
-pks_smp_map <- unique(as.data.table(cpeaks_sm)[, .(name, sample)])
-setnames(pks_smp_map, "name", "peak")
+pks_clusters <- unique(as.data.table(cpeaks_sm)[, .(name, sample)])
+setnames(pks_clusters, c("peak", "cluster"))
 
+smp <- unique(pks_clusters$cluster)
+smp <- grep("pos", smp, value = TRUE)
+smp_clusters <- sapply(smp, function(x) x)
 ```
 
 Recalculate motif scores without thresholding at 0.95 quantile
@@ -654,33 +647,38 @@ seqdt <- fread("genome/Nvec_vc1.1_gDNA.fasta.fai")[, 1:2]
 seqlvl <- c(seqdt[[1]], "ENA|OW052000|OW052000.1")
 
 # scanning
-mta_scores_mona <- mta_gw_motif_score_monalisa(
-  motifs = mona_lst[mo],
-  genome_object = genome,
-  index_object = seqdt,
-  bin_width = 250,
-  subsample_fraction = 0.10,
-  score_quantiles = c(0, 0.25, 0.5, 0.75, 0.95, 0.98, 0.99, 0.995, 0.999, 1.0),
-  score_quantile_thr = 0,
-  do_gw_scan = TRUE,
-  given_gr = cpeaks_gr[
-    cpeaks_gr$name %in% 
-    pks_clusters[cluster %in% smp_clusters[[sm]]]$peak
-  ],
-  nthreads = 16
-)
+scores_list <- sapply(names(smp_clusters), function(sm) {
+
+  # score motifs
+  mta_scores_mona <- mta_gw_motif_score_monalisa(
+    motifs = mona_lst[mo],
+    genome_object = genome,
+    index_object = seqdt,
+    bin_width = 250,
+    subsample_fraction = 0.10,
+    score_quantile_thr = 0,
+    do_gw_scan = TRUE,
+    given_gr = cpeaks_gr[
+      cpeaks_gr$name %in%
+      pks_clusters[cluster %in% smp_clusters[[sm]]]$peak
+    ],
+    nthreads = 16
+  )
+  scores_gr <- mta_scores_mona$gw_scan
+
+  # overlap with peaks
+  ovl <- findOverlaps(query = scores_gr, subject = cpeaks_gr)
+  scores <- scores_gr[queryHits(ovl)]
+  scores$peak <- cpeaks_gr[subjectHits(ovl)]$name
+  scores_dt <- as.data.table(scores)
+  scores_dt
+
+}, simplify = FALSE, USE.NAMES = TRUE)
+scores_dt <- rbindlist(scores_list, idcol = "sample")
 
 # motif quantile scores
-scores_gr <- mta_scores_mona$gw_scan
-scores_gr <- scores_gr[scores_gr$motif == mo]
-scores_q <- ecdf(scores_gr$motif_score)(scores_gr$motif_score)
-scores_gr$motif_score_quantile <- scores_q
-
-# overlap with peaks
-ovl <- findOverlaps(query = scores_gr, subject = cpeaks_gr)
-scores <- scores_gr[queryHits(ovl)]
-scores$peak <- cpeaks_gr[subjectHits(ovl)]$name
-scores_dt <- as.data.table(scores)
+scores_q <- ecdf(scores_dt$motif_score)(scores_dt$motif_score)
+scores_dt[, motif_score_quantile := scores_q]
 
 # add genes
 peaks <- fread(file.path(atac_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
@@ -695,30 +693,19 @@ scores_genes_dt <- merge.data.table(
 # max score per gene
 scor_mo <- scores_genes_dt[gene != ""]
 scor_mo <- scor_mo[order(-motif_score_quantile)][, .SD[1], .(gene)]
-scor_mc <- structure(scor_mo$motif_score_quantile, names = scor_mo$gene)
-scor_mc <- range_01(scor_mc)
+scor_mo[, motif_score_quantile := range_01(motif_score)]
 
 # plot
-dist_scaled <- data.table(
-  motif_quantile_score = scor_mc
-)
-gp_score <- ggplot(dist_scaled, aes(motif_quantile_score)) +
+scor_mp <- copy(scor_mo)
+scor_mp[, sample := str_extract(sample, "Elav|Fox|Ncol")]
+gp_score <- ggplot(scor_mp, aes(motif_score_quantile, fill = sample)) +
   geom_histogram(color = "white") +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  theme(legend.position = "bottom")
+  scale_fill_manual(values = line_cols) +
+  theme(legend.position = "bottom") +
+  facet_grid(sample ~ .)
 gp_score
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(
-  file.path(fig_dir, sprintf(
-    "motif-%s-sample-%s-quantile-scores-distribution.pdf", mo, sm
-  )),
-  width = 6, height = 4
-)
-gp_score
-dev.off()
 ```
 
 Motif enrichment
@@ -748,7 +735,8 @@ gp_enr_fc <- ggplot(dist_scaled, aes(motif_enrichment_fc, fill = sample)) +
   scale_fill_manual(values = line_cols) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  facet_grid(sample ~ .)
 
 # motif enrichment q value
 motf_ql <- -1 * log10(motf_qv)
@@ -778,7 +766,8 @@ gp_enr_qv <- ggplot(
   scale_fill_manual(values = line_cols) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  facet_grid(sample ~ .)
 
 gp_enr_fc / gp_enr_qv
 ```
@@ -806,7 +795,8 @@ gp_ftp <- ggplot(dist_scaled, aes(footprint_score, fill = sample)) +
   scale_fill_manual(values = line_cols) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  facet_grid(sample ~ .)
 gp_ftp
 ```
 
@@ -838,7 +828,8 @@ gp_tpm <- ggplot(dist_scaled, aes(TPM_scaled, fill = sample)) +
   scale_fill_manual(values = line_cols) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  facet_grid(sample ~ .)
 
 # TFs expression TPMs
 gene_tf <- tfs_annt[gene %in% rownames(tpms_mt)]$gene
@@ -857,7 +848,8 @@ gp_tpm_tfs <- ggplot(dist_scaled, aes(TPM_scaled_TFs, fill = sample)) +
   scale_fill_manual(values = line_cols) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_y_continuous(expand = c(0, 0)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  facet_grid(sample ~ .)
 
 gp_tpm / gp_tpm_tfs
 ```
@@ -867,12 +859,26 @@ pdf(
   file.path(fig_dir, sprintf(
     "motif-%s-scaled-values-distribution.pdf", mo
   )),
-  width = 6, height = 12
+  width = 6, height = 18
 )
-((gp_tpm / gp_tpm_tfs / gp_enr_fc / gp_enr_qv / gp_ftp) &
+((gp_tpm / gp_tpm_tfs / gp_score / gp_enr_fc / gp_enr_qv / gp_ftp) &
   theme(legend.position = "bottom")) +
   plot_layout(guides = "collect")
 dev.off()
+```
+
+Try this for one motif and one sample first
+
+```{r}
+# sample
+sm <- "Fox_pos"
+
+# motif
+mo <- "ARCH1154_RFX_RFX2"
+
+# TF gene
+dp <- fread(file.path(res_dir, "motif-gene-correaltion-pairs.tsv"))
+mg <- as.character(unique(dp[motif == mo]$gene))
 ```
 
 Calculate interaction score (IS) between a TF and potential target genes
@@ -892,6 +898,10 @@ ftp_tf <- c(
 )[tg]
 
 # motif score in peaks of target genes
+scor_mc <- structure(
+  scor_mo[sample == sm]$motif_score_quantile,
+  names = scor_mo[sample == sm]$gene
+)
 nsc_tg <- setdiff(tg, names(scor_mc))
 scr_tf <- c(
   scor_mc[intersect(tg, names(scor_mc))],
@@ -917,17 +927,30 @@ is_list <- list(
 is_dt <- rbindlist(sapply(names(is_list), function(x) {
   data.table(gene = names(is_list[[x]]), is = is_list[[x]])
 }, USE.NAMES = TRUE, simplify = FALSE), idcol = "group")
+is_dt[, TPM_tg := tpm_tg[gene]][, TPM_tf := tpm_tf]
+is_dt[, motif_quantile_score := scr_tf[gene]]
+is_dt[, footprint_score := ftp_tf[gene]]
+is_dt[, motif_enrichment_fc := enr_fc]
+is_dt[, motif_enrichment_minuslog10_q_value := enr_qv]
 is_dt[, group := factor(group, levels = names(is_list))]
 is_ann <- merge.data.table(
   is_dt, gene_ann, by = "gene",
   all.x = TRUE, sort = FALSE
 )
 setorder(is_ann, group, -is)
+fwrite(is_ann, file.path(res_dir, sprintf(
+  "motif-%s-sample-%s-interaction-scores.tsv", mo, sm
+)), sep = "\t")
 ```
 
 Check distribution of IS
 
 ```{r}
+is_ann <- fread(file.path(res_dir, sprintf(
+  "motif-%s-sample-%s-interaction-scores.tsv", mo, sm
+)))
+#is_ann <- is_ann[motif_quantile_score > 0]
+
 # favourite genes pfams list
 pfam_list <- list(
   flagellar = c(
@@ -964,12 +987,44 @@ interaction_labeller <- function(variable, value) {
 }
 
 gp_is <- ggplot(is_ann, aes(is)) +
-  geom_density() +
+  #geom_histogram(bins = 100, color = "white") +
+  geom_density(aes(color = motif_quantile_score > 0)) +
   geom_rug(data = is_ann[flagellar == TRUE], sides = "b", alpha = 0.5) +
-  facet_wrap(. ~ group, scales = "free_y", labeller = interaction_labeller) +
+  scale_x_continuous(limits = c(0, 1)) +
+  facet_wrap(. ~ group, labeller = interaction_labeller) +
   labs(x = "interaction score") +
-  theme(panel.grid.major = element_line(linewidth = 0.1))
+  theme(
+    panel.grid.major = element_line(linewidth = 0.1),
+    legend.position = "bottom"
+  )
 gp_is
+
+gp_is_qs <- ggplot(
+  is_ann[grep("qscore", group)],
+  aes(is, motif_quantile_score)
+) +
+  geom_point(alpha = 0.6) +
+  facet_wrap(. ~ group, scales = "free_y", labeller = interaction_labeller) +
+  labs(x = "interaction score", y = "motif quantile score") +
+  theme(panel.grid.major = element_line(linewidth = 0.1))
+
+gp_is_fpm <- ggplot(
+  is_ann[grep("footprint", group)],
+  aes(is, TPM_tg)
+) +
+  geom_point(alpha = 0.6) +
+  facet_wrap(. ~ group, scales = "free_y", labeller = interaction_labeller) +
+  labs(x = "interaction score", y = "footprint score") +
+  theme(panel.grid.major = element_line(linewidth = 0.1))
+
+gp_is_tpm <- ggplot(
+  is_ann,
+  aes(is, TPM_tg)
+) +
+  geom_point(alpha = 0.6) +
+  facet_wrap(. ~ group, scales = "free_y", labeller = interaction_labeller) +
+  labs(x = "interaction score", y = "target gene TPM") +
+  theme(panel.grid.major = element_line(linewidth = 0.1))
 ```
 
 ```{r include=FALSE, eval=TRUE}
@@ -978,9 +1033,41 @@ pdf(file.path(fig_dir, sprintf(
 )), width = 16, height = 16)
 gp_is
 dev.off()
+
+pdf(file.path(fig_dir, sprintf(
+  "motif-%s-sample-%s-interaction-scores-correlation.pdf", mo, sm
+)), width = 16, height = 14)
+gp_is_qs
+gp_is_ft
+gp_is_tpm
+dev.off()
 ```
 
 Compare top genes in each IS calculation
 ```{r}
-is_ann[, .SD[1:500], group][, .N, .(group, flagellar)][order(group, flagellar)]
+is_ann <- is_ann[motif_quantile_score > 0]
+
+is_ann[group == "footprint"][order(-is)]
+is_ann[group == "qscore"][order(-is)]
+is_ann[group == "footprint_qscore"][order(-is)]
+
+is_dt <- unique(is_ann[, .(group, gene, is, flagellar)])
+is_dt <- dcast.data.table(is_dt, gene + flagellar ~ group, value.var = "is")
+
+gp_is_qs <- ggplot(
+  is_dt,
+  aes(footprint, qscore)
+) +
+  geom_point(alpha = 0.6) +
+  theme(panel.grid.major = element_line(linewidth = 0.1))
+```
+
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, sprintf(
+  "motif-%s-sample-%s-interaction-scores-comparison.pdf", mo, sm
+)), width = 8, height = 8)
+gp_is_qs
+dev.off()
+
 ```

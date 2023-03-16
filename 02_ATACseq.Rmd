@@ -2465,6 +2465,17 @@ expr_mt <- read.table(
 )
 expr_genes <- apply(expr_mt, 2, function(x) rownames(expr_mt)[x > 1])
 
+# peaks in clusters
+pks_clusters <- fread(
+  file.path(res_dir, "consensusSeekeR-peaks-clusters.bed")
+)[, c(4, 8)]
+setnames(pks_clusters, c("peak", "cluster"))
+smp_clusters <- list(
+  "Elav_pos" = c("G1", "G2", "G5", "G6"),
+  "Fox_pos" = c("G2", "G3", "G4", "G5"),
+  "Ncol_pos" = c("G4", "G5", "G6", "G7")
+)
+
 # motif scores
 mta_scores_mona <- readRDS(
   file.path(res_dir, "motif-scores-archetypes-mona.rds")
@@ -2480,15 +2491,25 @@ bg_samples <- unlist(lapply(fg_samples, function(x) {
   str_replace(x, as.character(i), as.character(i + 1))
 }))
 enr_list <- lapply(seq_along(fg_samples), function(i) {
+
+  # version 1
   peaks_fg <- peaks_gr[peaks_gr$gene %in% expr_genes[[fg_samples[i]]]]
   peaks_bg <- peaks_gr[peaks_gr$gene %in% expr_genes[[bg_samples[i]]]]
+
+  # version 2
+  sm <- paste0(str_extract(fg_samples[i], "Elav|Fox|Ncol"), "_pos")
+  peaks_fg <- peaks_gr[
+    peaks_gr$name %in%
+    pks_clusters[cluster %in% smp_clusters[[sm]]]$peak
+  ]
+
   enr_df <- mta_motif_enrichment_test(
     sites_object = sites_gr,
     peaks_object = peaks_all,
     fg_list = peaks_fg$name,
     # bg_list = peaks_bg$name,
     bg_list = peaks_all[!peaks_all$name %in% peaks_fg$peak]$peak,
-    thresholds_vector = NULL, # mta_scores_mona$score_quantiles[,"0.95"],
+    thresholds_vector = NULL,
     label = fg_samples[i],
     nthreads = 2,
     pval_adjust = "BH"
@@ -2534,8 +2555,8 @@ enr_list <- lapply(as.character(levels(pks$group)), function(g) {
   enr_df <- mta_motif_enrichment_test(
     sites_object = sites_gr,
     peaks_object = peaks_gr,
-    fg_list = peaks_gr[peaks_gr$name %in% pks[group==g]$peak]$name,
-    bg_list = peaks_gr[!peaks_gr$name %in% pks[group==g]$peak]$name,
+    fg_list = peaks_gr[peaks_gr$name %in% pks[group == g]$peak]$name,
+    bg_list = peaks_gr[!peaks_gr$name %in% pks[group == g]$peak]$name,
     thresholds_vector = NULL, # mta_scores_mona$score_quantiles[,"0.95"],
     label = g,
     nthreads = 2,
@@ -2558,7 +2579,7 @@ fwrite(
 Motif enrichment heatmap
 
 ```{r fig.height=26, fig.width=12}
-enr_group <- "samples"
+enr_group <- "samples-v2"
 
 # enrichment scores
 dt <- fread(
@@ -2739,7 +2760,7 @@ gp
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "motifs-groups-heatmap.pdf"),
+  file.path(fig_dir, sprintf("motifs-%s-heatmap.pdf", enr_group)),
   width = 12,
   height = 36
 )
