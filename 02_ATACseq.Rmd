@@ -1754,6 +1754,21 @@ universalmotif::write_meme(
   overwrite = TRUE
 )
 
+# save motifs in multiple bins for TOBIAS BINDetect (open files limit)
+bins <- cut(
+  seq_along(arch_list_nm),
+  breaks = seq(0, by = 5e2, length.out = 1e3)
+)[seq_along(arch_list_nm)]
+for (i in seq_along(unique(bins))) {
+  message(i)
+  lvl <- unique(bins)[i]
+  universalmotif::write_meme(
+    motifs = arch_list_nm[bins == lvl],
+    file = sprintf("ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms-bin%s.meme", i),
+    #file = str_replace(arch_file, ".rds$", sprintf("-pwms-bin%s.meme", i)),
+    overwrite = TRUE
+  )
+}
 ```
 
 Plot heatmap of similarity of all motifs used in archetyping (i.e. motifs after filtering), with archetyping clusters indicated.
@@ -2366,7 +2381,8 @@ gp_orp
 dev.off()
 ```
 
-### Motif scores in peaks
+
+## Motif scores in peaks
 
 Score archetype motifs in consensus peaks
 
@@ -2768,7 +2784,7 @@ gp
 dev.off()
 ```
 
-### Mapping archetypes and TFs based on score and gene expression in groups
+## Mapping archetypes and TFs based on score and gene expression in groups
 
 Match by TF expression and motif enrichment in groups.
 
@@ -3534,6 +3550,8 @@ TOBIAS PlotAggregate --TFBS ${peaks} \
 
 ```
 
+### TOBIAS motif scores
+
 Combine motif scores and footprint scores to determine motif binding. 
 
 ```{bash eval=FALSE}
@@ -3547,26 +3565,32 @@ motifs="ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8
 genome="genome/Nvec_vc1.1_gDNA.fasta"
 nth=12
 
-for line in Fox Elav Ncol
+# have to split motifs in three files because of open file limit
+for x in {1..6}
 do
   
-  mkdir ${out_dir}/${line}
-  echo $(date) "- Starting BINDetect for" ${line} 
+  line1=Fox
+  line2=Elav
+  line3=Ncol
+  motifs="ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms-bin"${x}".meme"
+  mkdir ${out_dir}/${x}
+  echo $(date) "- Starting BINDetect for" ${x} 
 
   TOBIAS BINDetect \
     --motifs ${motifs} \
     --signals \
-      ${bwg_dir}/${line}_pos_footprints.bw \
-      ${bwg_dir}/${line}_neg_footprints.bw \
+      ${bwg_dir}/${line1}_pos_footprints.bw \
+      ${bwg_dir}/${line2}_pos_footprints.bw \
+      ${bwg_dir}/${line3}_pos_footprints.bw \
     --genome ${genome} \
     --peaks ${peaks} \
-    --outdir ${out_dir}/${line} \
-    --cond_names ${line}_pos ${line}_neg \
+    --outdir ${out_dir}/${x} \
+    --cond_names ${line1} ${line2} ${line3} \
     --cores ${nth}
 
 done
 
-
+# plot something, idk
 bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/ATACorrect"
 line=Elav
 mots="ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3 ARCH2465_POU1F1_POU4F3_POU4F2"
@@ -3588,6 +3612,154 @@ do
 done
 
 ```
+
+Combine motif binding scores 
+
+```{r}
+bind_dt <- rbindlist(lapply(1:6, function(x) {
+  fn <- list.files(
+    file.path("ATACSEQ/nucleosome_free_regions/footprint/BINDetect/", x),
+    pattern = "bindetect_results.txt", full.names = TRUE
+  )
+  dt <- fread(fn)
+  dt[, name := NULL]
+  dt[, output_prefix := NULL]
+  dt[, cluster := NULL]
+  dt
+}))
+fwrite(bind_dt, file.path(
+  "ATACSEQ/nucleosome_free_regions/footprint/BINDetect/bindetect_results.txt"
+), sep = "\t")
+```
+
+Plot volcano
+
+```{r}
+bind_dt <- fread(file.path(
+  "ATACSEQ/nucleosome_free_regions/footprint/BINDetect/bindetect_results.txt"
+))
+comparas <- list(
+  c("Fox", "Elav"),
+  c("Fox", "Ncol"),
+  c("Elav", "Ncol")
+)
+# volcano plots
+gpv_list <- lapply(comparas, function(x) {
+  cols <- c(
+    "motif_id",
+    sprintf("%s_%s_change", x[[1]], x[[2]]),
+    sprintf("%s_%s_pvalue", x[[1]], x[[2]])
+  )
+  dt <- unique(bind_dt[, ..cols])
+  setnames(dt, c("motif", "log2FoldChange", "pvalue"))
+  dt[, motif_label := str_remove(motif, "ARCH\\d+_")]
+  dt[, motif_label := strtrim(motif_label, 30)]
+  ggplotVolcano(
+    dt,
+    padj_thr = NULL, pval_thr = 0.05,
+    lfc_thr = 0.2,
+    sign_col = c("red", "blue"),
+    lims_fc = c(-0.5, 0.5),
+    lims_sig = c(0, 150),
+    title = sprintf("%s vs %s", x[[1]], x[[2]]),
+    xlab = "differential binding score",
+    y = "-log10(p value)",
+    label_column = "motif_label",
+    label_fc_thr = 0.2
+  ) +
+    theme(panel.grid.major = element_line(color = "gray", linewidth = 0.2))
+})
+
+gpv <- (wrap_plots(gpv_list, nrow = 1) & theme(legend.position = "bottom")) +
+  plot_layout(guides = "collect")
+gpv
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "BINDetect.pdf"),
+  width = 24, height = 8
+)
+gpv
+dev.off()
+```
+
+Plot heatmaps
+
+```{r}
+bind_dt <- fread(file.path(
+  "ATACSEQ/nucleosome_free_regions/footprint/BINDetect/bindetect_results.txt"
+))
+comparas <- list(
+  c("Fox", "Elav"),
+  c("Fox", "Ncol"),
+  c("Elav", "Ncol")
+)
+
+# heatmaps
+hm_dt <- rbindlist(lapply(comparas, function(x) {
+  cols <- c(
+    "motif_id",
+    sprintf("%s_%s_change", x[[1]], x[[2]]),
+    sprintf("%s_%s_pvalue", x[[1]], x[[2]])
+  )
+  dt <- unique(bind_dt[, ..cols])
+  setnames(dt, c("motif", "log2FoldChange", "pvalue"))
+  setorder(dt, pvalue)
+  dt[, motif_label := strtrim(motif, 30)]
+  dt[, motif_label := factor(motif_label, levels = unique(dt$motif_label))]
+  dt[, compara := sprintf("%s_%s", x[[1]], x[[2]])]
+  dt
+}))
+hm_dt[, minuslog10pvalue := -1 * log10(pvalue)]
+mots <- hm_dt[abs(log2FoldChange) > 0.2]$motif
+hm_dt <- hm_dt[motif %in% mots]
+
+gpv_dt <- dcast.data.table(
+  hm_dt, motif ~ compara, value.var = "log2FoldChange"
+)
+gpv_mt <- as.matrix(gpv_dt[, -1])
+rownames(gpv_mt) <- unique(gpv_dt$motif)
+mord <- rev(order(apply(gpv_mt, 1, which.max)))
+hm_dt[, motif := factor(motif, levels = rownames(gpv_mt)[mord])]
+setorder(hm_dt, motif)
+
+gp_dot <- ggplot(hm_dt, aes(
+  compara, motif_label,
+  size = minuslog10pvalue, fill = log2FoldChange
+)) +
+  geom_point(shape = 21) +
+  scale_fill_gradientn(
+    colours = colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000),
+    limits = c(-0.35, 0.35), oob = scales::squish, breaks = c(-0.3, 0, 0.3),
+    name = "log2(fold change)",
+  ) +
+  scale_size_continuous(
+    name = "-log10(q value)",
+    range = c(1, 7),
+    breaks = c(10, 50, 100, 150)
+  ) +
+  theme(
+    panel.grid.major = element_line(size = 0.25),
+    axis.text.y = element_text(size = 10),
+    axis.text.x = element_text(size = 10, angle = 90, vjust = 0.5, hjust = 1),
+    legend.direction = "vertical"
+  )
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "BINDetect_motifs.pdf"),
+  width = 7, height = 26
+)
+gp_dot
+dev.off()
+```
+
+
+### Quantile based motif scores
 
 Use quantile based motif scores (instead of motif scoring inplemented in TOBIAS BINDetect) to determine motif binding.
 
