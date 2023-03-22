@@ -52,6 +52,7 @@ pks_dir <- file.path(dat_dir, "macs2_peaks")
 cns_dir <- file.path(dat_dir, "consensus_peaks")
 hom_dir <- file.path(dat_dir, "homer")
 ftp_dir <- file.path(dat_dir, "footprint")
+bind_dir <- file.path(dat_dir, "footprint", "BINDetect")
 res_dir <- file.path(dat_dir, "results")
 fig_dir <- file.path(dat_dir, "plots")
 for (newdir in c(cns_dir, hom_dir, res_dir, fig_dir))
@@ -136,11 +137,7 @@ chrList <- Seqinfo(
     seqnames = seqnames(BSgenome.jaNemVect1.1.DToL.Assembly),
     seqlengths = seqlengths(BSgenome.jaNemVect1.1.DToL.Assembly),
     isCircular = c(
-      rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly))-1),
-      TRUE
-    ),
-    isCircular = c(
-      rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly))-1),
+      rep(FALSE, length(seqnames(BSgenome.jaNemVect1.1.DToL.Assembly)) - 1),
       TRUE
     ),
     genome = "jaNemVect1.1"
@@ -3565,7 +3562,7 @@ motifs="ATACSEQ/nucleosome_free_regions/results/motif-archetypes-PPM-PCCnorm-0.8
 genome="genome/Nvec_vc1.1_gDNA.fasta"
 nth=12
 
-# have to split motifs in three files because of open file limit
+# have to split motifs in multiple files because of the open file limit
 for x in {1..6}
 do
   
@@ -3580,16 +3577,24 @@ do
     --motifs ${motifs} \
     --signals \
       ${bwg_dir}/${line1}_pos_footprints.bw \
+      ${bwg_dir}/${line1}_neg_footprints.bw \
       ${bwg_dir}/${line2}_pos_footprints.bw \
+      ${bwg_dir}/${line2}_neg_footprints.bw \
       ${bwg_dir}/${line3}_pos_footprints.bw \
+      ${bwg_dir}/${line3}_neg_footprints.bw \
     --genome ${genome} \
     --peaks ${peaks} \
     --outdir ${out_dir}/${x} \
-    --cond_names ${line1} ${line2} ${line3} \
+    --cond_names \
+      ${line1}_pos ${line1}_neg \
+      ${line2}_pos ${line2}_neg \
+      ${line3}_pos ${line3}_neg \
     --cores ${nth}
 
 done
+```
 
+```{bash, eval=FALSE, include=FALSE}
 # plot something, idk
 bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/ATACorrect"
 line=Elav
@@ -3616,9 +3621,10 @@ done
 Combine motif binding scores 
 
 ```{r}
+bind_dir <- file.path(dat_dir, "footprint", "BINDetect")
 bind_dt <- rbindlist(lapply(1:6, function(x) {
   fn <- list.files(
-    file.path("ATACSEQ/nucleosome_free_regions/footprint/BINDetect/", x),
+    file.path(bind_dir, x),
     pattern = "bindetect_results.txt", full.names = TRUE
   )
   dt <- fread(fn)
@@ -3628,7 +3634,7 @@ bind_dt <- rbindlist(lapply(1:6, function(x) {
   dt
 }))
 fwrite(bind_dt, file.path(
-  "ATACSEQ/nucleosome_free_regions/footprint/BINDetect/bindetect_results.txt"
+  bind_dir, "bindetect_results.txt"
 ), sep = "\t")
 ```
 
@@ -3636,12 +3642,15 @@ Plot volcano
 
 ```{r}
 bind_dt <- fread(file.path(
-  "ATACSEQ/nucleosome_free_regions/footprint/BINDetect/bindetect_results.txt"
+  bind_dir, "bindetect_results.txt"
 ))
 comparas <- list(
-  c("Fox", "Elav"),
-  c("Fox", "Ncol"),
-  c("Elav", "Ncol")
+  c("Fox_pos", "Fox_neg"),
+  c("Elav_pos", "Elav_neg"),
+  c("Ncol_pos", "Ncol_neg"),
+  c("Fox_pos", "Elav_pos"),
+  c("Fox_pos", "Ncol_pos"),
+  c("Elav_pos", "Ncol_pos")
 )
 # volcano plots
 gpv_list <- lapply(comparas, function(x) {
@@ -3664,13 +3673,13 @@ gpv_list <- lapply(comparas, function(x) {
     title = sprintf("%s vs %s", x[[1]], x[[2]]),
     xlab = "differential binding score",
     y = "-log10(p value)",
-    label_column = "motif_label",
+    #label_column = "motif_label",
     label_fc_thr = 0.2
   ) +
     theme(panel.grid.major = element_line(color = "gray", linewidth = 0.2))
 })
 
-gpv <- (wrap_plots(gpv_list, nrow = 1) & theme(legend.position = "bottom")) +
+gpv <- (wrap_plots(gpv_list, nrow = 2) & theme(legend.position = "bottom")) +
   plot_layout(guides = "collect")
 gpv
 
@@ -3679,54 +3688,183 @@ gpv
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "BINDetect.pdf"),
-  width = 24, height = 8
+  width = 12, height = 8
 )
 gpv
 dev.off()
 ```
 
-Plot heatmaps
+Bound targets for identified significant motifs
 
 ```{r}
-bind_dt <- fread(file.path(
-  "ATACSEQ/nucleosome_free_regions/footprint/BINDetect/bindetect_results.txt"
-))
-comparas <- list(
-  c("Fox", "Elav"),
-  c("Fox", "Ncol"),
-  c("Elav", "Ncol")
-)
-
-# heatmaps
-hm_dt <- rbindlist(lapply(comparas, function(x) {
-  cols <- c(
-    "motif_id",
-    sprintf("%s_%s_change", x[[1]], x[[2]]),
-    sprintf("%s_%s_pvalue", x[[1]], x[[2]])
-  )
-  dt <- unique(bind_dt[, ..cols])
-  setnames(dt, c("motif", "log2FoldChange", "pvalue"))
-  setorder(dt, pvalue)
-  dt[, motif_label := strtrim(motif, 30)]
-  dt[, motif_label := factor(motif_label, levels = unique(dt$motif_label))]
-  dt[, compara := sprintf("%s_%s", x[[1]], x[[2]])]
-  dt
+bound_dt <- rbindlist(lapply(1:6, function(x) {
+  message(x)
+  mot_dirs <- list.dirs(file.path(bind_dir, x), recursive = FALSE)
+  mot_dirs <- grep("ARCH", mot_dirs, value = TRUE)
+  mot <- str_remove(basename(mot_dirs), "^_")
+  names(mot_dirs) <- mot
+  rbindlist(sapply(mot, function(m) {
+    message(m)
+    fns <- list.files(
+      file.path(mot_dirs[m], "beds"),
+      pattern = "_bound.bed",
+      full.names = TRUE
+    )
+    names(fns) <- str_extract(basename(fns), "(Elav|Fox|Ncol)_(pos|neg)")
+    rbindlist(sapply(names(fns), function(fn) {
+      fread(fns[fn])
+    }, USE.NAMES = TRUE, simplify = FALSE), idcol = "sample")
+  }, simplify = FALSE, USE.NAMES = TRUE))
 }))
-hm_dt[, minuslog10pvalue := -1 * log10(pvalue)]
-mots <- hm_dt[abs(log2FoldChange) > 0.2]$motif
-hm_dt <- hm_dt[motif %in% mots]
+bound_dt[, V11 := V13][, V13 := NULL]
+bed_cols <- c(
+  "seqnames", "start", "end", "motif", "score", "strand",
+  "seqnames_peak", "start_peak", "end_peak",
+  "peak", "peak_score", "peak_strand"
+)
+setnames(bound_dt, c("sample", bed_cols))
+bound_dt[, motif := str_remove(motif, "^_")]
 
+# save
+fwrite(
+  bound_dt,
+  file.path(bind_dir, "motifs_bound.tsv.gz"),
+  sep = "\t"
+)
+```
+
+Networks
+
+```{r}
+# load motif binding in peaks
+bound_dt <- fread(file.path(bind_dir, "motifs_bound.tsv.gz"))
+# load peak assignment to genes
+assign <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
+# combine
+bound_genes <- merge.data.table(
+  bound_dt, unique(assign[, .(peak, gene)]), by = "peak",
+  all.x = TRUE, allow.cartesian = TRUE, sort = FALSE
+)
+bound_genes[, sample := factor(sample, levels = c(
+  "Elav_pos", "Elav_neg",
+  "Fox_pos", "Fox_neg",
+  "Ncol_pos", "Ncol_neg"
+))]
+setcolorder(bound_genes, c(colnames(bound_dt), "gene"))
+
+# how many target genes for each TF?
+hits_dt <- unique(bound_genes[, .(sample, motif, gene)])
+hits_dt <- hits_dt[, .N, .(motif, sample)]
+
+hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  scale_fill_manual(values = line_cond_cols) +
+  labs(y = "number of target genes per TF") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none"
+  )
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "BINDetect_motif_target_hits.pdf"),
+  width = 5, height = 7
+)
+hits_gp
+dev.off()
+```
+
+For differential motifs, look at their targets
+
+```{r}
+# load diff motif binding results
+hm_dt <- fread(file.path(bind_dir, "bindetect_results_significant.txt"))
+
+# get motifs from all comparisons per line
+diff_mots_dt <- rbindlist(sapply(c("Elav", "Fox", "Ncol"), function(smp) {
+  # select motifs from comparison with neg control
+  dt_crt <- hm_dt[compara == sprintf("%s_pos_%s_neg", smp, smp)]
+  # select motifs from comparison with other lines
+  if (smp == "Elav") {
+    dt_dif <- rbindlist(list(
+      "neg" = dt_crt,
+      "Fox" = hm_dt[compara == "Fox_pos_Elav_pos"][
+        , log2FoldChange := -1 * log2FoldChange],
+      "Ncol" = hm_dt[compara == "Elav_pos_Ncol_pos"]
+    ), idcol = "vs")
+  } else if (smp == "Fox") {
+    dt_dif <- rbindlist(list(
+      "neg" = dt_crt,
+      "Elav" = hm_dt[compara == "Fox_pos_Elav_pos"],
+      "Ncol" = hm_dt[compara == "Fox_pos_Ncol_pos"]
+    ), idcol = "vs")
+  } else if (smp == "Ncol") {
+    dt_dif <- rbindlist(list(
+      "neg" = dt_crt,
+      "Fox" = hm_dt[compara == "Fox_pos_Ncol_pos"][
+        , log2FoldChange := -1 * log2FoldChange],
+      "Elav" = hm_dt[compara == "Elav_pos_Ncol_pos"][
+        , log2FoldChange := -1 * log2FoldChange]
+    ), idcol = "vs")
+  }
+  dt_dif[, compara := NULL]
+  setcolorder(dt_dif, c(
+    "vs", "motif", "motif_label",
+    "log2FoldChange", "pvalue", "minuslog10pvalue"
+  ))
+  dt_dif
+}, USE.NAMES = TRUE, simplify = FALSE), idcol = "reporterline")
+
+fwrite(
+  diff_mots_dt,
+  file.path(bind_dir, "bindetect_results_reporterline.txt"),
+  sep = "\t"
+)
+```
+
+Plot dotplot
+
+```{r}
+diff_mots_dt <- fread(file.path(
+  bind_dir, "bindetect_results_reporterline.txt"
+))
+
+# significant
+pval_thr <- 0.05
+fc_thr <- 0.2
+siginifcant_mots <- diff_mots_dt[
+  pvalue < pval_thr & abs(log2FoldChange) > fc_thr
+]$motif
+dp_dt <- diff_mots_dt[motif %in% siginifcant_mots]
+dp_dt[, id := paste(reporterline, vs, sep = " vs ")]
+
+# order samples
+dp_dt[, reporterline := factor(reporterline, levels = c("Elav", "Fox", "Ncol"))]
+dp_dt[, vs := factor(vs, levels = c("neg", "Elav", "Fox", "Ncol"))]
+lv_dt <- CJ(
+  levels(dp_dt$reporterline),
+  levels(dp_dt$vs)
+)[V1 != V2][, id := paste(V1, V2, sep = " vs ")]
+lv_dt[, V1 := factor(V1, levels = c("Elav", "Fox", "Ncol"))]
+lv_dt[, V2 := factor(V2, levels = c("neg", "Elav", "Fox", "Ncol"))]
+setorder(lv_dt, V1, V2)
+dp_dt[, id := factor(id, levels = lv_dt$id)]
+
+# order motifs
 gpv_dt <- dcast.data.table(
-  hm_dt, motif ~ compara, value.var = "log2FoldChange"
+  dp_dt, motif ~ id, value.var = "log2FoldChange"
 )
 gpv_mt <- as.matrix(gpv_dt[, -1])
 rownames(gpv_mt) <- unique(gpv_dt$motif)
 mord <- rev(order(apply(gpv_mt, 1, which.max)))
-hm_dt[, motif := factor(motif, levels = rownames(gpv_mt)[mord])]
-setorder(hm_dt, motif)
+dp_dt[, motif := factor(motif, levels = rownames(gpv_mt)[mord])]
+setorder(dp_dt, id, motif)
 
-gp_dot <- ggplot(hm_dt, aes(
-  compara, motif_label,
+gp_dot <- ggplot(dp_dt, aes(
+  id, motif_label,
   size = minuslog10pvalue, fill = log2FoldChange
 )) +
   geom_point(shape = 21) +
@@ -3744,20 +3882,21 @@ gp_dot <- ggplot(hm_dt, aes(
     panel.grid.major = element_line(size = 0.25),
     axis.text.y = element_text(size = 10),
     axis.text.x = element_text(size = 10, angle = 90, vjust = 0.5, hjust = 1),
+    axis.title.x = element_blank(),
     legend.direction = "vertical"
-  )
+  ) +
+  facet_grid(. ~ reporterline, scales = "free")
 
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "BINDetect_motifs.pdf"),
-  width = 7, height = 26
+  width = 10, height = 46
 )
 gp_dot
 dev.off()
 ```
-
 
 ### Quantile based motif scores
 
