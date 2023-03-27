@@ -40,6 +40,7 @@ library(universalmotif)
 library(monaLisa)
 library(rtracklayer)
 library(eulerr)
+library(ComplexUpset)
 source("../motif-analysis/mta_downstream_functions.R")
 source("functions.R")
 ```
@@ -3549,6 +3550,8 @@ TOBIAS PlotAggregate --TFBS ${peaks} \
 
 ### TOBIAS motif scores
 
+#### Motif binding
+
 Combine motif scores and footprint scores to determine motif binding. 
 
 ```{bash eval=FALSE}
@@ -3620,7 +3623,7 @@ done
 
 Combine motif binding scores 
 
-```{r}
+```{r eval=FALSE}
 bind_dir <- file.path(dat_dir, "footprint", "BINDetect")
 bind_dt <- rbindlist(lapply(1:6, function(x) {
   fn <- list.files(
@@ -3638,7 +3641,7 @@ fwrite(bind_dt, file.path(
 ), sep = "\t")
 ```
 
-Plot volcano
+Volcano plots
 
 ```{r}
 bind_dt <- fread(file.path(
@@ -3694,92 +3697,9 @@ gpv
 dev.off()
 ```
 
-Bound targets for identified significant motifs
+Parse all binding scores per sample (from all comparisons)
 
-```{r}
-bound_dt <- rbindlist(lapply(1:6, function(x) {
-  message(x)
-  mot_dirs <- list.dirs(file.path(bind_dir, x), recursive = FALSE)
-  mot_dirs <- grep("ARCH", mot_dirs, value = TRUE)
-  mot <- str_remove(basename(mot_dirs), "^_")
-  names(mot_dirs) <- mot
-  rbindlist(sapply(mot, function(m) {
-    message(m)
-    fns <- list.files(
-      file.path(mot_dirs[m], "beds"),
-      pattern = "_bound.bed",
-      full.names = TRUE
-    )
-    names(fns) <- str_extract(basename(fns), "(Elav|Fox|Ncol)_(pos|neg)")
-    rbindlist(sapply(names(fns), function(fn) {
-      fread(fns[fn])
-    }, USE.NAMES = TRUE, simplify = FALSE), idcol = "sample")
-  }, simplify = FALSE, USE.NAMES = TRUE))
-}))
-bound_dt[, V11 := V13][, V13 := NULL]
-bed_cols <- c(
-  "seqnames", "start", "end", "motif", "score", "strand",
-  "seqnames_peak", "start_peak", "end_peak",
-  "peak", "peak_score", "peak_strand"
-)
-setnames(bound_dt, c("sample", bed_cols))
-bound_dt[, motif := str_remove(motif, "^_")]
-
-# save
-fwrite(
-  bound_dt,
-  file.path(bind_dir, "motifs_bound.tsv.gz"),
-  sep = "\t"
-)
-```
-
-Networks
-
-```{r}
-# load motif binding in peaks
-bound_dt <- fread(file.path(bind_dir, "motifs_bound.tsv.gz"))
-# load peak assignment to genes
-assign <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
-# combine
-bound_genes <- merge.data.table(
-  bound_dt, unique(assign[, .(peak, gene)]), by = "peak",
-  all.x = TRUE, allow.cartesian = TRUE, sort = FALSE
-)
-bound_genes[, sample := factor(sample, levels = c(
-  "Elav_pos", "Elav_neg",
-  "Fox_pos", "Fox_neg",
-  "Ncol_pos", "Ncol_neg"
-))]
-setcolorder(bound_genes, c(colnames(bound_dt), "gene"))
-
-# how many target genes for each TF?
-hits_dt <- unique(bound_genes[, .(sample, motif, gene)])
-hits_dt <- hits_dt[, .N, .(motif, sample)]
-
-hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
-  geom_boxplot() +
-  scale_y_log10() +
-  scale_fill_manual(values = line_cond_cols) +
-  labs(y = "number of target genes per TF") +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-    legend.position = "none"
-  )
-
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(
-  file.path(fig_dir, "BINDetect_motif_target_hits.pdf"),
-  width = 5, height = 7
-)
-hits_gp
-dev.off()
-```
-
-For differential motifs, look at their targets
-
-```{r}
+```{r eval=FALSE}
 # load diff motif binding results
 hm_dt <- fread(file.path(bind_dir, "bindetect_results_significant.txt"))
 
@@ -3895,6 +3815,189 @@ pdf(
   width = 10, height = 46
 )
 gp_dot
+dev.off()
+```
+
+#### Networks
+
+Parse bound files for all motifs
+
+```{r eval=FALSE}
+bound_dt <- rbindlist(lapply(1:6, function(x) {
+  message(x)
+  mot_dirs <- list.dirs(file.path(bind_dir, x), recursive = FALSE)
+  mot_dirs <- grep("ARCH", mot_dirs, value = TRUE)
+  mot <- str_remove(basename(mot_dirs), "^_")
+  names(mot_dirs) <- mot
+  rbindlist(sapply(mot, function(m) {
+    message(m)
+    fns <- list.files(
+      file.path(mot_dirs[m], "beds"),
+      pattern = "_bound.bed",
+      full.names = TRUE
+    )
+    names(fns) <- str_extract(basename(fns), "(Elav|Fox|Ncol)_(pos|neg)")
+    rbindlist(sapply(names(fns), function(fn) {
+      fread(fns[fn])
+    }, USE.NAMES = TRUE, simplify = FALSE), idcol = "sample")
+  }, simplify = FALSE, USE.NAMES = TRUE))
+}))
+bound_dt[, V11 := V13][, V13 := NULL]
+bed_cols <- c(
+  "seqnames", "start", "end", "motif", "score", "strand",
+  "seqnames_peak", "start_peak", "end_peak",
+  "peak", "peak_score", "peak_strand"
+)
+setnames(bound_dt, c("sample", bed_cols))
+bound_dt[, motif := str_remove(motif, "^_")]
+
+# save
+fwrite(
+  bound_dt,
+  file.path(bind_dir, "motifs_bound.tsv.gz"),
+  sep = "\t"
+)
+```
+
+Networks stats
+
+```{r}
+# load motif binding in peaks
+bound_dt <- fread(file.path(bind_dir, "motifs_bound.tsv.gz"))
+# load peak assignment to genes
+assign <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
+# combine
+bound_genes <- merge.data.table(
+  bound_dt, unique(assign[, .(peak, gene)]), by = "peak",
+  all.x = TRUE, allow.cartesian = TRUE, sort = FALSE
+)
+bound_genes <- bound_genes[!is.na(gene)]
+bound_genes[, sample := factor(sample, levels = c(
+  "Elav_pos", "Elav_neg",
+  "Fox_pos", "Fox_neg",
+  "Ncol_pos", "Ncol_neg"
+))]
+setcolorder(bound_genes, c(colnames(bound_dt), "gene"))
+
+# how many target genes for each TF?
+hits_dt <- unique(bound_genes[, .(sample, motif, gene)])
+hits_dt <- hits_dt[, .N, .(motif, sample)]
+
+hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  scale_fill_manual(values = line_cond_cols) +
+  labs(y = "number of target genes per TF") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "BINDetect_motif_target_hits.pdf"),
+  width = 5, height = 7
+)
+hits_gp
+dev.off()
+```
+
+For differential motifs, compare their targets
+
+```{r}
+# parse for plotting
+mo_dt <- unique(bound_genes[order(score)][, .SD[1], .(motif, gene, sample)])
+mo_dt[, n_samples := .N, gene]
+setorder(mo_dt, -n_samples, gene, sample)
+mo_dt[, sample := factor(sample, levels = c(
+  "Ncol_neg", "Fox_neg", "Elav_neg",
+  "Ncol_pos", "Fox_pos", "Elav_pos"
+))]
+
+# motifs to inspect the targets for
+mots <- unique(mo_dt$motif)
+mots <- c(
+  # elav
+  "ARCH2118_Brinker_zf_C2H2_brk_ZNF454",
+  "ARCH63_HOXD11",
+  "ARCH1122_Homeodomains_NKX2_8_Abd_B",
+  "ARCH286_AP_2_Tfap2a_TFAP2C",
+  "ARCH7_GATA2_GATA3_Gata4",
+  "ARCH2076_HLH_PTF1A_Ptf1a",
+  "ARCH815_POU6F2",
+  # fox
+  "ARCH1157_Homeodomains_Hoxa2_Hoxb4",
+  "ARCH1154_RFX_RFX2",
+  # Ncol
+  "ARCH1706_zf_C2H2_CG12605",
+  "ARCH691_HLH_TCF3",
+  "ARCH737_ANTP_HOXA2_ANTP_HOXA3_ANTP_HOXB2_ANTP_HOXB3_ANTP_HOXD3_VSX1",
+  "ARCH2465_POU1F1_POU4F3_POU4F2",
+  "ARCH215_HMGbox_Sox_Sox1",
+  "ARCH2459_LIM_LHX1_LHX2",
+  "ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3",
+  # elav + ncol
+  "ARCH1610_HLH_Tcf4",
+  "ARCH470_RUNX1_RUNX2_RUNX3_RUNX3_RUNX2"
+)
+
+# plot upset diagrams
+up_gps <- lapply(mots, function(mo) {
+  mo_df <- dcast.data.table(
+    mo_dt[motif == mo][, .(gene, sample)][, N := 1],
+    gene ~ sample, value.var = "N"
+  )
+  mo_df[is.na(mo_df)] <- 0
+  class(mo_df) <- "data.frame"
+  rownames(mo_df) <- mo_df$gene
+  mo_df$gene <- NULL
+
+  up_gp <- upset(
+    mo_df, colnames(mo_df),
+    width_ratio = 0.1,
+    min_size = 10,
+    sort_sets = FALSE
+  )
+  up_gp <- upset(
+    mo_df, colnames(mo_df),
+    width_ratio = 0.1,
+    sort_intersections = FALSE,
+    sort_sets = FALSE,
+    intersections = list(
+      c(
+        "Elav_pos", "Fox_pos", "Ncol_pos",
+        "Ncol_neg", "Fox_neg", "Elav_neg"
+      ),
+      "Elav_pos", "Fox_pos", "Ncol_pos",
+      c("Elav_pos", "Fox_pos", "Ncol_pos"),
+      c("Elav_pos", "Fox_pos"),
+      c("Elav_pos", "Ncol_pos"),
+      c("Fox_pos", "Ncol_pos"),
+      c("Elav_pos", "Elav_neg"),
+      c("Fox_pos", "Fox_neg"),
+      c("Ncol_pos", "Ncol_neg")
+    )
+  ) +
+    labs(title = mo)
+})
+```
+```{r}
+fit_eu <- euler(mo_df)
+eul <- plot(
+  fit_eu,
+  quantities = TRUE,
+  main = "significantly upregulated genes"
+)
+eul
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "BINDetect_motif_target_hits_upset.pdf"),
+  width = 10, height = 7
+)
+print(up_gps)
 dev.off()
 ```
 
