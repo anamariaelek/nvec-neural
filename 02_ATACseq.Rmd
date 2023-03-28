@@ -39,7 +39,6 @@ library(parallel)
 library(universalmotif)
 library(monaLisa)
 library(rtracklayer)
-library(eulerr)
 library(ComplexUpset)
 source("../motif-analysis/mta_downstream_functions.R")
 source("functions.R")
@@ -3655,6 +3654,7 @@ comparas <- list(
   c("Fox_pos", "Ncol_pos"),
   c("Elav_pos", "Ncol_pos")
 )
+
 # volcano plots
 gpv_list <- lapply(comparas, function(x) {
   cols <- c(
@@ -3686,6 +3686,24 @@ gpv <- (wrap_plots(gpv_list, nrow = 2) & theme(legend.position = "bottom")) +
   plot_layout(guides = "collect")
 gpv
 
+# parse data
+bind_dt <- rbindlist(lapply(comparas, function(x) {
+  cols <- c(
+    "motif_id",
+    sprintf("%s_%s_change", x[[1]], x[[2]]),
+    sprintf("%s_%s_pvalue", x[[1]], x[[2]])
+  )
+  dt <- unique(bind_dt[, ..cols])
+  setnames(dt, c("motif", "log2FoldChange", "pvalue"))
+  dt[, compara := sprintf("%s_%s", x[[1]], x[[2]])]
+  dt
+}))
+fwrite(bind_dt, file.path(
+  bind_dir, "bindetect_results.txt"
+), sep = "\t")
+fwrite(bind_dt[pvalue < 0.05], file.path(
+  bind_dir, "bindetect_results_significant.txt"
+), sep = "\t")
 ```
 
 ```{r include=FALSE, eval=TRUE}
@@ -3701,7 +3719,8 @@ Parse all binding scores per sample (from all comparisons)
 
 ```{r eval=FALSE}
 # load diff motif binding results
-hm_dt <- fread(file.path(bind_dir, "bindetect_results_significant.txt"))
+hm_dt <- fread(file.path(bind_dir, "bindetect_results.txt"))
+#hm_dt <- fread(file.path(bind_dir, "bindetect_results_significant.txt"))
 
 # get motifs from all comparisons per line
 diff_mots_dt <- rbindlist(sapply(c("Elav", "Fox", "Ncol"), function(smp) {
@@ -3731,10 +3750,7 @@ diff_mots_dt <- rbindlist(sapply(c("Elav", "Fox", "Ncol"), function(smp) {
     ), idcol = "vs")
   }
   dt_dif[, compara := NULL]
-  setcolorder(dt_dif, c(
-    "vs", "motif", "motif_label",
-    "log2FoldChange", "pvalue", "minuslog10pvalue"
-  ))
+  setcolorder(dt_dif, c("vs", "motif", "log2FoldChange", "pvalue"))
   dt_dif
 }, USE.NAMES = TRUE, simplify = FALSE), idcol = "reporterline")
 
@@ -3743,14 +3759,43 @@ fwrite(
   file.path(bind_dir, "bindetect_results_reporterline.txt"),
   sep = "\t"
 )
+#fwrite(
+#  diff_mots_dt,
+#  file.path(bind_dir, "bindetect_results_significant_reporterline.txt"),
+#  sep = "\t"
+#)
 ```
 
 Plot dotplot
 
 ```{r}
+# BINDetect results
 diff_mots_dt <- fread(file.path(
   bind_dir, "bindetect_results_reporterline.txt"
 ))
+
+# motifs dictionary
+# to order motifs by structural class
+dict <- fread(file.path(
+    res_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
+))
+dict_mot <- unique(dict[, .(archetype_name, tf_family, tf_class)])
+setnames(dict_mot, "archetype_name", "motif")
+grep_pairs <- list(
+  "fox" = "Forkhead",
+  "gata" = "GATA",
+  "hox" = "Homeodomains",
+  "mef" = "Mef2",
+  "pax" = "PAX",
+  "pou" = "Pou",
+  "zf_c2h2" = "zf-C2H2"
+)
+for (i in seq_along(grep_pairs)) {
+  dict_mot[
+    grepl(names(grep_pairs)[i], motif, ignore.case = TRUE) & tf_family == "",
+    tf_family := grep_pairs[i]
+  ]
+}
 
 # significant
 pval_thr <- 0.05
@@ -3780,11 +3825,14 @@ gpv_dt <- dcast.data.table(
 gpv_mt <- as.matrix(gpv_dt[, -1])
 rownames(gpv_mt) <- unique(gpv_dt$motif)
 mord <- rev(order(apply(gpv_mt, 1, which.max)))
+mord <- hclust(dist(gpv_mt), method = "ward.D2")$order
 dp_dt[, motif := factor(motif, levels = rownames(gpv_mt)[mord])]
 setorder(dp_dt, id, motif)
 
+# plot
+dp_dt[, minuslog10pvalue := -1 * log10(pvalue)]
 gp_dot <- ggplot(dp_dt, aes(
-  id, motif_label,
+  id, motif,
   size = minuslog10pvalue, fill = log2FoldChange
 )) +
   geom_point(shape = 21) +
@@ -3812,7 +3860,7 @@ gp_dot <- ggplot(dp_dt, aes(
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "BINDetect_motifs.pdf"),
-  width = 10, height = 46
+  width = 14, height = 46
 )
 gp_dot
 dev.off()
@@ -3982,15 +4030,6 @@ up_gps <- lapply(mots, function(mo) {
     labs(title = mo)
 })
 ```
-```{r}
-fit_eu <- euler(mo_df)
-eul <- plot(
-  fit_eu,
-  quantities = TRUE,
-  main = "significantly upregulated genes"
-)
-eul
-```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
@@ -3999,6 +4038,35 @@ pdf(
 )
 print(up_gps)
 dev.off()
+```
+
+Look at target genes
+
+```{r}
+# parse per sample and add gene annotation
+mo_dcs <- dcast.data.table(
+  mo_dt[, .(motif, gene, sample)][, N := 1],
+  motif + gene ~ sample, value.var = "N"
+)
+mo_dcs[is.na(mo_dcs)] <- 0
+mo_ann <- merge.data.table(
+  mo_dcs, gene_ann[, .SD[1], gene],
+  by = "gene", all.x = TRUE, sort = FALSE
+)
+mo_ann[is.na(pfam), pfam := ""]
+mo_ann[is.na(name), name := ""]
+setcolorder(mo_ann, c("motif", "gene", "pfam", "name"))
+fwrite(mo_ann, file.path(res_dir, "motifs_genes_targets.tsv.gz"), sep = "\t")
+
+# targets only in positive samples
+mo_one <- mo_ann[motif == "ARCH2465_POU1F1_POU4F3_POU4F2"]
+mo_pos <- mo_one[Elav_neg == 0 & Fox_neg == 0 & Ncol_neg == 0]
+mo_pos[Elav_pos == 1 & Fox_pos == 1 & Ncol_pos == 1]
+mo_pos[Elav_pos == 1 & Fox_pos == 0 & Ncol_pos == 0]
+mo_pos[Elav_pos == 0 & Fox_pos == 1 & Ncol_pos == 0]
+mo_pos[Elav_pos == 0 & Fox_pos == 0 & Ncol_pos == 1]
+
+mo_pos[motif == "ARCH1154_RFX_RFX2"]
 ```
 
 ### Quantile based motif scores
