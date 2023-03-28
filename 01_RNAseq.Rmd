@@ -965,3 +965,65 @@ pdf(
 draw(hm)
 dev.off()
 ```
+
+## Comparisons fold changes
+
+Start from normalized gene counts
+
+```{r}
+tpm_mt <- read.table(
+  file.path(res_dir, "tpm_expression.tsv"),
+  header = TRUE
+)
+```
+
+Get previously identified marker genes
+
+```{r}
+# select genes
+clusters_dt <- fread(file.path(res_dir, "genes_clusters.tsv"))
+tpm_mt <- tpm_mt[clusters_dt$gene, ]
+
+# aggregate replicates
+smpl <- paste(
+  str_extract(colnames(tpm_mt), "Fox|Elav|Ncol"),
+  str_to_lower(str_extract(colnames(tpm_mt), "Pos|Neg")),
+  sep = "_"
+)
+smpl_mt <- tapply(colnames(tpm_mt), smpl, function(y) {
+  apply(tpm_mt[, y], 1, mean)
+}, simplify = FALSE)
+smpl_mt <- do.call("cbind", smpl_mt)
+
+# fold changes
+comparas <- list(
+  c("Elav_pos", "Elav_neg"),
+  c("Elav_pos", "Fox_pos"),
+  c("Elav_pos", "Ncol_pos"),
+  c("Fox_pos", "Fox_neg"),
+  c("Fox_pos", "Elav_pos"),
+  c("Fox_pos", "Ncol_pos"),
+  c("Ncol_pos", "Ncol_neg"),
+  c("Ncol_pos", "Fox_pos"),
+  c("Ncol_pos", "Elav_pos")
+)
+log2fc_list <- lapply(comparas, function(x) {
+  v1 <- smpl_mt[, x[[1]]]
+  v2 <- smpl_mt[, x[[2]]]
+  log2((v1 + 1e-03) / (v2 + 1e-03))
+})
+log2fc_mt <- do.call("cbind", log2fc_list)
+colnames(log2fc_mt) <- paste(
+  sapply(comparas, function(x) x[[1]]),
+  sapply(comparas, function(x) x[[2]]), sep = "_"
+)
+
+# save
+write.table(
+  log2fc_mt,
+  file.path(res_dir, "log2fc_expression.tsv"),
+  sep = "\t",
+  row.names = TRUE,
+  quote = FALSE
+)
+```
