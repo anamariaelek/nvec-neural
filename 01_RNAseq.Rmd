@@ -980,10 +980,6 @@ tpm_mt <- read.table(
 Get previously identified marker genes
 
 ```{r}
-# select genes
-clusters_dt <- fread(file.path(res_dir, "genes_clusters.tsv"))
-tpm_mt <- tpm_mt[clusters_dt$gene, ]
-
 # aggregate replicates
 smpl <- paste(
   str_extract(colnames(tpm_mt), "Fox|Elav|Ncol"),
@@ -1017,6 +1013,11 @@ colnames(log2fc_mt) <- paste(
   sapply(comparas, function(x) x[[1]]),
   sapply(comparas, function(x) x[[2]]), sep = "_"
 )
+colnames(log2fc_mt) <- str_remove_all(colnames(log2fc_mt), "_pos")
+colnames(log2fc_mt) <- str_remove(
+  colnames(log2fc_mt), "(Elav|Fox|Ncol)_(?=neg)"
+)
+colnames(log2fc_mt) <- str_replace(colnames(log2fc_mt), "_", "_vs_")
 
 # save
 write.table(
@@ -1026,4 +1027,115 @@ write.table(
   row.names = TRUE,
   quote = FALSE
 )
+
+# select genes
+clusters_dt <- fread(file.path(res_dir, "genes_clusters.tsv"))
+log2fc_mt <- log2fc_mt[clusters_dt$gene, ]
+write.table(
+  log2fc_mt[clusters_dt$gene, ],
+  file.path(res_dir, "log2fc_expression_markers.tsv"),
+  sep = "\t",
+  row.names = TRUE,
+  quote = FALSE
+)
+```
+
+Heatmap
+
+```{r fig.height=18, fig.width=6, warning=FALSE, message=FALSE}
+log2fc_mt <- read.table(
+  file.path(res_dir, "log2fc_expression.tsv"),
+  sep = "\t",
+  header = TRUE
+)
+clusters_dt <- fread(file.path(res_dir, "genes_clusters.tsv"))
+
+# center at 0
+plot_mt <- log2fc_mt
+plot_min <- quantile(unlist(abs(plot_mt)), 0.95)
+plot_mt[plot_mt < -plot_min] <- plot_min
+plot_mt[plot_mt > plot_min] <- plot_min
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000)
+col_fun <- circlize::colorRamp2(
+  seq(-plot_min, plot_min, length.out = length(col_vec)),
+  col_vec
+)
+
+# samples
+colnames(plot_mt) <- str_replace_all(colnames(plot_mt), "_", " ")
+col_split <- str_extract(colnames(plot_mt), "Elav|Fox|Ncol")
+
+# gene module annotations
+grann <- clusters_dt[match(rownames(plot_mt), gene)]$group
+grann_lab <- unique(clusters_dt[match(rownames(plot_mt), gene)]$group)
+grann <- factor(grann, levels = grann_lab)
+module_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "group" = anno_block(
+      labels = grann_lab,
+      gp = gpar(col = NA)
+    )
+)
+row_split <- grann
+
+# genes annotations
+marks_gold <- fread(
+  file.path("annotation", "golden-marks-230116.tsv"),
+  fill = TRUE
+)[, 1:2]
+setnames(marks_gold, c("gene", "name"))
+marks_gold[, name := str_remove(name, "^Nv")]
+
+tfs_annt <- fread(
+  file.path("annotation", "curated_TFh_Nvec_DToL_names.tsv"),
+  header = FALSE
+)
+setnames(tfs_annt, c("gene", "pfam", "og"))
+
+marks_tfs <- merge.data.table(
+  tfs_annt,
+  marks_gold,
+  by = "gene", all = TRUE, sort = FALSE
+)
+marks_tfs[is.na(marks_tfs)] <- ""
+marks_tfs <- marks_tfs[gene %in% rownames(plot_mt)]
+marks_tfs <- marks_tfs[name != ""]
+
+row_labels_marks_ids <- match(marks_tfs$gene, rownames(plot_mt))
+row_labels_marks <- marks_tfs[
+  match(rownames(plot_mt)[row_labels_marks_ids], gene)
+]$name
+mark_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "marker" = anno_mark(
+      at = row_labels_marks_ids,
+      labels = row_labels_marks
+    )
+)
+
+# heatmap
+hm <- Heatmap(
+  plot_mt, name = "normalized\nexpression",
+  col = col_fun,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = FALSE, show_column_names = TRUE,
+  row_title = "genes",
+  row_split = row_split, column_split = col_split,
+  cluster_row_slices = FALSE,
+  right_annotation = mark_ann,
+  left_annotation = module_ann,
+  border = TRUE
+)
+hm
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "comparison_heatmap.pdf"),
+  width = 6, height = 18
+)
+draw(hm)
+dev.off()
 ```

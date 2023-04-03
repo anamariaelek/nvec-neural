@@ -2888,7 +2888,7 @@ dict_new[gene %in% tf_mot_dt$gene, og := tf_mot_og[gene]]
 dict_new[gene %in% tf_mot_dt$gene, pfam := tf_mot_pfam[gene]]
 fwrite(
   dict_new,
-  file.path(res_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"),
+  file.path(atac_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"),
   sep = "\t"
 )
 ```
@@ -3210,7 +3210,7 @@ labels_p <- function(
   column_name,
   padj_thrs = 1e-3,
   fc_thrs = 4,
-  operation = c("|","&")[1]
+  operation = c("|", "&")[1]
 ) {
   return(
     function(m) {
@@ -3926,19 +3926,74 @@ bound_genes[, sample := factor(sample, levels = c(
   "Ncol_pos", "Ncol_neg"
 ))]
 setcolorder(bound_genes, c(colnames(bound_dt), "gene"))
+```
+
+For differential motifs, compare their targets.  
+First subset targets for only expressed genes.
+
+```{r}
+# parse for plotting
+mo_dt <- unique(bound_genes[order(score)][, .SD[1], .(motif, gene, sample)])
+mo_dt[, n_samples := .N, gene]
+setorder(mo_dt, -n_samples, gene, sample)
+mo_dt[, sample := factor(sample, levels = c(
+  "Ncol_neg", "Fox_neg", "Elav_neg",
+  "Ncol_pos", "Fox_pos", "Elav_pos"
+))]
+
+# subset for expressed genes in each reporter line
+
+# tpm gene expression
+tpm_mt <- read.table(
+  file.path("RNASEQ_QUANTIFICATION", "results", "tpm_expression.tsv")
+)
+
+# aggregate replicates
+smpl <- paste(
+  str_extract(colnames(tpm_mt), "Fox|Elav|Ncol"),
+  str_to_lower(str_extract(colnames(tpm_mt), "Pos|Neg")),
+  sep = "_"
+)
+smpl_mt <- tapply(colnames(tpm_mt), smpl, function(y) {
+  apply(tpm_mt[, y], 1, mean)
+}, simplify = FALSE)
+smpl_mt <- do.call("cbind", smpl_mt)
+
+# expressed genes
+tpm_genes_dt <- rbindlist(apply(smpl_mt, 2, function(x) {
+  data.table(tpm = x)[, gene := names(x)]
+}, simplify = FALSE), idcol = "sample")
+mo_dt <- merge.data.table(
+  mo_dt, tpm_genes_dt,
+  by = c("gene", "sample"),
+  all.x = TRUE, sort = FALSE
+)
+mo_dt[, expressed := FALSE][tpm > 0.5, expressed := TRUE]
+unique(
+  mo_dt[, .(sample, gene, expressed)]
+)[, .N, .(sample, expressed)][order(sample, expressed)]
+
+# save
+fwrite(
+  mo_dt,
+  file.path(res_dir, "motifs_genes_targets_long.tsv.gz"),
+  sep = "\t"
+)
 
 # how many target genes for each TF?
-hits_dt <- unique(bound_genes[, .(sample, motif, gene)])
+hits_dt <- unique(mo_dt[expressed == TRUE][, .(sample, motif, gene)])
 hits_dt <- hits_dt[, .N, .(motif, sample)]
 
 hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
   geom_boxplot() +
-  scale_y_log10() +
+  scale_y_continuous(breaks = seq(0, 1e5, 1e3)) +
   scale_fill_manual(values = line_cond_cols) +
   labs(y = "number of target genes per TF") +
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-    legend.position = "none"
+    legend.position = "none",
+    panel.grid.major.y = element_line(linewidth = 0.5),
+    panel.grid.minor.y = element_line(linewidth = 0.2)
   )
 ```
 
@@ -3951,20 +4006,14 @@ hits_gp
 dev.off()
 ```
 
-For differential motifs, compare their targets
-
+Inspect number of target genes overlapping in different samples
 ```{r}
-# parse for plotting
-mo_dt <- unique(bound_genes[order(score)][, .SD[1], .(motif, gene, sample)])
-mo_dt[, n_samples := .N, gene]
-setorder(mo_dt, -n_samples, gene, sample)
-mo_dt[, sample := factor(sample, levels = c(
-  "Ncol_neg", "Fox_neg", "Elav_neg",
-  "Ncol_pos", "Fox_pos", "Elav_pos"
-))]
-
 # motifs to inspect the targets for
+
+# # all motifs
 mots <- unique(mo_dt$motif)
+
+# # selected motifs
 mots <- c(
   # elav
   "ARCH2118_Brinker_zf_C2H2_brk_ZNF454",
@@ -3990,10 +4039,16 @@ mots <- c(
   "ARCH470_RUNX1_RUNX2_RUNX3_RUNX3_RUNX2"
 )
 
+# # best correlated motifs
+mots_dt <- fread(file.path("results", "correlation_expression_binding_posterboys.tsv"))
+mots <- mots_dt$motif
+
+mo_dt <- fread(file.path(res_dir, "motifs_genes_targets_long.tsv.gz"))
+
 # plot upset diagrams
 up_gps <- lapply(mots, function(mo) {
   mo_df <- dcast.data.table(
-    mo_dt[motif == mo][, .(gene, sample)][, N := 1],
+    mo_dt[expressed == TRUE][motif == mo][, .(gene, sample)][, N := 1],
     gene ~ sample, value.var = "N"
   )
   mo_df[is.na(mo_df)] <- 0
@@ -4033,7 +4088,7 @@ up_gps <- lapply(mots, function(mo) {
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "BINDetect_motif_target_hits_upset.pdf"),
+  file.path("plots", "BINDetect_motif_target_hits_upset.pdf"),
   width = 10, height = 7
 )
 print(up_gps)
@@ -4056,7 +4111,11 @@ mo_ann <- merge.data.table(
 mo_ann[is.na(pfam), pfam := ""]
 mo_ann[is.na(name), name := ""]
 setcolorder(mo_ann, c("motif", "gene", "pfam", "name"))
-fwrite(mo_ann, file.path(res_dir, "motifs_genes_targets.tsv.gz"), sep = "\t")
+fwrite(
+  mo_ann,
+  file.path(res_dir, "motifs_genes_targets_wide_expressed.tsv.gz"),
+  sep = "\t"
+)
 
 # targets only in positive samples
 mo_one <- mo_ann[motif == "ARCH2465_POU1F1_POU4F3_POU4F2"]
