@@ -160,6 +160,15 @@ dds <- readRDS(file.path(res_dir, "dds.rds"))
 dds <- estimateSizeFactors(dds)
 norm_mt <- counts(dds, normalized = TRUE)
 
+# save
+write.table(
+  norm_mt,
+  file.path(res_dir, "mat_norm.tsv"),
+  sep = "\t",
+  row.names = TRUE,
+  quote = FALSE
+)
+
 # row normalize to bring genes to same range
 norm_mt <- (norm_mt + 10) / apply(norm_mt + 10, 1, median)
 norm_mt <- log2(norm_mt)

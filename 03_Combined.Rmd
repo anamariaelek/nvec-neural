@@ -118,7 +118,12 @@ Load normalized gene expression (RNA-seq) and motif accessibility (ATAC-seq) dat
 ```{r}
 # GENES
 
-# gene expression
+# size norm gene expression
+exps_mt <- read.table(
+  file.path(rna_dir, "mat_norm.tsv")
+)
+
+# size and gene norm gene expression
 expr_mt <- read.table(
   file.path(rna_dir, "norm_expression.tsv")
 )
@@ -128,12 +133,31 @@ tpms_mt <- read.table(
   file.path(rna_dir, "tpm_expression.tsv")
 )
 
+# gene clusters
+gene_clust <- fread(
+  file.path(rna_dir, "genes_clusters.tsv")
+)
+
 # PEAKS
+
+# peak accessibility
+accs_mt <- read.table(
+  file.path(atac_dir, "mat_norm.tsv")
+)
 
 # peak to gene assignment
 assign <- fread(
   file.path(atac_dir, "consensusSeekeR-peaks-gene-assignment.tsv")
 )
+
+# peak clusters
+pks_clust <- fread(
+  file.path(atac_dir, "consensusSeekeR-peaks-clusters.bed")
+)
+bed_cols <- c(
+  "seqnames", "start", "end", "peak", "score", "strand", "cluster", "group"
+)
+setnames(pks_clust, bed_cols)
 
 # MOTIFS
 
@@ -163,7 +187,196 @@ dict_mot <- unique(dict[, .(archetype_name, gene)][gene != ""])
 setnames(dict_mot, c("motif", "gene"))
 ```
 
-# Ongoing analysis
+## Descriptive analysis
+
+### ATAC peaks are generally more cell type-specific than gene expression?
+
+```{r}
+# aggregate expression replicates
+smpl <- paste(
+  str_extract(colnames(tpms_mt), "Fox|Elav|Ncol"),
+  str_to_lower(str_extract(colnames(exps_mt), "Pos|Neg")),
+  sep = "_"
+)
+nexp_mt <- tapply(colnames(exps_mt), smpl, function(y) {
+  apply(exps_mt[, y], 1, mean)
+}, simplify = FALSE)
+nexp_mt <- do.call("cbind", nexp_mt)
+nexp_mt <- nexp_mt[rowSums(nexp_mt) > 0, ]
+
+# aggregate accessibility replicates
+smpl <- paste(
+  str_extract(colnames(accs_mt), "Fox|Elav|Ncol"),
+  str_to_lower(str_extract(colnames(accs_mt), "pos|neg")),
+  sep = "_"
+)
+nacc_mt <- tapply(colnames(accs_mt), smpl, function(y) {
+  apply(accs_mt[, y], 1, mean)
+}, simplify = FALSE)
+nacc_mt <- do.call("cbind", nacc_mt)
+nacc_mt <- nacc_mt[rowSums(nacc_mt) > 0, ]
+
+
+# function to calculate Tau index
+Tau <- function(x) {
+  # normalize by max
+  nmt <- x /apply(x, 1, max, na.rm = TRUE)
+
+  # tau index
+  apply(nmt, 1, function(x) sum(1 - x) / (ncol(nmt) - 1))
+
+}
+
+# expression Tau index
+tau_exp <- Tau(nexp_mt)
+tau_acc <- Tau(nacc_mt)
+tau_dt <- rbindlist(list(
+  "expression" = data.table(tau = tau_exp),
+  "accessibility" = data.table(tau = tau_acc)
+), idcol = "group")
+tau_dt[, group := factor(group, levels = c("expression", "accessibility"))]
+
+gp_tau <- ggplot(tau_dt, aes(x = group, y = tau)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "data", y = "Tau specificity", title = "All peaks\nand genes") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+Compare Tau for matched peaks and genes
+
+```{r}
+tau_exp_dt <- data.table(
+  gene = names(tau_exp),
+  tau_exp = tau_exp
+)
+tau_acc_dt <- data.table(
+  peak = names(tau_acc),
+  tau_acc = tau_acc
+)
+tau_ann <- merge.data.table(
+  tau_acc_dt, unique(assign[, .(gene, peak, dist_to_tss, is_promoter, is_intergenic)]),
+  by = c("peak"), all.x = TRUE, sort = FALSE
+)
+tau_ann <- merge.data.table(
+  tau_ann, tau_exp_dt, by = "gene",
+  all.x = TRUE, sort = FALSE
+)
+tau_ann <- tau_ann[!is.na(gene)]
+setnames(tau_ann, c("tau_exp", "tau_acc"), c("expression", "accessibility"))
+tau_dt <- melt.data.table(tau_ann, id.vars = "gene", measure.vars = c("expression", "accessibility"))
+tau_dt[, variable := factor(variable, levels = c("expression", "accessibility"))]
+
+gp_tau_com <- ggplot(tau_dt, aes(x = variable, y = value)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "data", y = "Tau specificity", title = "Matched\npeaks and genes") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+Compare only markers
+
+```{r}
+tau_ann_mark <- tau_ann[gene %in% gene_clust$gene][peak %in% pks_clust$peak]
+tau_dt_mark <- melt.data.table(tau_ann_mark, id.vars = "gene", measure.vars = c("expression", "accessibility"))
+tau_dt_mark[, variable := factor(variable, levels = c("expression", "accessibility"))]
+
+gp_tau_mark <- ggplot(tau_dt_mark, aes(x = variable, y = value)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "data", y = "Tau specificity", title = "Marker\npeaks and genes") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "tau.pdf"), width = 12, height = 8)
+gp_tau + gp_tau_com + gp_tau_mark
+dev.off()
+```
+
+### More cell-type specific elements tend to be “distal” enhancers than the more broadly used elements?
+
+```{r}
+assign_clust <- merge.data.table(
+  assign, pks_clust[, .(seqnames, start, end, peak, group)],
+  by = c("seqnames", "start", "end", "peak"),
+  all.x = TRUE, sort = FALSE
+)
+assign_clust[is.na(group), group := "other"]
+assign_clust[, group := factor(group, levels = c(paste0("G", 1:9), "other"))]
+gp_dist_to_tss <- ggplot(assign_clust, aes(group, dist_to_tss)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "groups", y = "distance to TSS") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_dist_to_tss.pdf"), width = 8, height = 4)
+gp_dist_to_tss
+dev.off()
+```
+
+```{r}
+assign_clust[, tau := tau_acc[peak]]
+assign_clust[, dist_to_tss_capped := pmin(dist_to_tss, 1e3)]
+gp_peaks_tau <- ggplot(assign_clust, aes(tau, dist_to_tss)) +
+  labs(x = "Tau specificity", y = "distance to TSS") +
+  #stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+  #geom_hex(bins = 70) +
+  #scale_fill_continuous(type = "viridis") +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0), trans = "log10") +
+  theme(
+    legend.position='none'
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_tau.pdf"), width = 4.5, height = 4)
+gp_peaks_tau
+dev.off()
+```
+
+Look at the bins of Tau
+
+```{r}
+assign_clust[, tau_bin := cut(tau, breaks = seq(0, 1, 0.1))]
+gp_tau_bin <- ggplot(assign_clust[!is.na(tau_bin)], aes(tau_bin, dist_to_tss)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "Tau bins", y = "distance to TSS") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_tau_groups.pdf"), width = 8, height = 6)
+gp_dist_to_tss / gp_tau_bin
+dev.off()
+```
+
 ## Correlation between motif enrichment and gene expression
 
 ```{r fig.width=8, fig.height=6}
@@ -274,6 +487,7 @@ dev.off()
 ```
 
 Plot heatmap of gene expression and motif enrichment
+
 ```{r fig.height=8, fig.width=6}
 # ordering
 gord <- order(apply(tfs_mt, 1, which.max))
@@ -320,6 +534,7 @@ gp_dot <- ggplot(dp, aes(sample, id)) +
     legend.direction = "vertical"
   )
 ```
+
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "motifs-genes-heatmap-v2.pdf"),
@@ -1124,268 +1339,4 @@ fwrite(
   file.path(res_dir, "networks.tsv"),
   sep = "\t"
 )
-```
-
-## In-silico ChIP edge score
-
-```{r}
-minmax <- function(x, na.rm = TRUE) {
-    (x - min(x)) / (max(x) - min(x))
-}
-#' @param s numeric, correlation between the chromatin accessibility of peak i
-#'   and the RNA expression of TF j
-#' @param r numeric, motif score for TF j in peak i
-#' @param p numeric, maximum chromatin accessibility of peak i
-#'   across all samples
-insilico_chip <- function(s, r, p) {
-  s * minmax(r * p)
-}
-```
-
-```{r}
-mt_rna[1:3, ]
-mt_atac[1:3, ]
-```
-
-# Deprecated analysis
-## For specific motif, compare different metrics
-
-```{r}
-# peaks assigned to genes
-peaks <- fread(file.path(atac_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
-setnames(peaks, "peak", "name")
-peaks_gr <- makeGRangesFromDataFrame(peaks, keep.extra.columns = TRUE)
-
-# motif scores
-mta_scores_mona <- readRDS(
-  file.path(atac_dir, "motif-scores-archetypes-mona.rds")
-)
-sites_gr <- mta_scores_mona$gw_scan
-sites_gr$name <- sites_gr$motif
-sites_gr[sites_gr$name == mo]
-```
-```{r}
-mo <- "ARCH1154_RFX_RFX2"
-mg <- as.character(unique(dp[motif == mo]$gene))
-
-# select top motif hit in each target gene
-bnd_dt <- bind_dt[motif == mo][gene != ""]
-bnt_dt <- bnd_dt[order(score)][, .SD[1], .(motif, sample, gene)]
-bnt_dt <- bnd_dt[order(ftp_score)][, .SD[1], .(motif, gene)]
-
-# correaltaion between tf gene and target gene
-cors <- sapply(unique(bnt_dt$gene), function(g) {
-  x <- unlist(expr_mt[g, ])
-  y <- unlist(expr_mt[mg, ])
-  cor(x, y)
-})
-bnt_dt[, expression_cor := cors[gene]]
-bnt_dt[is.na(expression_cor), expression_cor := 0]
-bnt_dt[, expression_cor_pos := pmax(0, expression_cor)]
-setorder(bnt_dt, expression_cor_pos)
-bnt_dt[, gene := factor(gene, levels = unique(bnt_dt$gene))]
-
-# correlation between tf gene expression and motif accessibility
-cors <- sapply(unique(bnt_dt$peak), function(p) {
-  x <- unlist(bind_mt[p, ])
-  y <- unlist(expr_mt[mg, ])
-  y <- tapply(y, paste0(str_extract(names(y), "Fox|Elav|Ncol"), "_pos"), mean)
-  cor(x, y[names(x)])
-})
-bnt_dt[, accessibility_cor := cors[peak]]
-bnt_dt[is.na(accessibility_cor), accessibility_cor := 0]
-bnt_dt[, accessibility_cor_pos := pmax(0, accessibility_cor)]
-setorder(bnt_dt, accessibility_cor_pos)
-bnt_dt[, gene := factor(gene, levels = unique(bnt_dt$gene))]
-
-# add gene annotaiton
-bna_dt <- merge.data.table(
-  bnt_dt,
-  gene_ann[gene %in% bnt_dt$gene],
-  by = "gene",
-  all.x = TRUE,
-  sort = FALSE
-)
-
-# favourite genes pfams list
-pfams <- c(
-  "Kinesin/",
-  "Dynein_heavy/",
-  "Ax_dynein_light/",
-  "Tubulin/",
-  "DHC_N1/",
-  "DHC_N2/",
-  "DLIC/",
-  "Dynein_light/",
-  "Dynactin_p62/"
-)
-bna_dt[, flagellar := FALSE]
-for (pd in pfams) {
-  bna_dt[grep(pd, pfam), flagellar := TRUE]
-}
-
-gp_mot <- ggplot(bna_dt, aes(
-  ftp_score, accessibility_cor,
-  size = expression_cor_pos,
-  fill = bound,
-  shape = flagellar,
-  group = 1
-)) +
-  geom_point() +
-  #geom_smooth(method = "lm", se = FALSE, show.legend = FALSE) +
-  #scale_fill_manual(values = line_cols) +
-  scale_fill_manual(values = c("FALSE" = "red", "TRUE" = "blue")) +
-  scale_shape_manual(values = c("FALSE" = 21, "TRUE" = 23)) +
-  scale_size_continuous(
-    name = "TF-target gene\nexpression correlation",
-    range = c(1, 4),
-    breaks = c(0, 0.4, 0.8, 1)
-  ) +
-  labs(
-    x = "max footprint score per gene",
-    y = "footprint score-TF gene expression\ncorrealation",
-    title = mo
-  ) +
-  guides(
-    fill = guide_legend(override.aes = list(size = 5, shape = 21)),
-    shape = guide_legend(override.aes = list(size = 5)),
-    size = guide_legend(override.aes = list(shape = 21))
-  )
-
-```
-```{r include=FALSE, eval=TRUE}
-pdf(
-  file.path(fig_dir, sprintf("motif-%s-scores.pdf", mo)),
-  width = 10, height = 8
-)
-gp_mot
-dev.off()
-```
-
-## Distribution of all motif scores
-
-```{r}
-mo <- "ARCH1154_RFX_RFX2"
-
-require(universalmotif)
-require(monalisa)
-
-# motifs
-mots_lst <- readRDS(
-  file.path(atac_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms.rds")
-)
-mona_lst <- mta_convert_umot_to_monalisa(mots_lst)
-
-# peaks
-cpeaks <- fread(file.path(cns_dir, "consensusSeekeR-peaks.bed"))
-setnames(cpeaks, c("seqnames", "start", "end", "name", "score", "strand"))
-cpeaks_gr <- makeGRangesFromDataFrame(cpeaks, keep.extra.columns = TRUE)
-
-# genome
-genome <- Biostrings::readDNAStringSet("genome/Nvec_vc1.1_gDNA.fasta")
-seqdt <- fread("genome/Nvec_vc1.1_gDNA.fasta.fai")[, 1:2]
-seqlvl <- c(seqdt[[1]], "ENA|OW052000|OW052000.1")
-
-# scanning
-mta_scores_mona <- mta_gw_motif_score_monalisa(
-  motifs = mona_lst[mo],
-  genome_object = genome,
-  index_object = seqdt,
-  bin_width = 250,
-  subsample_fraction = 0.10,
-  score_quantiles = c(0, 0.25, 0.5, 0.75, 0.95, 0.98, 0.99, 0.995, 0.999, 1.0),
-  score_quantile_thr = 0,
-  do_gw_scan = TRUE,
-  given_gr = cpeaks_gr,
-  nthreads = 16
-)
-
-# add peaks
-scores_gr <- mta_scores_mona$gw_scan
-ovl <- findOverlaps(query = scores_gr, subject = cpeaks_gr)
-scores <- scores_gr[queryHits(ovl)]
-scores$peak <- cpeaks_gr[subjectHits(ovl)]$name
-scores_dt <- as.data.table(scores)
-# add genes
-peaks <- fread(file.path(atac_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
-scores_genes_dt <- merge.data.table(
-  scores_dt, unique(peaks[, .(peak, gene)]),
-  by = "peak",
-  all.x = TRUE,
-  allow.cartesian = TRUE,
-  sort = FALSE
-)
-# add gene annotations
-scores_ann_dt <- merge.data.table(
-  scores_genes_dt, gene_ann, by = "gene",
-  all.x = TRUE, sort = FALSE
-)
-scores_ann_dt[is.na(scores_ann_dt)] <- ""
-
-# favourite genes pfams list
-pfam_list <- list(
-  flagellar = c(
-    "Kinesin/",
-    "Dynein_heavy/",
-    "Ax_dynein_light/",
-    "Tubulin/",
-    "DHC_N1/",
-    "DHC_N2/",
-    "DLIC/",
-    "Dynein_light/",
-    "Dynactin_p62/"
-  ),
-  cnido = c(
-    "Collagen/",
-    "Gal_Lectin/",
-    "CBM_14/",
-    "CAP/",
-    "IU_nuc_hydro/",
-    "PLAT/"
-  )
-)
-for (i in names(pfam_list)) {
-  scores_ann_dt[, I(i) := FALSE]
-  for (pd in pfam_list[[i]]) {
-    scores_ann_dt[grep(pd, pfam), I(i) := TRUE]
-  }
-}
-
-gene_list <- list(
-  cnido = fread("../scRNAseq_nvec_v4/annotation/cnidocyte_marks.tsv")[[1]],
-  neuro = fread("../scRNAseq_nvec_v4/annotation/neuro_marks.tsv")[[1]]
-)
-for (i in names(gene_list)) {
-  scores_ann_dt[, I(i) := ifelse(
-    gene %in% gene_list[[i]], TRUE, FALSE
-  )]
-}
-scores_ann_dt[, .N, neuro]
-
-# plot scores distributions
-gp_mos <- ggplot(scores_ann_dt, aes_string("motif_score", color = i)) +
-  geom_vline(
-    xintercept = qs[c("0.25", "0.5", "0.75")],
-    size = 0.2, color = "grey",
-  ) +
-  geom_vline(
-    xintercept = qs[c("0.95")],
-    size = 0.2, color = "red"
-  ) +
-  geom_density(size = 2) +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_color_manual(values = c("TRUE" = "orange", "FALSE" = "grey")) +
-  theme(legend.position = "bottom") +
-  labs(x = "motif score", title = mo)
-
-```
-
-```{r include=FALSE, eval=TRUE}
-pdf(
-  file.path(fig_dir, sprintf("motif-%s-motif-scores-distribution.pdf", mo)),
-  width = 8, height = 6
-)
-gp_mos
-dev.off()
 ```
