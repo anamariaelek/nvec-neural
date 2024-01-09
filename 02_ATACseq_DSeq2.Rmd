@@ -1,0 +1,215 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+## Differntial peak analysis
+
+Differential analysis with DESeq2
+
+```{r, eval=TRUE}
+# all positive vs negative
+dds_cond <- DESeqDataSetFromMatrix(
+  countData = pks_mt,
+  colData = col_df,
+  design = ~ condition
+)
+dds_cond <- DESeq(dds_cond)
+
+# condition within reporter line line
+dds_conl <- DESeqDataSetFromMatrix(
+  countData = pks_mt,
+  colData = col_df,
+  design = ~ group
+)
+dds_conl <- DESeq(dds_conl)
+
+```
+
+Function for MA plots
+
+```{r}
+ggplotMA <- function(
+  res,
+  padj_thr = 0.05,
+  sign_col = c("red", "blue"),
+  lims_fc = c(NA, NA),
+  lims_mean = c(NA, NA),
+  trans_mean = "identity",
+  title = ""
+) {
+  res_dt <- as.data.table(res)
+  res_dt[log2FoldChange < lims_fc[1], log2FoldChange := lims_fc[1]]
+  res_dt[log2FoldChange > lims_fc[2], log2FoldChange := lims_fc[2]]
+  res_dt[, dir := ifelse(log2FoldChange > 0, "up", "down")]
+  res_dt[is.na(padj), padj := 1]
+  res_dt[, sign := padj < padj_thr]
+  res_dt[sign == FALSE, dir := NA]
+  gp <- ggplot(
+    res_dt,
+    aes(x = baseMean, y = log2FoldChange)
+  )
+  if (length(sign_col) == 1) {
+    gp <- gp +
+    geom_point(aes(colour = sign), size = 0.5) +
+    scale_color_manual(
+      values = c("FALSE" = "grey", "TRUE" = sign_col),
+      name = sprintf("p.adjusted < %s", padj_thr)
+    )
+  } else if (length(sign_col) > 1) {
+    gp <- gp +
+    geom_point(aes(colour = dir), size = 0.5) +
+    scale_color_manual(
+      values = c("up" = sign_col[2], down = sign_col[1]),
+      na.value = "grey",
+      name = sprintf("p.adjusted < %s", padj_thr)
+    )
+  }
+  gp <- gp +
+    guides(colour = guide_legend(override.aes = list(size = 4))) +
+    scale_y_continuous(
+      limits = lims_fc,
+      expand = expansion(mult = c(0.01, 0.01))
+    ) +
+    scale_x_continuous(
+      limits = lims_mean,
+      expand = expansion(mult = c(0.01, 0.01)),
+      trans = trans_mean
+    ) +
+    geom_hline(aes(yintercept = 0), size = 1) +
+    labs(
+      x = "mean of normalized counts",
+      y = "log2 fold change",
+      subtitle = sprintf(
+        "up=%s; down=%s",
+        nrow(res_dt[padj < padj_thr & log2FoldChange > 0]),
+        nrow(res_dt[padj < padj_thr & log2FoldChange < 0])
+      )
+    ) +
+    theme(
+      legend.position = "bottom",
+      plot.title = element_text(size = 20),
+      plot.subtitle = element_text(size = 18)
+    )
+  if (title != "")
+    gp <- gp + labs(title = title)
+  gp
+}
+ggplotVolcano <- function(
+  res,
+  padj_thr = 0.05,
+  sign_col = c("red", "blue"),
+  lims_fc = c(NA, NA),
+  lims_sig = c(NA, NA),
+  title = ""
+) {
+  res_dt <- as.data.table(res)
+  res_dt[log2FoldChange < lims_fc[1], log2FoldChange := lims_fc[1]]
+  res_dt[log2FoldChange > lims_fc[2], log2FoldChange := lims_fc[2]]
+  res_dt[, dir := ifelse(log2FoldChange > 0, "up", "down")]
+  res_dt[, minuslog10padj := -1 * log10(padj)]
+  res_dt[, sign := padj < padj_thr]
+  res_dt[sign == FALSE, dir := NA]
+  gp <- ggplot(
+    res_dt,
+    aes(x = log2FoldChange, y = minuslog10padj)
+  )
+  if (length(sign_col) == 1) {
+    gp <- gp +
+    geom_point(aes(colour = sign), size = 0.5) +
+    scale_color_manual(
+      values = c("FALSE" = "grey", "TRUE" = sign_col),
+      name = sprintf("p.adjusted < %s", padj_thr)
+    )
+  } else if (length(sign_col) > 1) {
+    gp <- gp +
+    geom_point(aes(colour = dir), size = 0.5) +
+    scale_color_manual(
+      values = c("up" = sign_col[2], down = sign_col[1]),
+      na.value = "grey",
+      name = sprintf("p.adjusted < %s", padj_thr)
+    )
+  }
+  gp <- gp +
+    guides(colour = guide_legend(override.aes = list(size = 4))) +
+    scale_x_continuous(
+      limits = lims_fc,
+      expand = expansion(mult = c(0.01, 0.01))
+    ) +
+    scale_y_continuous(
+      limits = lims_sig,
+      expand = expansion(mult = c(0.01, 0.01))
+    ) +
+    labs(
+      x = "log2 fold change",
+      y = "- log10 adjusted p value",
+      subtitle = sprintf(
+        "up=%s; down=%s",
+        nrow(res_dt[padj < padj_thr & log2FoldChange > 0]),
+        nrow(res_dt[padj < padj_thr & log2FoldChange < 0])
+      )
+    ) +
+    theme(
+      legend.position = "bottom",
+      plot.title = element_text(size = 20),
+      plot.subtitle = element_text(size = 18)
+    )
+  if (title != "")
+    gp <- gp + labs(title = title)
+  gp
+}
+```
+
+Contrasts
+
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=9}
+contrast <- c("condition", "positive", "negative")
+res_pos <- results(dds_cond, contrast = contrast)
+res_lfc_pos <- lfcShrink(dds_cond, contrast = contrast, type="ashr")
+gp_pos <- ggplotMA(
+  res_lfc_pos, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+contrast <- c("group", "Foxpositive", "Foxnegative")
+res_fox <- results(dds_conl, contrast = contrast)
+res_lfc_fox <- lfcShrink(dds_conl, contrast = contrast, type="ashr")
+contrast <- str_replace_all(contrast,c("positive"=" positive","negative"=" negative"))
+gp_fox <- ggplotMA(
+  res_lfc_fox, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+contrast <- c("group", "Elavpositive", "Elavnegative")
+res_elav <- results(dds_conl, contrast = contrast)
+res_lfc_elav <- lfcShrink(dds_conl, contrast = contrast, type="ashr")
+contrast <- str_replace_all(contrast,c("positive"=" positive","negative"=" negative"))
+gp_elav <- ggplotMA(
+  res_lfc_elav, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+contrast <- c("group", "Ncolpositive", "Ncolnegative")
+res_ncol <- results(dds_conl, contrast = contrast)
+res_lfc_ncol <- lfcShrink(dds_conl, contrast = contrast, type="ashr")
+contrast <- str_replace_all(contrast,c("positive"=" positive","negative"=" negative"))
+gp_ncol <- ggplotMA(
+  res_lfc_ncol, 
+  lims_fc=c(-3,3), lims_mean=c(NA,1e3),
+  title=sprintf("%s vs %s",contrast[2],contrast[3])
+)
+
+gp_pch <- ((gp_pos + gp_fox) / (gp_elav + gp_ncol)) + 
+  plot_layout(guides = "collect") & theme(legend.position = "bottom")
+gp_pch
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "MA_plots.pdf"), width=8, height=9)
+gp_pch
+dev.off()
+```
+
