@@ -1202,6 +1202,39 @@ fwrite(
 
 ```
 
+Motif to TF assignment
+
+```{r}
+# assignment
+dc <- fread(file.path(
+  "annotation",
+  "assignment-archetype-motif-gene.tsv.gz"
+))[, .(gene, archetype_name)]
+dc[, motif := str_extract(archetype_name, "ARCH\\d+")]
+dc[, archetype_name := NULL]
+
+# plot motif logos
+require(ggseqlogo)
+mots_nms <- sapply(mots_lst, function(i) str_extract(i@name, "ARCH\\d+"))
+names(mots_lst) <- mots_nms
+pdf(
+  file.path(fig_dir, "motifs-tfs-logo.pdf"),
+  width = 8, height = 4
+)
+for (i in seq_len(nrow(dc))) {
+  mn <- dc[i, motif]
+  gn <- dc[i, gene]
+  pf <- gene_ann[gene == gn, pfam]
+  nm <- gene_ann[gene == gn, name]
+  mt <- mots_lst[[mn]]@motif
+  gg_mot <- ggseqlogo(mt) + labs(title = sprintf(
+    "%s\n%s\n%s\n%s", mn, gn, nm, pf
+  ))
+  print(gg_mot)
+}
+dev.off()
+```
+
 Motif enrichment in groups defined before
 
 ```{r eval=FALSE}
@@ -1260,15 +1293,7 @@ dt <- fread(
 setnames(dt, c("label", "motif"), c("group", "archetype_name"))
 dt[, motif := str_extract(archetype_name, "ARCH\\d+")]
 
-# motif to tf assignment
-dc <- fread(file.path(
-  "annotation",
-  "assignment-archetype-motif-gene.tsv.gz"
-))[, .(gene, archetype_name)]
-dc[, motif := str_extract(archetype_name, "ARCH\\d+")]
-dc[, archetype_name := NULL]
-
-# combine
+# add motif to tf assignment
 dt <- merge.data.table(
   dt, dc, by = "motif",
   all.x = TRUE, sort = FALSE, allow.cartesian = TRUE
@@ -1932,7 +1957,7 @@ gp_dot
 dev.off()
 ```
 
-## Networks
+## TF-gene networks
 
 Parse bound files for all motifs
 
@@ -2003,17 +2028,12 @@ bound_dt <- merge.data.table(
 )
 bound_dt <- bound_dt[!is.na(target_gene)]
 
-# parse only motif + gene + target gene + sample info
-mo_dt <- bound_dt[order(score)][, .SD[1], .(motif, gene, target_gene, sample)]
+# parse only motif + gene + target gene + sample info, for pos samples
+mo_dt <- bound_dt[order(score)][, .SD[1], .(motif, gene, target_gene, sample)][grep("pos", sample)]
 mo_dt <- unique(mo_dt[, .(
   motif, motif_name, gene, name, pfam, target_gene, sample
 )])
 mo_dt[, n_samples := length(unique(.SD$sample)), .(motif, gene, target_gene)]
-setorder(mo_dt, -n_samples, gene, sample)
-mo_dt[, sample := factor(sample, levels = c(
-  "Ncol_neg", "Fox_neg", "Elav_neg",
-  "Ncol_pos", "Fox_pos", "Elav_pos"
-))]
 
 # add target gene annotation
 target_gene_ann <- copy(gene_ann)
@@ -2029,7 +2049,7 @@ mo_dt <- merge.data.table(
 mo_dt[is.na(target_pfam), target_pfam := ""]
 mo_dt[is.na(target_name), target_name := ""]
 
-# gene expression
+# gene expression tpm
 tpm_mt <- read.table(
   file.path("RNASEQ_QUANTIFICATION", "raw_counts_rnaseq.tsv"),
   header = TRUE, row.names = 1
@@ -2048,35 +2068,66 @@ smpl_mt <- do.call("cbind", smpl_mt)
 
 # expressed genes
 tpm_genes_dt <- rbindlist(apply(smpl_mt, 2, function(x) {
-  data.table(tpm = x)[, gene := names(x)]
+  data.table(expression_tpm = x)[, gene := names(x)]
 }, simplify = FALSE), idcol = "sample")
 mo_dt <- merge.data.table(
   mo_dt, tpm_genes_dt,
   by = c("gene", "sample"),
   all.x = TRUE, sort = FALSE
 )
-mo_dt[, expressed := FALSE][tpm > 100, expressed := TRUE]
+mo_dt[, expressed := FALSE][expression_tpm > 100, expressed := TRUE]
 unique(
   mo_dt[, .(sample, gene, expressed)]
 )[, .N, .(sample, expressed)][order(sample, expressed)]
 
 # expressed target genes
 tmp_tgenes_dt <- copy(tpm_genes_dt)
-setnames(tmp_tgenes_dt, c("gene", "tpm"), c("target_gene", "target_tpm"))
+setnames(tmp_tgenes_dt, c("gene", "expression_tpm"), c("target_gene", "target_expression_tpm"))
 mo_dt <- merge.data.table(
   mo_dt, tmp_tgenes_dt,
   by = c("target_gene", "sample"),
   all.x = TRUE, sort = FALSE
 )
-mo_dt[, target_expressed := FALSE][target_tpm > 100, target_expressed := TRUE]
+mo_dt[, target_expressed := FALSE][target_expression_tpm > 100, target_expressed := TRUE]
 unique(
   mo_dt[, .(sample, target_gene, target_expressed)]
 )[, .N, .(sample, target_expressed)][order(sample, target_expressed)]
 
+# gene expression lfc
+lfc_mt <- read.table(
+  file.path("RNASEQ_QUANTIFICATION", "results", "log2fc_expression.tsv"),
+  sep = "\t",
+  header = TRUE
+)
+lfc_mt <- lfc_mt[, grep("vs_neg", colnames(lfc_mt))]
+lfc_dt <- melt.data.table(
+  as.data.table(lfc_mt, keep.rownames = "gene"),
+  id.vars = "gene",
+  variable.name = "sample",
+  value.name = "expression_lfc"
+)
+lfc_dt[, sample := str_replace_all(sample, "_vs_neg", "_pos")]
+mo_dt <- merge.data.table(
+  mo_dt, lfc_dt, by = c("sample", "gene"),
+  all.x = TRUE, sort = FALSE
+)
+
+# target expression lfc
+lfc_tg <- copy(lfc_dt)
+setnames(lfc_tg, c("gene", "expression_lfc"), c("target_gene", "target_expression_lfc"))
+mo_dt <- merge.data.table(
+  mo_dt, lfc_tg, by = c("sample", "target_gene"),
+  all.x = TRUE, sort = FALSE
+)
+
 # save
+mo_dt <- mo_dt[!is.na(target_gene)]
 setcolorder(mo_dt, c(
   "sample", "gene", "target_gene", "name", "pfam", "target_name", "target_pfam",
-  "tpm", "expressed", "target_tpm", "target_expressed", "motif", "motif_name",
+  "expression_tpm", "target_expression_tpm",
+  "expression_lfc", "target_expression_lfc",
+  "expressed", "target_expressed",
+  "motif", "motif_name",
   "n_samples"
 ))
 fwrite(

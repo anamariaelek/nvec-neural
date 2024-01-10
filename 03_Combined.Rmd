@@ -212,7 +212,7 @@ mt_rna <- read.table(
 
 Dot plot of expression and binding score
 
-```{r fig.width=8, fig.height=10}
+```{r fig.width=14, fig.height=18}
 dt_rna_plot <- melt.data.table(
   as.data.table(mt_rna, keep.rownames = "gene"),
   id.vars = "gene", variable.name = "comparison", value.name = "rna_fc"
@@ -468,6 +468,7 @@ mo_dt <- fread(
 )
 mo_dt <- mo_dt[expressed == TRUE & target_expressed == TRUE]
 mo_dt <- mo_dt[grep("pos", sample)]
+mo_dt <- mo_dt[expression_lfc > 0]
 mo_dt[, reporterline := str_remove(sample, "_pos")]
 
 # binding correaltions with expression
@@ -506,15 +507,37 @@ fwrite(
 )
 ```
 
+Filtering by expression
+
+```{r}
+mo_dt_cor <- fread(file.path(res_dir, "correlation_network.tsv.gz"))
+mo_dt_cor[, reporterline := NULL]
+mo_dt_cor[, target_TF := ifelse(target_gene %in% .SD$gene, TRUE, FALSE), sample]
+mo_dt_cor[, name := substr(name, 1, 30)]
+mo_dt_cor[, pfam := substr(pfam, 1, 30)]
+mo_dt_cor[, target_name := substr(target_name, 1, 30)]
+mo_dt_cor[, target_pfam := substr(target_pfam, 1, 30)]
+mo_dt_cor <- mo_dt_cor[expression_lfc > 1.5][target_expression_lfc > 1]
+setcolorder(mo_dt_cor, c(
+  "sample", "gene", "name", "pfam",
+  "expression_tpm", "expression_lfc",
+  "motif", "motif_name",
+  "target_gene", "target_name", "target_pfam",
+  "target_expression_tpm", "target_expression_lfc", 
+  "expression_correlation", "n_samples"
+))
+```
+
 How many target genes for each TF?
 
 ```{r fig.width=3, fig.height=6}
 hits_dt <- mo_dt_cor[, .N, .(gene, motif, sample)]
 hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
-  geom_boxplot() +
+  geom_boxplot(outlier.color = NA) +
+  ggbeeswarm::geom_beeswarm(shape = 21) +
   scale_y_continuous(trans = "log10") +
   scale_fill_manual(values = line_cond_cols) +
-  labs(y = "number of target genes per TF") +
+  labs(y = "target genes per TF") +
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     legend.position = "none",
@@ -527,7 +550,7 @@ hits_gp
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "network_motif_target_hits.pdf"),
-  width = 3, height = 7
+  width = 2.5, height = 5
 )
 hits_gp
 dev.off()
@@ -536,19 +559,11 @@ dev.off()
 Save network files
 
 ```{r}
-mo_dt_cor[, sample := NULL]
-mo_dt_cor[, target_TF := ifelse(target_gene %in% .SD$gene, TRUE, FALSE), reporterline]
-setcolorder(mo_dt_cor, c(
-  "reporterline", "gene", "name", "pfam", "tpm", "motif", "motif_name",
-  "target_gene", "target_name", "target_pfam", "target_tpm",
-  "expression_correlation", "n_samples"
-))
-
 require(openxlsx)
 wb <- createWorkbook()
 for (smp in c("Elav", "Ncol", "Fox")) {
   smp_fn <- file.path(res_dir, sprintf("correlation_network_%s.tsv.gz", smp))
-  smp_dt <- mo_dt_cor[reporterline == smp]
+  smp_dt <- mo_dt_cor[sample == paste0(smp, "_pos")]
   message("Saving: ", smp_fn)
   fwrite(smp_dt, smp_fn, sep = "\t")
   # all genes
@@ -559,7 +574,7 @@ for (smp in c("Elav", "Ncol", "Fox")) {
   tfs_orph <- smp_dt[!gene %in% tfs_dt$gene, .SD[1], gene]
   tfs_orph[, target_gene := "none"]
   tfs_orph[, c("target_name", "target_pfam") := ""]
-  tfs_orph[, c("target_tpm", "n_samples", "expression_correlation") := 0]
+  tfs_orph[, c("target_expression_tpm", "target_expression_lfc", "n_samples", "expression_correlation") := 0]
   tfs_dt <- rbindlist(list(tfs_dt, tfs_orph), use.names = TRUE)
   addWorksheet(wb, sheetName = paste0(smp, "_TF"))
   writeData(wb, sheet = paste0(smp, "_TF"), tfs_dt)
@@ -573,7 +588,7 @@ saveWorkbook(
 
 ## Cnidocytes network
 
-Comparison Ozment et al. 2021 eLife paper.
+Comparison with Ozment et al. 2021 eLife paper.
 
 ```{r}
 # load data from paper and translate gene IDs to DToL IDs
@@ -599,8 +614,8 @@ pou_pub_act <- pou_pub[relation == "activated", .(target_gene, fold_change)]
 setnames(pou_pub_act, "fold_change", "activated")
 pou_pub_rep <- pou_pub[relation == "repressed", .(target_gene, fold_change)]
 setnames(pou_pub_rep, "fold_change", "repressed")
-pou_net_gen <- pou_net[, .(target_gene, expression_correlation)]
-setnames(pou_net_gen, "expression_correlation", "network")
+pou_net_gen <- pou_net[, .(target_gene, target_expression_lfc)]
+setnames(pou_net_gen, "target_expression_lfc", "network")
 pou_dt <- merge.data.table(merge.data.table(
   pou_pub_act, pou_pub_rep,
   by = "target_gene", all = TRUE
@@ -613,9 +628,7 @@ require(eulerr)
 fit <- euler(pou_mt)
 p1 <- plot(
   fit,
-  quantities = TRUE,
-  #fill = k4me3_cols,
-  #labels = list(font = 4)
+  quantities = TRUE
 )
 print(p1)
 ```
