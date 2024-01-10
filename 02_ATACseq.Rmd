@@ -1083,8 +1083,8 @@ row_labels_marks <- marks_tfs[
 mark_ann <- HeatmapAnnotation(
     which = "row", border = TRUE,
     "padj<0.01" = rownames(plot_mt) %in% genes_deseq,
-    "var>1" = rownames(plot_mt) %in% genes_vari,
-    "FC>2" = rownames(plot_mt) %in% genes_fc,
+    # "var>1" = rownames(plot_mt) %in% genes_vari,
+    #"FC>2" = rownames(plot_mt) %in% genes_fc,
     "marker" = anno_mark(
       at = row_labels_marks_ids,
       labels = row_labels_marks
@@ -1126,7 +1126,7 @@ dev.off()
 
 Score archetype motifs in consensus peaks
 
-```{r eval=FALSE, echo=FALSE}
+```{r eval=FALSE}
 require(universalmotif)
 require(monalisa)
 
@@ -1204,7 +1204,7 @@ fwrite(
 
 Motif enrichment in groups defined before
 
-```{r eval=FALSE, echo=FALSE}
+```{r eval=FALSE}
 # load peaks clustering to groups
 pks <- fread(
   file.path(res_dir, "consensusSeekeR-peaks-clusters.bed")
@@ -1284,8 +1284,7 @@ rownames(mat_qv) <- dat_qv$motif
 write.table(
   mat_qv,
   file.path(
-    res_dir,
-    sprintf("motif-enrich-%s-archetypes-mona-qvalue.tsv", enr_group)
+    res_dir, "motif-enrich-archetypes-mona-qvalue.tsv"
   ),
   sep = "\t", quote = FALSE
 )
@@ -1299,9 +1298,7 @@ mat_fc[is.na(mat_fc)] <- 0
 rownames(mat_fc) <- dat_fc$motif
 write.table(
   mat_fc,
-  file.path(
-    res_dir,
-    sprintf("motif-enrich-%s-archetypes-mona-fc.tsv", enr_group)),
+  file.path(res_dir, "motif-enrich-archetypes-mona-fc.tsv"),
   sep = "\t", quote = FALSE
 )
 
@@ -1703,7 +1700,7 @@ fwrite(bind_dt, file.path(
 
 Volcano plots
 
-```{r fig.height=10, fig.width=18}
+```{r fig.height=6, fig.width=10}
 # bindetect results
 bind_dt <- fread(file.path(
   bind_dir, "bindetect_results.txt"
@@ -1996,16 +1993,41 @@ bound_dt[, sample := factor(sample, levels = c(
   "Ncol_pos", "Ncol_neg"
 ))]
 
-# parse only motif + gene + dample info
-mo_dt <- unique(bound_dt[order(score)][, .SD[1], .(motif, gene, sample)][, .(
-  motif, motif_name, gene, name, pfam, sample
+# add peak to target gene assignment
+assign <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
+assign <- unique(assign[, .(gene, peak)])
+setnames(assign, "gene", "target_gene")
+bound_dt <- merge.data.table(
+  bound_dt, assign, by = "peak",
+  all.x = TRUE, sort = FALSE, allow.cartesian = TRUE
+)
+bound_dt <- bound_dt[!is.na(target_gene)]
+
+# parse only motif + gene + target gene + sample info
+mo_dt <- bound_dt[order(score)][, .SD[1], .(motif, gene, target_gene, sample)]
+mo_dt <- unique(mo_dt[, .(
+  motif, motif_name, gene, name, pfam, target_gene, sample
 )])
-mo_dt[, n_samples := length(unique(.SD$sample)), .(motif, gene)]
+mo_dt[, n_samples := length(unique(.SD$sample)), .(motif, gene, target_gene)]
 setorder(mo_dt, -n_samples, gene, sample)
 mo_dt[, sample := factor(sample, levels = c(
   "Ncol_neg", "Fox_neg", "Elav_neg",
   "Ncol_pos", "Fox_pos", "Elav_pos"
 ))]
+
+# add target gene annotation
+target_gene_ann <- copy(gene_ann)
+setnames(
+  target_gene_ann,
+  colnames(target_gene_ann),
+  paste0("target_", colnames(target_gene_ann))
+)
+mo_dt <- merge.data.table(
+  mo_dt, target_gene_ann, by = "target_gene",
+  all.x = TRUE, sort = FALSE
+)
+mo_dt[is.na(target_pfam), target_pfam := ""]
+mo_dt[is.na(target_name), target_name := ""]
 
 # gene expression
 tpm_mt <- read.table(
@@ -2038,19 +2060,41 @@ unique(
   mo_dt[, .(sample, gene, expressed)]
 )[, .N, .(sample, expressed)][order(sample, expressed)]
 
+# expressed target genes
+tmp_tgenes_dt <- copy(tpm_genes_dt)
+setnames(tmp_tgenes_dt, c("gene", "tpm"), c("target_gene", "target_tpm"))
+mo_dt <- merge.data.table(
+  mo_dt, tmp_tgenes_dt,
+  by = c("target_gene", "sample"),
+  all.x = TRUE, sort = FALSE
+)
+mo_dt[, target_expressed := FALSE][target_tpm > 100, target_expressed := TRUE]
+unique(
+  mo_dt[, .(sample, target_gene, target_expressed)]
+)[, .N, .(sample, target_expressed)][order(sample, target_expressed)]
+
 # save
+setcolorder(mo_dt, c(
+  "sample", "gene", "target_gene", "name", "pfam", "target_name", "target_pfam",
+  "tpm", "expressed", "target_tpm", "target_expressed", "motif", "motif_name",
+  "n_samples"
+))
 fwrite(
   mo_dt,
   file.path(res_dir, "motifs_genes_targets_long.tsv.gz"),
   sep = "\t"
 )
+```
 
-# how many target genes for each TF?
-hits_dt <- unique(mo_dt[expressed == TRUE][, .(sample, motif, gene)])
+How many target genes for each TF?
+
+```{r fig.width=4, fig.height=6}
+hits_dt <- unique(mo_dt[expressed == TRUE][, .(sample, motif, gene, target_gene)])
 hits_dt <- hits_dt[, .N, .(motif, sample)]
 
 hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
   geom_boxplot() +
+  scale_y_continuous(trans = "log10") +
   scale_fill_manual(values = line_cond_cols) +
   labs(y = "number of target genes per TF") +
   theme(
@@ -2059,6 +2103,7 @@ hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
     panel.grid.major.y = element_line(linewidth = 0.5),
     panel.grid.minor.y = element_line(linewidth = 0.2)
   )
+hits_gp
 ```
 
 ```{r include=FALSE, eval=TRUE}

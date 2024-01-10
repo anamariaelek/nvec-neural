@@ -1,0 +1,1342 @@
+---
+title: "Combined expression and accesibility"
+output:
+  html_document:
+    theme: cosmo
+    self_contained: true
+    toc: true
+    toc_float: true
+    toc-location: left
+editor: visual
+---
+
+## Setup
+
+Load packages
+
+```{r warning=FALSE, message=FALSE, results=FALSE}
+library(data.table)
+library(stringr)
+library(ggplot2)
+theme_py <- theme_light() + theme(
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.border = element_rect(colour = "black", fill = NA),
+  text = element_text(size = 20),
+  strip.placement = "outside",
+  strip.text = element_text(size = 20, color = "black"),
+  strip.background = element_rect(fill = "white")
+)
+theme_set(theme_py)
+library(patchwork)
+library(ggrepel)
+library(ComplexHeatmap)
+library(GenomicRanges)
+require(ggraph)
+require(igraph)
+source("functions.R")
+source("../motif-analysis/mta_downstream_functions.R")
+```
+
+Data directories and metadata
+
+```{r}
+atac_dir <- file.path(
+  "ATACSEQ", "nucleosome_free_regions", "results"
+)
+cns_dir <- file.path(
+  "ATACSEQ", "nucleosome_free_regions", "consensus_peaks"
+)
+bnd_dir <- file.path(
+  "ATACSEQ", "nucleosome_free_regions", "footprint", "BINDetect"
+)
+rna_dir <- file.path(
+  "RNASEQ_QUANTIFICATION", "results"
+)
+res_dir <- file.path("results")
+fig_dir <- file.path("plots")
+for (newdir in c(res_dir, fig_dir))
+  dir.create(newdir, showWarnings = FALSE)
+
+# metadata
+des_fn <- file.path("RNASEQ_QUANTIFICATION", "design_table.tsv")
+des_dt <- fread(des_fn)
+setnames(des_dt, "reporter_line", "reporterline")
+col_dt <- des_dt[, .(sample, reporterline, condition)]
+col_dt[, reporterline := factor(
+  reporterline,
+  levels = c("Elav", "Fox", "Ncol")
+)]
+col_dt[, condition := factor(condition, levels = c("negative", "positive"))]
+setorder(col_dt, reporterline, condition)
+
+# colors
+condition_cols <- c("positive" = "blue", "negative" = "red")
+line_cols <- c("Elav" = "#ff7f00", "Fox" = "#984ea3", "Ncol" = "#4daf4a")
+line_cond_cols <- c(
+  "Elav_pos" = "#ff7f00", "Fox_pos" = "#984ea3", "Ncol_pos" = "#4daf4a",
+  "Elav_neg" = "#ebbd8f", "Fox_neg" = "#d18adb", "Ncol_neg" = "#90d18e"
+)
+```
+
+Gene annotations and lists
+
+```{r}
+# golden markers
+marks_gold <- fread(
+  file.path("annotation", "golden-marks-230116.tsv"),
+  fill = TRUE
+)[, 1:2]
+setnames(marks_gold, c("gene", "name"))
+marks_gold[, name := str_remove(name, "^Nv")]
+marks_gold_v <- structure(marks_gold$name, names = marks_gold$gene)
+
+# gene annotations
+gene_annt <- fread(
+  file.path("annotation", "Nvec_annotation_v3_2020-10-23_DToL_names"),
+  select = 1:3
+)
+setnames(gene_annt, c("gene", "pfam", "name"))
+
+# TF annotations
+tfs_annt <- fread(
+  file.path("annotation", "curated_TFh_Nvec_DToL_names.tsv"),
+  header = FALSE
+)
+setnames(tfs_annt, c("gene", "pfam", "name"))
+
+# combine annotations
+gene_ann <- rbindlist(list(
+  gene_annt[!gene %in% tfs_annt$gene],
+  tfs_annt
+))
+gene_ann[gene %in% marks_gold$gene & name == "", name := marks_gold_v[gene]]
+```
+
+Load normalized gene expression (RNA-seq) and motif accessibility (ATAC-seq) data
+
+```{r}
+# GENES
+
+# size norm gene expression
+exps_mt <- read.table(
+  file.path(rna_dir, "mat_norm.tsv")
+)
+
+# size and gene norm gene expression
+expr_mt <- read.table(
+  file.path(rna_dir, "norm_expression.tsv")
+)
+
+# gene expression TPMs
+tpms_mt <- read.table(
+  file.path(rna_dir, "tpm_expression.tsv")
+)
+
+# gene clusters
+gene_clust <- fread(
+  file.path(rna_dir, "genes_clusters.tsv")
+)
+
+# PEAKS
+
+# peak accessibility
+accs_mt <- read.table(
+  file.path(atac_dir, "mat_norm.tsv")
+)
+
+# peak to gene assignment
+assign <- fread(
+  file.path(atac_dir, "consensusSeekeR-peaks-gene-assignment.tsv")
+)
+
+# peak clusters
+pks_clust <- fread(
+  file.path(atac_dir, "consensusSeekeR-peaks-clusters.bed")
+)
+bed_cols <- c(
+  "seqnames", "start", "end", "peak", "score", "strand", "cluster", "group"
+)
+setnames(pks_clust, bed_cols)
+
+# MOTIFS
+
+# motif enrichment scores
+motf_dt <- fread(
+  file.path(atac_dir, "motif-enrich-samples-v2-archetypes-mona.tsv")
+)
+setnames(motf_dt, "label", "group")
+
+# motif enrichment qvalue
+motf_qv <- read.table(
+  file.path(atac_dir, "motif-enrich-samples-v2-archetypes-mona-qvalue.tsv"),
+  sep = "\t"
+)
+
+# motif enrichment log2fc
+motf_fc <- read.table(
+  file.path(atac_dir, "motif-enrich-samples-v2-archetypes-mona-fc.tsv"),
+  sep = "\t"
+)
+
+# motifs dictionary
+dict <- fread(file.path(
+    atac_dir, "motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-mapped.dict"
+))
+dict_mot <- unique(dict[, .(archetype_name, gene)][gene != ""])
+setnames(dict_mot, c("motif", "gene"))
+```
+
+## Descriptive analysis
+
+### ATAC peaks are generally more cell type-specific than gene expression?
+
+```{r}
+# aggregate expression replicates
+smpl <- paste(
+  str_extract(colnames(tpms_mt), "Fox|Elav|Ncol"),
+  str_to_lower(str_extract(colnames(exps_mt), "Pos|Neg")),
+  sep = "_"
+)
+nexp_mt <- tapply(colnames(exps_mt), smpl, function(y) {
+  apply(exps_mt[, y], 1, mean)
+}, simplify = FALSE)
+nexp_mt <- do.call("cbind", nexp_mt)
+nexp_mt <- nexp_mt[rowSums(nexp_mt) > 0, ]
+
+# aggregate accessibility replicates
+smpl <- paste(
+  str_extract(colnames(accs_mt), "Fox|Elav|Ncol"),
+  str_to_lower(str_extract(colnames(accs_mt), "pos|neg")),
+  sep = "_"
+)
+nacc_mt <- tapply(colnames(accs_mt), smpl, function(y) {
+  apply(accs_mt[, y], 1, mean)
+}, simplify = FALSE)
+nacc_mt <- do.call("cbind", nacc_mt)
+nacc_mt <- nacc_mt[rowSums(nacc_mt) > 0, ]
+
+
+# function to calculate Tau index
+Tau <- function(x) {
+  # normalize by max
+  nmt <- x /apply(x, 1, max, na.rm = TRUE)
+
+  # tau index
+  apply(nmt, 1, function(x) sum(1 - x) / (ncol(nmt) - 1))
+
+}
+
+# expression Tau index
+tau_exp <- Tau(nexp_mt)
+tau_acc <- Tau(nacc_mt)
+tau_dt <- rbindlist(list(
+  "expression" = data.table(tau = tau_exp),
+  "accessibility" = data.table(tau = tau_acc)
+), idcol = "group")
+tau_dt[, group := factor(group, levels = c("expression", "accessibility"))]
+
+gp_tau <- ggplot(tau_dt, aes(x = group, y = tau)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "data", y = "Tau specificity", title = "All peaks\nand genes") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+Compare Tau for matched peaks and genes
+
+```{r}
+tau_exp_dt <- data.table(
+  gene = names(tau_exp),
+  tau_exp = tau_exp
+)
+tau_acc_dt <- data.table(
+  peak = names(tau_acc),
+  tau_acc = tau_acc
+)
+tau_ann <- merge.data.table(
+  tau_acc_dt, unique(assign[, .(gene, peak, dist_to_tss, is_promoter, is_intergenic)]),
+  by = c("peak"), all.x = TRUE, sort = FALSE
+)
+tau_ann <- merge.data.table(
+  tau_ann, tau_exp_dt, by = "gene",
+  all.x = TRUE, sort = FALSE
+)
+tau_ann <- tau_ann[!is.na(gene)]
+setnames(tau_ann, c("tau_exp", "tau_acc"), c("expression", "accessibility"))
+tau_dt <- melt.data.table(tau_ann, id.vars = "gene", measure.vars = c("expression", "accessibility"))
+tau_dt[, variable := factor(variable, levels = c("expression", "accessibility"))]
+
+gp_tau_com <- ggplot(tau_dt, aes(x = variable, y = value)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "data", y = "Tau specificity", title = "Matched\npeaks and genes") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+Compare only markers
+
+```{r}
+tau_ann_mark <- tau_ann[gene %in% gene_clust$gene][peak %in% pks_clust$peak]
+tau_dt_mark <- melt.data.table(tau_ann_mark, id.vars = "gene", measure.vars = c("expression", "accessibility"))
+tau_dt_mark[, variable := factor(variable, levels = c("expression", "accessibility"))]
+
+gp_tau_mark <- ggplot(tau_dt_mark, aes(x = variable, y = value)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "data", y = "Tau specificity", title = "Marker\npeaks and genes") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "tau.pdf"), width = 12, height = 8)
+gp_tau + gp_tau_com + gp_tau_mark
+dev.off()
+```
+
+### More cell-type specific elements tend to be “distal” enhancers than the more broadly used elements?
+
+```{r}
+assign_clust <- merge.data.table(
+  assign, pks_clust[, .(seqnames, start, end, peak, group)],
+  by = c("seqnames", "start", "end", "peak"),
+  all.x = TRUE, sort = FALSE
+)
+assign_clust[is.na(group), group := "other"]
+assign_clust[, group := factor(group, levels = c(paste0("G", 1:9), "other"))]
+gp_dist_to_tss <- ggplot(assign_clust, aes(group, dist_to_tss)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "groups", y = "distance to TSS") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_dist_to_tss.pdf"), width = 8, height = 4)
+gp_dist_to_tss
+dev.off()
+```
+
+```{r}
+assign_clust[, tau := tau_acc[peak]]
+assign_clust[, dist_to_tss_capped := pmin(dist_to_tss, 1e3)]
+gp_peaks_tau <- ggplot(assign_clust, aes(tau, dist_to_tss)) +
+  labs(x = "Tau specificity", y = "distance to TSS") +
+  #stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+  #geom_hex(bins = 70) +
+  #scale_fill_continuous(type = "viridis") +
+  geom_point(alpha = 0.1) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0), trans = "log10") +
+  theme(
+    legend.position='none'
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_tau.pdf"), width = 4.5, height = 4)
+gp_peaks_tau
+dev.off()
+```
+
+Look at the bins of Tau
+
+```{r}
+assign_clust[, tau_bin := cut(tau, breaks = seq(0, 1, 0.1))]
+gp_tau_bin <- ggplot(assign_clust[!is.na(tau_bin)], aes(tau_bin, dist_to_tss)) +
+  geom_violin(scale = "width", alpha = 0.8, color = "black") +
+  geom_boxplot(width = 0.5, outlier.shape = NA, alpha = 0.8, color = "black") +
+  scale_y_continuous(expand = expansion(mult = c(0.01, 0.01))) +
+  labs(x = "Tau bins", y = "distance to TSS") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    legend.title = element_blank(), legend.position = "none"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(file.path(fig_dir, "peaks_tau_groups.pdf"), width = 8, height = 6)
+gp_dist_to_tss / gp_tau_bin
+dev.off()
+```
+
+## Correlation between motif enrichment and gene expression
+
+```{r fig.width=8, fig.height=6}
+# TF genes
+expr_mt_pos <- expr_mt[, grep("Pos", colnames(expr_mt))]
+tfs_mt <- expr_mt_pos[rownames(expr_mt_pos) %in% dict_mot$gene, ]
+dim(tfs_mt)
+tfs_dt <- melt.data.table(
+  as.data.table(tfs_mt, keep.rownames = "gene"),
+  id.vars = "gene",
+  variable.name = "sample",
+  value.name = "gene_expression_fc"
+)
+tfs_dt[, motif := dict_mot[match(tfs_dt$gene, gene)]$motif]
+
+# motifs
+mot_qv_mt <- motf_qv[
+  dict_mot[match(rownames(tfs_mt), gene)]$motif,
+  colnames(tfs_mt)
+]
+mot_qv_mt <- -1 * log10(mot_qv_mt)
+dim(mot_qv_mt)
+mot_qv_dt <- melt.data.table(
+  as.data.table(mot_qv_mt, keep.rownames = "motif"),
+  id.vars = "motif",
+  variable.name = "sample",
+  value.name = "motif_enrichment_minuslog10_fdr"
+)
+
+mot_fc_mt <- motf_fc[
+  dict_mot[match(rownames(tfs_mt), gene)]$motif,
+  colnames(tfs_mt)
+]
+mot_fc_mt <- log2(mot_fc_mt)
+dim(mot_fc_mt)
+mot_fc_dt <- melt.data.table(
+  as.data.table(mot_fc_mt, keep.rownames = "motif"),
+  id.vars = "motif",
+  variable.name = "sample",
+  value.name = "motif_enrichment_fc"
+)
+
+mot_dt <- merge.data.table(
+  mot_fc_dt, mot_qv_dt, by = c("sample", "motif")
+)
+dt <- merge.data.table(
+  tfs_dt, mot_dt,
+  by = c("motif", "sample"),
+  all.x = TRUE
+)
+
+# correlations
+cors <- diag(cor(t(tfs_mt), t(mot_qv_mt)))
+cors[is.na(cors)] <- 0
+names(cors) <- rownames(mot_qv_mt)
+dt[, cor_qv := cors[motif]]
+
+cors <- diag(cor(t(tfs_mt), t(mot_fc_mt)))
+cors[is.na(cors)] <- 0
+names(cors) <- rownames(mot_fc_mt)
+dt[, cor_fc := cors[motif]]
+
+# add metadata
+ds <- merge.data.table(dt, col_dt, by = "sample")
+
+# don't overlap many-to-many motif-gene pairs
+ds[, id := paste(motif, gene, sep = " | ")]
+
+# select best correlated pairs among many-to-many
+dp <- ds[order(cor_qv)][, .SD[1], .(sample, motif)]
+
+# save
+fwrite(dp, file.path(
+  res_dir, "motif-gene-correlation-pairs-v2.tsv"
+), sep = "\t")
+
+# plot
+gp1 <- ggplot(dp, aes(
+  gene_expression_fc, motif_enrichment_fc,
+  fill = reporterline, group = 1
+)) +
+  geom_point(shape = 21) +
+  geom_smooth(method = "lm", se = FALSE, show.legend = FALSE) +
+  scale_fill_manual(values = line_cols) +
+  labs(x = "gene expression\nlog2(FC)", y = "motif enrichment\nlog2(FC)")
+
+gp2 <- ggplot(dp, aes(
+  gene_expression_fc, motif_enrichment_minuslog10_fdr,
+  fill = reporterline, group = 1
+)) +
+  geom_point(shape = 21) +
+  geom_smooth(method = "lm", se = FALSE, show.legend = FALSE) +
+  scale_fill_manual(values = line_cols) +
+  labs(x = "gene expression\nlog2(FC)", y = "motif enrichment\nlog10(q value)")
+
+gp_cor <- (gp1 + gp2 & theme(legend.position = "bottom")) +
+  plot_layout(guides = "collect")
+gp_cor
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "motifs-genes-correlation-v2.pdf"),
+  width = 8.5, height = 5
+)
+gp_cor
+dev.off()
+```
+
+Plot heatmap of gene expression and motif enrichment
+
+```{r fig.height=8, fig.width=6}
+# ordering
+gord <- order(apply(tfs_mt, 1, which.max))
+dp[, gene := factor(gene, levels = rownames(tfs_mt)[gord])]
+setorder(dp, gene)
+dp[, motif := factor(motif, levels = unique(ds$motif))]
+setorder(ds, motif)
+
+mord <- rev(order(apply(mot_qv_mt, 1, which.max)))
+dp[, motif := factor(motif, levels = rownames(mot_qv_mt)[mord])]
+setorder(dp, motif)
+
+dp[, id := factor(id, levels = unique(dp$id))]
+dp[, sample := factor(sample, levels = colnames(mot_qv_mt))]
+
+# save
+fwrite(dp, file.path(
+  res_dir, "motif-gene-correlation-pairs-heatmap-v2.tsv"
+), sep = "\t")
+
+# plot
+library(ggplot2)
+library(scales)
+gp_dot <- ggplot(dp, aes(sample, id)) +
+  geom_point(
+    aes(size = motif_enrichment_minuslog10_fdr, fill = gene_expression_fc),
+    shape = 21,
+    color = "black"
+  ) +
+  scale_fill_gradientn(
+    colours = colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000),
+    limits = c(-5, 5), oob = squish, breaks = c(-5, 0, 5),
+    name = "gene expression\nlog2(fold change)",
+  ) +
+  scale_size_continuous(
+    name = "motif enrichment\n-log10(q value)",
+    range = c(1, 7),
+    breaks = c(0, 10, 20)
+  ) +
+  theme(
+    panel.grid.major = element_line(size = 0.25),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust = 1),
+    legend.direction = "vertical"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "motifs-genes-heatmap-v2.pdf"),
+  width = 18, height = 16
+)
+gp_dot
+dev.off()
+```
+
+## Binding scores for best correlated motifs
+
+Plot dotplot
+
+```{r}
+# BINDetect results
+diff_mots_dt <- fread(file.path(
+  bnd_dir, "bindetect_results_reporterline.txt"
+))
+
+# correlation results from previous step
+dp <- fread(file.path(
+  res_dir, "motif-gene-correlation-pairs-heatmap-v2.tsv"
+))
+dp_dt <- diff_mots_dt[motif %in% dp$motif]
+dp_dt <- merge.data.table(
+  dp_dt, unique(dp[, .(motif, gene)]), by = "motif",
+  all.x = TRUE, sort = FALSE
+)
+
+# significant
+pval_thr <- 0.05
+fc_thr <- 0.2
+siginifcant_mots <- diff_mots_dt[
+  pvalue < pval_thr & abs(log2FoldChange) > fc_thr
+]$motif
+# dp_dt <- dp_dt[motif %in% siginifcant_mots]
+
+# order samples
+dp_dt[, reporterline := factor(reporterline, levels = c("Elav", "Fox", "Ncol"))]
+dp_dt[, vs := factor(vs, levels = c("neg", "Elav", "Fox", "Ncol"))]
+lv_dt <- CJ(
+  levels(dp_dt$reporterline),
+  levels(dp_dt$vs)
+)[V1 != V2][, id := paste(V1, V2, sep = " vs ")]
+lv_dt[, V1 := factor(V1, levels = c("Elav", "Fox", "Ncol"))]
+lv_dt[, V2 := factor(V2, levels = c("neg", "Elav", "Fox", "Ncol"))]
+setorder(lv_dt, V1, V2)
+dp_dt[, id := paste(as.character(reporterline), vs, sep = " vs ")]
+dp_dt[, id := factor(id, levels = lv_dt$id)]
+
+# order motifs
+gpv_dt <- dcast.data.table(
+  dp_dt, motif ~ id, value.var = "log2FoldChange"
+)
+gpv_mt <- as.matrix(gpv_dt[, -1])
+rownames(gpv_mt) <- unique(gpv_dt$motif)
+mord <- rev(order(apply(gpv_mt, 1, which.max)))
+mord <- hclust(dist(gpv_mt), method = "ward.D2")$order
+dp_dt[, motif := factor(motif, levels = rownames(gpv_mt)[mord])]
+setorder(dp_dt, id, motif)
+
+# plot
+dp_dt[, label := paste(strtrim(motif, 55), "|", gene)]
+dp_dt[, minuslog10pvalue := -1 * log10(pvalue)]
+gp_dot <- ggplot(dp_dt, aes(
+  id, label,
+  size = minuslog10pvalue, fill = log2FoldChange
+)) +
+  geom_point(shape = 21) +
+  scale_fill_gradientn(
+    colours = colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000),
+    limits = c(-0.35, 0.35), oob = scales::squish, breaks = c(-0.3, 0, 0.3),
+    name = "log2(fold change)",
+  ) +
+  scale_size_continuous(
+    name = "-log10(q value)",
+    range = c(1, 7),
+    breaks = c(10, 50, 100, 150)
+  ) +
+  theme(
+    panel.grid.major = element_line(size = 0.25),
+    axis.text.y = element_text(size = 10),
+    axis.text.x = element_text(size = 10, angle = 90, vjust = 0.5, hjust = 1),
+    axis.title.x = element_blank(),
+    legend.direction = "vertical"
+  ) +
+  facet_grid(. ~ reporterline, scales = "free")
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "binding_score_comparison_heatmap.pdf"),
+  width = 14, height = 20
+)
+gp_dot
+dev.off()
+```
+
+## Correlation between motif binding and gene expression
+
+Load fold changes for expression and motif binding
+
+```{r}
+# binding comparisons fold changes for best correlated motifs
+diff_mots_dt <- fread(file.path(
+  bnd_dir, "bindetect_results_reporterline.txt"
+))
+dp <- fread(file.path(
+  res_dir, "motif-gene-correlation-pairs-heatmap-v2.tsv"
+))
+dp_dt <- diff_mots_dt[motif %in% dp$motif]
+dp_dt <- merge.data.table(
+  dp_dt, unique(dp[, .(motif, gene)]), by = "motif",
+  all.x = TRUE, sort = FALSE
+)
+dp_dt[, id := paste(reporterline, vs, sep = "_vs_")]
+dt_atac <- dcast.data.table(
+  dp_dt, motif + gene ~ id, value.var = "log2FoldChange"
+)
+mt_atac <- as.matrix(dt_atac[, -c(1:2)])
+rownames(mt_atac) <- dt_atac$gene
+
+# RNA comparisons fold changes
+mt_rna <- read.table(
+  file.path(rna_dir, "log2fc_expression.tsv"),
+  sep = "\t",
+  header = TRUE
+)
+```
+
+Heatmap of genes expression fold change (equivalent to binding scores heatmap plotted before)
+
+```{r fig.height=26, fig.width=11, warning=FALSE, message=FALSE}
+plot_mt <- mt_rna[rownames(mt_atac), ]
+
+# cluster genes
+hc <- hclust(dist(plot_mt), method = "ward.D2")
+plot_mt <- plot_mt[rownames(plot_mt)[hc$order], ]
+
+# gene annotation
+gene_names <- gene_ann[match(rownames(plot_mt), gene)]$name
+gene_names <- strtrim(gene_names, 45)
+rownames(plot_mt) <- paste(gene_names, rownames(plot_mt), sep = " | ")
+
+# center at 0
+plot_min <- quantile(unlist(abs(plot_mt)), 0.95)
+plot_mt[plot_mt < -plot_min] <- plot_min
+plot_mt[plot_mt > plot_min] <- plot_min
+
+# heatmap colors
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000)
+col_fun <- circlize::colorRamp2(
+  seq(-plot_min, plot_min, length.out = length(col_vec)),
+  col_vec
+)
+
+# samples
+colnames(plot_mt) <- str_replace_all(colnames(plot_mt), "_", " ")
+col_split <- str_extract(colnames(plot_mt), "Elav|Fox|Ncol")
+
+# genes annotations
+mark_ann <- HeatmapAnnotation(
+    which = "row", border = TRUE,
+    "marker" = anno_mark(
+      at = row_labels_marks_ids,
+      labels = row_labels_marks
+    )
+)
+
+# heatmap
+hm <- Heatmap(
+  plot_mt, name = "expression\nlog2(fold change)",
+  col = col_fun,
+  show_heatmap_legend = TRUE,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = TRUE, show_column_names = TRUE,
+  row_names_side = "left", row_names_max_width = unit(24, "cm"),
+  row_title = "genes",
+  column_split = col_split,
+  cluster_row_slices = FALSE,
+  border = TRUE
+)
+hm
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "expression_comparison_heatmap.pdf"),
+  width = 11, height = 26
+)
+draw(hm)
+dev.off()
+```
+
+Plot two heatmaps together
+
+```{r}
+mt_atac_hm <- mt_atac[, colnames(mt_rna)]
+mt_rna_hm <- mt_rna[rownames(mt_atac), ]
+
+# order genes
+mt_ord <- cbind(mt_rna_hm, mt_atac_hm)
+hc_ord <- hclust(dist(mt_ord), method = "ward.D2")
+gene_ord <- rownames(mt_ord)[hc_ord$order]
+mt_atac_hm <- mt_atac_hm[gene_ord, ]
+mt_rna_hm <- mt_rna_hm[gene_ord, ]
+
+# construct gene ids
+gene_names <- gene_ann[match(gene_ord, gene)]$name
+gene_names <- strtrim(gene_names, 45)
+rownames(mt_rna_hm) <- paste(gene_names, rownames(mt_rna_hm), sep = " | ")
+rownames(mt_atac_hm) <- paste(gene_names, rownames(mt_atac_hm), sep = " | ")
+
+mt_rna_plot <- mt_rna_hm
+mt_atac_plot <- mt_atac_hm
+
+# heatmap colors
+atac_min <- abs(min(mt_rna_plot))
+rna_min <- abs(min(mt_rna_plot))
+
+atac_min <- quantile(unlist(abs(mt_atac_plot)), 0.95)
+mt_atac_plot[mt_atac_plot < -atac_min] <- atac_min
+mt_atac_plot[mt_atac_plot > atac_min] <- atac_min
+
+rna_min <- quantile(unlist(abs(mt_rna_plot)), 0.95)
+mt_rna_plot[mt_rna_plot < -rna_min] <- rna_min
+mt_rna_plot[mt_rna_plot > rna_min] <- rna_min
+
+col_vec <- colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000)
+col_fun_rna <- circlize::colorRamp2(
+  seq(-rna_min, rna_min, length.out = length(col_vec)),
+  col_vec
+)
+col_fun_atac <- circlize::colorRamp2(
+  seq(-atac_min, atac_min, length.out = length(col_vec)),
+  col_vec
+)
+
+hm_rna <- Heatmap(
+  mt_rna_plot, name = "expression\nlog2(fold change)",
+  col = col_fun_rna,
+  show_heatmap_legend = TRUE,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = TRUE, show_column_names = TRUE,
+  row_names_side = "left", row_names_max_width = unit(24, "cm"),
+  row_title = "genes", column_title = "gene expression",
+  column_title_side = "top",
+  column_split = str_extract(colnames(mt_rna_plot), "Elav|Fox|Ncol"),
+  cluster_row_slices = FALSE,
+  border = TRUE
+)
+hm_atac <- Heatmap(
+  mt_atac_plot, name = "binding score\nlog2(fold change)",
+  col = col_fun_atac,
+  show_heatmap_legend = TRUE,
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  show_row_names = TRUE, show_column_names = TRUE,
+  row_names_side = "left", row_names_max_width = unit(24, "cm"),
+  row_title = "genes", column_title = "motif binding",
+  column_title_side = "top",
+  column_split = str_extract(colnames(mt_atac_plot), "Elav|Fox|Ncol"),
+  cluster_row_slices = FALSE,
+  border = TRUE
+)
+hm_rna + hm_atac
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "comparison_heatmap_cor0.5.pdf"),
+  width = 12, height = 20
+)
+hm_rna + hm_atac
+dev.off()
+```
+
+Plot it as a dot plot
+
+```{r}
+dp <- fread(file.path(
+  res_dir, "motif-gene-correlation-pairs-heatmap-v2.tsv"
+))
+
+dt_rna_plot <- melt.data.table(
+  as.data.table(mt_rna_plot, keep.rownames = "TF"),
+  id.vars = "TF", variable.name = "comparison", value.name = "rna_fc"
+)
+dt_atac_plot <- melt.data.table(
+  as.data.table(mt_atac_plot, keep.rownames = "TF"),
+  id.vars = "TF", variable.name = "comparison", value.name = "atac_fc"
+)
+dt_plot <- merge.data.table(
+  dt_rna_plot, dt_atac_plot,
+  by = c("TF", "comparison")
+)
+dt_plot[rna_fc < 0, rna_fc := 0]
+dt_plot[, TF := factor(TF, levels = rev(rownames(mt_rna_plot)))]
+setorder(dt_plot, TF)
+dt_plot[, gene := str_extract(TF, "(?<= | )Nvec_.+")]
+dt_plot <- merge.data.table(
+  dt_plot, unique(dp[, .(gene, motif, id)]),
+  by = "gene", sort = FALSE
+)
+dt_plot[, id := factor(id, levels = unique(dt_plot$id))]
+
+# plot
+require(ggplot2)
+require(scales)
+gp_dot <- ggplot(dt_plot, aes(comparison, id)) +
+  geom_point(
+    aes(size = rna_fc, fill = atac_fc),
+    shape = 21,
+    color = "black"
+  ) +
+  scale_fill_gradientn(
+    colours = colorRampPalette(RColorBrewer::brewer.pal(11, "BrBG"))(1000),
+    #limits = c(-5, 5), oob = squish, breaks = c(-5, 0, 5),
+    name = "motif binding\nlog2(fold change)",
+  ) +
+  scale_size_continuous(
+    range = c(1, 7),
+    breaks = c(0, 2, 4, 6),
+    name = "gene expression\nlog2(fold change)"
+  ) +
+  theme(
+    panel.grid.major = element_line(size = 0.25),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8, angle = 90, vjust = 0.5, hjust = 1),
+    legend.direction = "vertical"
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "expression_comparison_dotplot.pdf"),
+  width = 18, height = 18
+)
+gp_dot
+dev.off()
+```
+
+Select correlated genes
+
+```{r}
+mt_atac <- mt_atac[, colnames(mt_rna)]
+mt_rna <- mt_rna[rownames(mt_atac), ]
+
+# correlation between same comparisons (columns)
+mt_cors_smp <- cor(mt_atac, mt_rna, method = "spearman")
+diag(mt_cors_smp)
+
+# correlation between genes (rows)
+mt_cors_gen <- cor(t(mt_atac), t(mt_rna), method = "spearman")
+cors_gen <- diag(mt_cors_gen)
+cors_gen <- sort(cors_gen, decreasing = TRUE)
+
+# select correlated genes
+select_pos <- names(cors_gen[(cors_gen) > 0.45])
+
+# correlation distribution
+dt_cors <- data.table(cor = cors_gen)
+dt_cors$gene <- names(cors_gen)
+dt_cors[, correlation := "no"]
+dt_cors[gene %in% select_pos, correlation := "positive"]
+
+# plot
+gp_hist <- ggplot(dt_cors, aes(cor, fill = correlation)) +
+  geom_histogram(color = "black", binwidth = 0.1) +
+  scale_y_continuous(expand = expansion(c(0, 0.1))) +
+  scale_fill_manual(values = c(
+    "positive" = "green",
+    "no" = "grey"
+  )) +
+  labs(x = "correlation", y = "number of genes") +
+  theme(legend.position = "none")
+
+```
+
+Inspect correlations between gene expression and motif binding score per sample
+
+```{r}
+mt_ord <- cbind(mt_rna, mt_atac)
+colnames(mt_ord) <- paste(
+  colnames(mt_ord),
+  rep(c("RNA", "ATAC"), each = 9),
+  sep = "_"
+)
+mt_dt <- as.data.table(mt_ord, keep.rownames = "gene")
+mt_dt <- merge.data.table(
+  mt_dt, unique(dt_atac[, .(motif, gene)]),
+  by = "gene", sort = FALSE, all.x = TRUE
+)
+
+dt_atac <- melt.data.table(
+  mt_dt,
+  id.vars = c("gene", "motif"),
+  measure.vars = grep("ATAC", colnames(mt_dt), value = TRUE),
+  value.name = "ATAC", variable.name = "comparison"
+)
+dt_atac[, comparison := str_remove(comparison, "_ATAC")]
+
+dt_rna <- melt.data.table(
+  mt_dt,
+  id.vars = "gene",
+  measure.vars = grep("RNA", colnames(mt_dt), value = TRUE),
+  value.name = "RNA", variable.name = "comparison"
+)
+dt_rna[, comparison := str_remove(comparison, "_RNA")]
+
+dt_comp <- merge.data.table(
+  dt_rna, dt_atac,
+  by = c("gene", "comparison"), all = TRUE
+)
+setcolorder(dt_comp, c("motif", "gene", "ATAC", "RNA"))
+dt_comp[, reporterline := str_extract(comparison, "Elav|Fox|Ncol")]
+dt_comp[, vs := str_extract(comparison, "vs.*")]
+dt_comp[, vs := str_remove(vs, "vs_")]
+dt_comp <- merge.data.table(
+  dt_comp, dt_cors, by = "gene",
+  all.x = TRUE, sort = FALSE
+)
+
+# save
+fwrite(
+  dt_comp,
+  file.path(res_dir, "correlation_expression_binding.tsv"),
+  sep = "\t"
+)
+
+# TFs label
+tff <- c(
+  "ARID5A_ARID5B", "ANTP_NKX3_2", "ANTP_EN1_ANTP_EN2_Nkx6_1",
+  "DMBX1_DPRX",
+  "EGR", "Ets_GABPA_ELK4_ELK1_Elk",
+  "FOSL", "FOXR2", "Foxl", "FOXC1_FOXC2_FOXG1_Foxg1",
+  "GATA",
+  "JUN",
+  "NR2C",
+  "Hoxa2_Hoxb4", "HOXD",
+  "POU4", "POU3", "PRD_PAX3_PRD_PAX7", "PTF1A",
+  "RFX2", "RFX6",
+  "Sox",
+  "TEA_sd", "Tfap2a", "Tcf", "TCF", "TALE_TGIF", "TWIST1_TWIST2",
+  "zf_C2H2_CG12605", "zf_C2H2_ZNF792", "ZIC"
+)
+dt_lab <- dt_comp[cor > 0.45 & abs(RNA) > 1 & abs(ATAC) > 0.1]
+dt_lab[, motif_name := str_extract(
+  motif,
+  sprintf("(%s)\\d*", paste(tff, collapse = "|"))
+)]
+dt_lab[, motif_name := str_replace_all(motif_name, c(
+  "ANTP_EN1_ANTP_EN2_Nkx6_1" = "Nkx6.1",
+  "Ets_GABPA_ELK4_ELK1_Elk" = "Ets/ELK1/4",
+  "FOXC1_FOXC2_FOXG1_Foxg1" = "FOXC1/G1",
+  "Hoxa2_Hoxb4" = "Hoxa2/b4",
+  "PRD_PAX3_PRD_PAX7" = "PAX3/7",
+  "TWIST1_TWIST2" = "TWIST1/2",
+  "DMBX1_DPRX" = "DMBX1/DPRX",
+  "POU3" = "POU4"
+))]
+
+# save poster boys
+dt_best <- unique(dt_lab[][, .(motif, motif_name, cor)])
+fwrite(
+  dt_best,
+  file.path(res_dir, "correlation_expression_binding_posterboys.tsv"),
+  sep = "\t"
+)
+
+# plot
+gp_comp <- ggplot(dt_comp, aes(RNA, ATAC, color = correlation)) +
+  geom_point(data = dt_comp[correlation == "no"], alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_text_repel(
+    data = dt_lab[ATAC > 0],
+    aes(label = motif_name),
+    color = "black",
+    size = 3,
+    segment.color = "grey50",
+    min.segment.length = 0,
+    nudge_y = 0.5 - dt_lab[ATAC > 0]$ATAC,
+  ) +
+  geom_text_repel(
+    data = dt_lab[ATAC < 0],
+    aes(label = motif_name),
+    color = "black",
+    size = 3,
+    segment.color = "grey50",
+    min.segment.length = 0,
+    nudge_y = -0.5 - dt_lab[ATAC < 0]$ATAC,
+  ) +
+  geom_point(data = dt_comp[correlation != "no"], alpha = 0.8) +
+  scale_color_manual(values = c(
+    "positive" = "green",
+    "no" = "grey"
+  )) +
+  scale_y_continuous(expand = c(0.1, 0.1)) +
+  facet_grid(vs ~ reporterline) +
+  theme(legend.position = "bottom")
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "comparison_scatter.pdf"),
+  width = 10, height = 15
+)
+(gp_hist / gp_comp) + plot_layout(heights = c(1, 5))
+dev.off()
+```
+
+## Gene networks
+
+Load baseline networks from BINDetect bound targets that are also expressed in given sample
+
+```{r}
+# binding targets
+mo_dt <- fread(
+  file.path(atac_dir, "motifs_genes_targets_long.tsv.gz")
+)
+mo_dt[, motif := str_replace(motif, ":", "")]
+mo_dt <- mo_dt[, .(motif, gene, sample)][grep("pos", sample)]
+mo_dt[, reporterline := str_remove(sample, "_pos")]
+
+# binding correaltions with expression
+dt_comp <- fread(
+  file.path(res_dir, "correlation_expression_binding.tsv")
+)
+dt_comp_cor[, motif := str_replace_all(motif, ":", "")]
+dt_comp_cor <- unique(
+  dt_comp[correlation != "no"][, .(motif, gene, reporterline)]
+)
+setnames(dt_comp_cor, c("gene"), c("tf_gene"))
+
+# select correlated motifs
+mo_dt_cor <- merge.data.table(
+  dt_comp_cor, mo_dt, by = c("motif", "reporterline"), sort = FALSE
+)
+
+# add expression correlation
+g_cors <- cor(t(tpms_mt))
+g_cors_dt <- rbindlist(lapply(rownames(g_cors), function(g) {
+  data.table(cor = g_cors[g, ])[
+    , tf_gene := g][
+      , gene := colnames(g_cors)]
+}))
+mo_dt_cor <- merge.data.table(
+  mo_dt_cor, g_cors_dt, by = c("gene", "tf_gene")
+)
+mo_dt_cor <- mo_dt_cor[!is.na(cor)]
+
+# save
+fwrite(
+  mo_dt_cor,
+  file.path(res_dir, "correlation_network.tsv"),
+  sep = "\t"
+)
+```
+
+How many target genes for each TF?
+
+```{r}
+hits_dt <- mo_dt_cor[, .N, .(tf_gene, sample)]
+hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
+  geom_boxplot() +
+  scale_y_continuous(breaks = seq(0, 1e5, 1e3)) +
+  scale_fill_manual(values = line_cond_cols) +
+  labs(y = "number of target genes per TF") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none",
+    panel.grid.major.y = element_line(linewidth = 0.5),
+    panel.grid.minor.y = element_line(linewidth = 0.2)
+  )
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "network_motif_target_hits.pdf"),
+  width = 5, height = 7
+)
+hits_gp
+dev.off()
+```
+
+Parse network data
+
+```{r}
+require(ggraph)
+require(igraph)
+
+net_list <- vector("list", length = 3L)
+names(net_list) <- c("Elav", "Fox", "Ncol")
+
+net_data <- vector("list", length = 3L)
+names(net_data) <- c("Elav", "Fox", "Ncol")
+
+for (sline in c("Elav", "Fox", "Ncol")) {
+
+  # edges
+
+  # get strongest edges for given line
+  mo_dt_cor <- fread(
+    file.path(res_dir, "correlation_network.tsv")
+  )
+  coef_dt_filt_select <- mo_dt_cor[abs(cor) > 0.8][reporterline == sline]
+  # add info from other lines
+  coef_dt_filt_select[, edge := paste(gene, tf_gene, sep = "__")]
+  coef_dt_filt_other <- mo_dt_cor[abs(cor) > 0.8][reporterline != sline]
+  coef_dt_filt_other[, edge := paste(gene, tf_gene, sep = "__")]
+  coef_dt_filt_other <- unique(coef_dt_filt_other[, .(edge, reporterline)])
+  coef_dt_filt_other[, n_lines := .N, edge]
+  coef_dt_filt_other[n_lines == 1, lines := paste(
+    sline, reporterline, sep = "+"
+  )]
+  coef_dt_filt_other[n_lines == 2, lines := paste(
+    c(sline, setdiff(c("Elav", "Fox", "Ncol"), sline)),
+    collapse = "+"
+  )]
+  coef_dt_filt_other <- unique(coef_dt_filt_other[, .(edge, lines)])
+  coef_dt_filt_select <- merge.data.table(
+    coef_dt_filt_select, coef_dt_filt_other,
+    by = "edge", all.x = TRUE, sort = FALSE
+  )
+  coef_dt_filt_select[is.na(lines), lines := sline]
+  setcolorder(coef_dt_filt_select, c("gene", "tf_gene"))
+
+  # vertices
+
+  # # TFs
+  nodes_tf <- unique(mo_dt_cor[, .(tf_gene, motif)])
+  setnames(nodes_tf, "tf_gene", "gene")
+  nodes_tf[, tf := TRUE]
+  dt_best <- fread(
+    file.path(res_dir, "correlation_expression_binding_posterboys.tsv")
+  )
+  nodes_tf <- merge.data.table(
+    nodes_tf, dt_best[, .(motif, motif_name)],
+    all.x = TRUE, sort = FALSE
+  )
+  nodes_tf[
+    motif == "ARCH1678_POU3F2_POU3F1_POU3F4_POU3F3",
+    motif_name := "POU4"
+  ]
+  nodes_tf[is.na(motif_name), motif_name := str_remove(motif, "ARCH\\d+_")]
+  nodes_tf[nchar(motif_name) > 25, motif_name := paste0(
+    strtrim(motif_name, 22), "..."
+  )]
+
+  # # other genes
+  nodes_gs <- unique(mo_dt_cor[, .(gene)])[!gene %in% nodes_tf$gene]
+  nodes_gs[, tf := FALSE][, motif := ""][, motif_name := ""]
+  # all vertices
+  nodes_filt_select <- rbindlist(list(nodes_tf, nodes_gs), use.names = TRUE)
+  setcolorder(nodes_filt_select, c("gene", "tf"))
+  nodes_filt_select <- nodes_filt_select[gene %in% c(
+    coef_dt_filt_select$gene, coef_dt_filt_select$tf_gene
+  )]
+  # add expression
+  nodes_filt_select[, tpm := mean(
+    unlist(tpms_mt[gene, grep(sline, colnames(tpms_mt))])
+  ), by = seq_len(nrow(nodes_filt_select))]
+  nodes_filt_select[, tpm := pmin(tpm, quantile(tpm, 0.95))]
+
+  # graph visuals
+  nodecols <- structure(c("goldenrod", "firebrick1"), names = c(FALSE, TRUE))
+  nodeshapes <- structure(c(21, 22), names = c(FALSE, TRUE))
+  heatmap_colors <- c("#ffe8bd", "orange", "orangered2", "#520c52")
+  col_fun <- colorRampPalette(colors = heatmap_colors)
+  all_line_cols <- c(
+    line_cols,
+    "Ncol+Elav+Fox" = "#b0b0b0",
+    "Elav+Fox+Ncol" = "#b0b0b0",
+    "Fox+Elav+Ncol" = "#b0b0b0",
+    "Elav+Fox" = "#984ea3", "Fox+Elav" = "#ff7f00",
+    "Elav+Ncol" = "#4daf4a", "Ncol+Elav" = "#ff7f00",
+    "Fox+Ncol" = "#4daf4a", "Ncol+Fox" = "#984ea3"
+  )
+  nodes_filt_select[, ]
+
+  # build graph
+  net <- graph_from_data_frame(
+    d = coef_dt_filt_select,
+    vertices = nodes_filt_select,
+    directed = TRUE
+  )
+  # net <- simplify(net, remove.multiple = FALSE, remove.loops = FALSE)
+
+  # degree as node size and add labels
+  V(net)$degree <- igraph::degree(net)
+  E(net)$lines <- coef_dt_filt_select$lines
+
+  # graph
+  layouts <- c("stress", "fr", "lgl", "graphopt")
+  layout_list <- sapply(layouts, function(layout) {
+    message(" - ", layout)
+    tryCatch({
+      set.seed(1950)
+      ggp <- ggraph(net, layout = layout) +
+        geom_edge_link0(aes(
+          edge_width = abs(cor),
+          edge_color = lines,
+          linetype = factor(sign(cor), levels = c(1, -1))
+        )) +
+        geom_node_point(aes(size = degree, shape = tf, fill = tpm)) +
+        geom_node_text(
+          aes(filter = motif_name != "", label = motif_name),
+          repel = TRUE, fontface = "bold", color = "black"
+        ) +
+        scale_edge_linetype(name = "expression\ncorrelation\ndirection") +
+        scale_edge_color_manual(values = all_line_cols) +
+        scale_edge_width(
+          name = "expression\ncorrelation", range = c(0.05, 0.5)
+        ) +
+        scale_size(range = c(1, 10)) +
+        scale_fill_gradientn(colours = heatmap_colors) +
+        scale_shape_manual(values = nodeshapes) +
+        theme_graph(base_family = "Helvetica") +
+        theme(legend.position = "right") +
+        labs(
+          title = sline,
+          caption = layout
+        )
+    }, error = function(e) warning(e))
+  }, USE.NAMES = TRUE, simplify = FALSE)
+
+  # save plot
+  pdf(
+    file.path(fig_dir, sprintf("network_%s.pdf", sline)),
+    width = 18, height = 12
+  )
+  print(layout_list$fr)
+  dev.off()
+  net_list[[sline]] <- layout_list$fr
+
+  # save table results
+  dt <- copy(coef_dt_filt_select)[, c("edge", "sample") := NULL]
+  # add target gene annotation
+  dt_ann_gs <- merge.data.table(
+    dt, gene_ann, by = "gene", all.x = TRUE, sort = FALSE
+  )
+  setnames(
+    dt_ann_gs,
+    c("gene", "pfam", "name"),
+    c("target_gene", "target_pfam", "target_name")
+  )
+  # add tf gene annotation
+  setnames(dt_ann_gs, "tf_gene", "gene")
+  dt_ann_tf <- merge.data.table(
+    dt_ann_gs, gene_ann, by = "gene", all.x = TRUE, sort = FALSE
+  )
+  setnames(
+    dt_ann_tf,
+    c("gene", "pfam", "name"),
+    c("tf_gene", "tf_pfam", "tf_name")
+  )
+  # add target gene tpm
+  dt_tpm <- nodes_filt_select[, .(gene, tf, tpm)]
+  setnames(dt_tpm, c("gene", "tpm"), c("target_gene", "target_tpm"))
+  dt_ann <- merge.data.table(
+    dt_ann_tf, dt_tpm,
+    by = "target_gene", all.x = TRUE, sort = FALSE
+  )
+  # add tf gene tpm
+  dt_tpm <- dt_tpm[tf == TRUE][, tf := NULL]
+  setnames(dt_tpm, c("target_gene", "target_tpm"), c("tf_gene", "tf_tpm"))
+  dt_ann_all <- merge.data.table(
+    dt_ann, dt_tpm,
+    by = "tf_gene", all.x = TRUE, sort = FALSE
+  )
+  # order and save
+  setcolorder(dt_ann_all, c(
+    "target_gene", "target_pfam", "target_name", "tf", "target_tpm",
+    "tf_gene", "tf_pfam", "tf_name", "motif", "tf_tpm",
+    "cor", "reporterline", "lines"
+  ))
+  dt_ann_all[is.na(dt_ann_all)] <- ""
+  fwrite(
+    dt_ann_all,
+    file.path(res_dir, sprintf("network_%s.tsv", sline)),
+    sep = "\t"
+  )
+
+  net_data[[sline]] <- dt_ann_all
+}
+
+net_dt <- rbindlist(net_data)
+
+net_list
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "networks.pdf"),
+  width = 18, height = 12
+)
+net_list
+dev.off()
+
+fwrite(
+  net_dt,
+  file.path(res_dir, "networks.tsv"),
+  sep = "\t"
+)
+```
