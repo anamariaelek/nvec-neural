@@ -1206,6 +1206,8 @@ Motif to TF assignment
 
 ```{r}
 # assignment
+# _ARCH1151_Homeodomains.HG_NVE7697_Homeodo
+# _ARCH1335_Homeodomains.HG_XM_001632929.3_
 dc <- fread(file.path(
   "annotation",
   "assignment-archetype-motif-gene.tsv.gz"
@@ -1674,6 +1676,7 @@ nth=12
 # alternatively, motifs for TFs only
   x="tfs"
   motifs="annotation/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms-tfs.meme"
+  #motifs="annotation/ARCH1151_Pit1+1bp_POU4F1_Pit.meme"
 
   line1=Fox
   line2=Elav
@@ -1741,6 +1744,7 @@ dc[, archetype_name := NULL]
 dc_tf <- merge.data.table(
   dc, tfs_annt, by = "gene", all.x = TRUE
 )
+setnames(dc_tf, "og", "name")
 dc_tf[gene %in% names(marks_gold_v), name := marks_gold_v[gene]]
 
 # coparisons

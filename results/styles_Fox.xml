@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<vizmap id="VizMap-2024_01_11-21_27" documentVersion="3.1">
+    <visualStyle name="Directed_0">
+        <network>
+            <visualProperty default="false" name="NETWORK_ANNOTATION_SELECTION"/>
+            <visualProperty default="550.0" name="NETWORK_SIZE"/>
+            <visualProperty default="400.0" name="NETWORK_HEIGHT"/>
+            <visualProperty default="" name="NETWORK_TITLE"/>
+            <visualProperty default="0.0" name="NETWORK_DEPTH"/>
+            <visualProperty default="false" name="NETWORK_NODE_LABEL_SELECTION"/>
+            <visualProperty default="#FFFFFF" name="NETWORK_BACKGROUND_PAINT"/>
+            <visualProperty default="0.0" name="NETWORK_CENTER_X_LOCATION"/>
+            <visualProperty default="550.0" name="NETWORK_WIDTH"/>
+            <visualProperty default="false" name="NETWORK_FORCE_HIGH_DETAIL"/>
+            <visualProperty default="1.0" name="NETWORK_SCALE_FACTOR"/>
+            <visualProperty default="0.0" name="NETWORK_CENTER_Y_LOCATION"/>
+            <visualProperty default="true" name="NETWORK_EDGE_SELECTION"/>
+            <visualProperty default="0.0" name="NETWORK_CENTER_Z_LOCATION"/>
+            <visualProperty default="true" name="NETWORK_NODE_SELECTION"/>
+        </network>
+        <node>
+            <dependency value="true" name="nodeCustomGraphicsSizeSync"/>
+            <dependency value="true" name="nodeSizeLocked"/>
+            <visualProperty default="20.0" name="NODE_SIZE">
+                <continuousMapping attributeName="expression_lfc" attributeType="float">
+                    <continuousMappingPoint attrValue="1.5" equalValue="10.0" greaterValue="10.0" lesserValue="1.0"/>
+                    <continuousMappingPoint attrValue="8.0" equalValue="30.0" greaterValue="1.0" lesserValue="30.0"/>
+                </continuousMapping>
+            </visualProperty>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_2"/>
+            <visualProperty default="#B6B6B6" name="NODE_LABEL_BACKGROUND_COLOR"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_5, name=Node Custom Paint 5)" name="NODE_CUSTOMPAINT_5"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_3"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_9"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_5"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_7, name=Node Custom Paint 7)" name="NODE_CUSTOMPAINT_7"/>
+            <visualProperty default="8" name="NODE_LABEL_FONT_SIZE"/>
+            <visualProperty default="10.0" name="COMPOUND_NODE_PADDING"/>
+            <visualProperty default="1.0" name="NODE_BORDER_WIDTH"/>
+            <visualProperty default="#252525" name="NODE_LABEL_COLOR"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_7"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_8"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_5"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_3, name=Node Custom Paint 3)" name="NODE_CUSTOMPAINT_3"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_9"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_6"/>
+            <visualProperty default="0.0" name="NODE_Y_LOCATION"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_1"/>
+            <visualProperty default="255" name="NODE_BORDER_TRANSPARENCY"/>
+            <visualProperty default="50.0" name="NODE_WIDTH"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_4"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_LABEL_POSITION"/>
+            <visualProperty default="0.0" name="NODE_LABEL_ROTATION"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_1"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_9, name=Node Custom Paint 9)" name="NODE_CUSTOMPAINT_9"/>
+            <visualProperty default="false" name="NODE_SELECTED"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_6, name=Node Custom Paint 6)" name="NODE_CUSTOMPAINT_6"/>
+            <visualProperty default="true" name="NODE_NESTED_NETWORK_IMAGE_VISIBLE"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_8"/>
+            <visualProperty default="255" name="NODE_LABEL_BACKGROUND_TRANSPARENCY"/>
+            <visualProperty default="0.0" name="NODE_X_LOCATION"/>
+            <visualProperty default="#969696" name="NODE_FILL_COLOR">
+                <discreteMapping attributeName="name" attributeType="string">
+                    <discreteMappingEntry attributeValue="Sp6-9" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.3:like:JUN/JUNB/JUND" value="#0C2C84"/>
+                    <discreteMappingEntry attributeValue="MAF/MAFA/MAFB/" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.6:JUN/JUNB/JUND" value="#171FC0"/>
+                    <discreteMappingEntry attributeValue="Insm1" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="Anthox1/Ax1" value="#B096FF"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG130.0:NA" value="#78C679"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.57:RAX/RAX2" value="#AC7FBA"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.91:like:FERD3L/PTF1A" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.64:MEOX1/MEOX" value="#E63F59"/>
+                    <discreteMappingEntry attributeValue="ZMAT1/ZMAT3" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="Pou4" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="ZNF845" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="islike:E2F1/E2F2/E2F3/E2F6" value="#40BAD7"/>
+                    <discreteMappingEntry attributeValue="MADS-box_SRF.HG1.2:BORCS8-MEF2" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.14:like:CREB3/CREB3L1" value="#405397"/>
+                    <discreteMappingEntry attributeValue="FoxA/D" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.17:ATF3/JDP2" value="#295FE3"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#2946D6"/>
+                    <discreteMappingEntry attributeValue="THAP_finger.HG1.0:AC073612.1/T" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.Unclassified" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="GLIS1/GLIS3" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="T-box.HG1.13:TBX1/TBX10/TBX15/" value="#A8D0A7"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="OtxB" value="#FDC780"/>
+                    <discreteMappingEntry attributeValue="Ets.HG1.2:ELK1/ELK3/ELK4" value="#C8A1D0"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.34:HMX1/HMX2/" value="#EF6548"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.28:PAX3/PAX7" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="Cnido-Jun" value="#D05ECC"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="FoxQ2d" value="#88419D"/>
+                    <discreteMappingEntry attributeValue="Klf13" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="Cnido-Fos1" value="#D01ACA"/>
+                    <discreteMappingEntry attributeValue="KLF10/KLF11" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.3:like:RFX4/RFX6/RFX8" value="#018D86"/>
+                    <discreteMappingEntry attributeValue="PaxA" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="zf-C4_Nuclear_receptors.HG1.34" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="Doublesex_DM.HG1.19:like:DMRT1" value="#3690C0"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG4.9:like:POU3F1" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.17:like:FOXI1/FOX" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG19.1:PRDM14" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG7.4:SCRT1/SCRT2" value="#41A859"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.39:BARHL1/BAR" value="#DD534D"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="NvSoxA" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="THAP10" value="#F6E99E"/>
+                    <discreteMappingEntry attributeValue="TEAD" value="#EDF3A7"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Six3/6" value="#BDBDBD"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.6:like:RFX6" value="#7BC7BB"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX" value="#C80000"/>
+                </discreteMapping>
+            </visualProperty>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_3"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_6"/>
+            <visualProperty default="true" name="NODE_VISIBLE"/>
+            <visualProperty default="200.0" name="NODE_LABEL_WIDTH"/>
+            <visualProperty default="0.0" name="NODE_DEPTH"/>
+            <visualProperty default="255" name="NODE_TRANSPARENCY"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_7"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_3"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_2"/>
+            <visualProperty default="255" name="NODE_LABEL_TRANSPARENCY"/>
+            <visualProperty default="0.0" name="NODE_Z_LOCATION"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_8"/>
+            <visualProperty default="50.0" name="NODE_HEIGHT"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_4, name=Node Custom Paint 4)" name="NODE_CUSTOMPAINT_4"/>
+            <visualProperty default="NONE" name="NODE_LABEL_BACKGROUND_SHAPE"/>
+            <visualProperty default="#919191" name="NODE_BORDER_PAINT"/>
+            <visualProperty default="ELLIPSE" name="NODE_SHAPE"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_1, name=Node Custom Paint 1)" name="NODE_CUSTOMPAINT_1"/>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_2, name=Node Custom Paint 2)" name="NODE_CUSTOMPAINT_2"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_2"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_7"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_4"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_5"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_6"/>
+            <visualProperty default="SansSerif.plain,plain,12" name="NODE_LABEL_FONT_FACE"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="NODE_CUSTOMGRAPHICS_POSITION_9"/>
+            <visualProperty default="ROUND_RECTANGLE" name="COMPOUND_NODE_SHAPE"/>
+            <visualProperty default="org.cytoscape.cg.model.NullCustomGraphics,0,[ Remove Graphics ]," name="NODE_CUSTOMGRAPHICS_4"/>
+            <visualProperty default="" name="NODE_TOOLTIP"/>
+            <visualProperty default="#787878" name="NODE_PAINT"/>
+            <visualProperty default="" name="NODE_LABEL">
+                <passthroughMapping attributeName="name" attributeType="string"/>
+            </visualProperty>
+            <visualProperty default="DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_8, name=Node Custom Paint 8)" name="NODE_CUSTOMPAINT_8"/>
+            <visualProperty default="SOLID" name="NODE_BORDER_STROKE"/>
+            <visualProperty default="50.0" name="NODE_CUSTOMGRAPHICS_SIZE_1"/>
+            <visualProperty default="#FF0066" name="NODE_SELECTED_PAINT"/>
+        </node>
+        <edge>
+            <dependency value="true" name="arrowColorMatchesEdge"/>
+            <visualProperty default="AUTO_BEND" name="EDGE_STACKING"/>
+            <visualProperty default="0.0" name="EDGE_Z_ORDER"/>
+            <visualProperty default="255" name="EDGE_LABEL_BACKGROUND_TRANSPARENCY"/>
+            <visualProperty default="false" name="EDGE_SELECTED"/>
+            <visualProperty default="NONE" name="EDGE_LABEL_BACKGROUND_SHAPE"/>
+            <visualProperty default="#FFFF00" name="EDGE_TARGET_ARROW_SELECTED_PAINT"/>
+            <visualProperty default="true" name="EDGE_VISIBLE"/>
+            <visualProperty default="255" name="EDGE_TRANSPARENCY"/>
+            <visualProperty default="#FFFF00" name="EDGE_SOURCE_ARROW_SELECTED_PAINT"/>
+            <visualProperty default="200.0" name="EDGE_LABEL_WIDTH"/>
+            <visualProperty default="SansSerif.plain,plain,12" name="EDGE_LABEL_FONT_FACE"/>
+            <visualProperty default="#333333" name="EDGE_TARGET_ARROW_UNSELECTED_PAINT"/>
+            <visualProperty default="#808080" name="EDGE_PAINT"/>
+            <visualProperty default="0.0" name="EDGE_LABEL_ROTATION"/>
+            <visualProperty default="#FF0000" name="EDGE_STROKE_SELECTED_PAINT"/>
+            <visualProperty default="#3399FF" name="EDGE_LABEL_COLOR"/>
+            <visualProperty default="" name="EDGE_LABEL"/>
+            <visualProperty default="12" name="EDGE_LABEL_FONT_SIZE"/>
+            <visualProperty default="ARROW" name="EDGE_TARGET_ARROW_SHAPE"/>
+            <visualProperty default="#B6B6B6" name="EDGE_LABEL_BACKGROUND_COLOR"/>
+            <visualProperty default="0.5" name="EDGE_STACKING_DENSITY"/>
+            <visualProperty default="C,C,c,0.00,0.00" name="EDGE_LABEL_POSITION"/>
+            <visualProperty default="6.0" name="EDGE_SOURCE_ARROW_SIZE"/>
+            <visualProperty default="" name="EDGE_TOOLTIP"/>
+            <visualProperty default="#CCCCCC" name="EDGE_UNSELECTED_PAINT">
+                <discreteMapping attributeName="name" attributeType="string">
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) Nvec_vc1.1_XM_032380374.2" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.3:like:JUN/JUNB/JUND (interacts with) Nvec_vc1.1_XM_001641129.3" value="#0C2C84"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.3:like:RFX4/RFX6/RFX8 (interacts with) RFX.HG1.3:like:RFX4/RFX6/RFX8" value="#018D86"/>
+                    <discreteMappingEntry attributeValue="Doublesex_DM.HG1.19:like:DMRT1 (interacts with) zf-C2H2.HG14.4:PRDM6" value="#3690C0"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Doublesex_DM.HG1.19:like:DMRT1" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_vc1.1_XM_032361814.2" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032375635.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) Nvec_vc1.1_XM_032377792.2" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG7.4:SCRT1/SCRT2 (interacts with) Insm1" value="#41AB5D"/>
+                    <discreteMappingEntry attributeValue="Insm1 (interacts with) Nvec_vc1.1_XM_001637190.3" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="THAP10 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#F6E99E"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_001641129.3" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) Nvec_vc1.1_XM_032370011.2" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_v1g19278" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="islike:E2F1/E2F2/E2F3/E2F6 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#40BAD7"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="Ets.HG1.2:ELK1/ELK3/ELK4 (interacts with) Nvec_vc1.1_XM_032385556.2" value="#C8A1D0"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) zf-C2H2.HG7.4:SCRT1/SCRT2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032376926.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="THAP10 (interacts with) HLH.HG1.29:MYC/MYCL/MYCN" value="#F6E99E"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) FoxA/D" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) ZNF845" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) Homeodomains.HG1.34:HMX1/HMX2/" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) Nvec_vc1.1_XM_032375635.2" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.17:ATF3/JDP2 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#295FE3"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.3:like:RFX4/RFX6/RFX8 (interacts with) FoxQ2d" value="#018D86"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Pou4" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_v1g19278" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="Cnido-Fos1 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#D01ACA"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.39:BARHL1/BAR (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#DD534D"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) HLH.HG1.29:MYC/MYCL/MYCN" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) FoxQ2d" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="TEAD (interacts with) Nvec_vc1.1_XM_032372078.2" value="#EDF3A7"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032376926.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="Cnido-Fos1 (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#D01ACA"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.28:PAX3/PAX7 (interacts with) Nvec_vc1.1_XM_001634160.3" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) OtxB" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) ZNF845" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Forkhead.HG1.17:like:FOXI1/FOX" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Pou4" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_001634160.3" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) OtxB" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.64:MEOX1/MEOX (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#E63F59"/>
+                    <discreteMappingEntry attributeValue="OtxB (interacts with) Nvec_vc1.1_XM_032387167.2" value="#FDC780"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) Cnido-Jun" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Cnido-Jun (interacts with) Nvec_vc1.1_XM_032364814.2" value="#D05ECC"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_048728967.1" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Homeodomains.HG2.29:PAX4/PAX6" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) FoxA/D" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="T-box.HG1.13:TBX1/TBX10/TBX15/ (interacts with) Nvec_vc1.1_XM_032376926.2" value="#A8D0A7"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Homeodomains.HG2.28:PAX3/PAX7" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) Forkhead.HG1.17:like:FOXI1/FOX" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.6:like:RFX6 (interacts with) Nvec_vc1.1_XM_032385706.2" value="#7BC7BB"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_001641129.3" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) Cnido-Jun" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Pou4" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_001637190.3" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) HLH.HG1.29:MYC/MYCL/MYCN" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="T-box.HG1.13:TBX1/TBX10/TBX15/ (interacts with) Nvec_vc1.1_XM_032372078.2" value="#A8D0A7"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Nvec_vc1.1_XM_032387167.2" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_vc1.1_XM_048723292.1" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF (interacts with) Nvec_v1g19278" value="#2946D6"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_v1g19278" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) FoxA/D" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) OtxB" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG19.1:PRDM14 (interacts with) Nvec_vc1.1_XM_001625588.3" value="#40A625"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.34:HMX1/HMX2/ (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#EF6548"/>
+                    <discreteMappingEntry attributeValue="TEAD (interacts with) Pou4" value="#EDF3A7"/>
+                    <discreteMappingEntry attributeValue="Cnido-Jun (interacts with) Nvec_vc1.1_XM_032372078.2" value="#D05ECC"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) NvSoxA" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="Insm1 (interacts with) RFX.HG1.6:like:RFX6" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Cnido-Jun" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.28:PAX3/PAX7 (interacts with) Nvec_vc1.1_XM_032363168.2" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG130.0:NA (interacts with) Nvec_vc1.1_XM_032385496.2" value="#78C679"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.91:like:FERD3L/PTF1A (interacts with) Insm1" value="#FECC6D"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_048723292.1" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Forkhead.HG1.17:like:FOXI1/FOX" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.6:JUN/JUNB/JUND (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#171FC0"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) Nvec_vc1.1_XM_032370011.2" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032363992.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032363992.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.14:like:CREB3/CREB3L1 (interacts with) Nvec_vc1.1_XM_001639547.3" value="#405397"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) ZNF845" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032379465.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.64:MEOX1/MEOX (interacts with) Pou4" value="#E63F59"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) Nvec_vc1.1_XM_032375635.2" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU (interacts with) Nvec_vc1.1_XM_032363992.2" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) Cnido-Fos1" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) ZNF845" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="Anthox1/Ax1 (interacts with) Nvec_vc1.1_XM_001625109.3" value="#B096FF"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU (interacts with) Nvec_vc1.1_XM_032379465.2" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="OtxB (interacts with) FoxA/D" value="#FDC780"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) Nvec_vc1.1_XM_048723292.1" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Forkhead.HG1.12:FOXN1/FOXN4/FO" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG7.4:SCRT1/SCRT2 (interacts with) RFX.HG1.6:like:RFX6" value="#41AB5D"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.91:like:FERD3L/PTF1A (interacts with) Anthox1/Ax1" value="#FECC6D"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) FoxA/D" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="OtxB (interacts with) Nvec_v1g19278" value="#FDC780"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) OtxB" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_048731064.1" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_032361814.2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) RFX.HG1.6:like:RFX6" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG7.4:SCRT1/SCRT2 (interacts with) Nvec_vc1.1_XM_032385496.2" value="#41AB5D"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) Nvec_vc1.1_XM_032372078.2" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_032364814.2" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="FoxQ2d (interacts with) Nvec_vc1.1_XM_032385496.2" value="#88419D"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) Nvec_vc1.1_XM_048723292.1" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Pou4" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG19.1:PRDM14 (interacts with) Nvec_vc1.1_XM_032362875.2" value="#40A625"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) Cnido-Jun" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_001640743.3" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="Cnido-Jun (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#D05ECC"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_032361849.2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_001640743.3" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032372078.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.17:ATF3/JDP2 (interacts with) Nvec_vc1.1_XM_032364814.2" value="#295FE3"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032361814.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="THAP10 (interacts with) zf-C2H2.HG1.32:like:AC008758.1" value="#F6E99E"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032361814.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="islike:E2F1/E2F2/E2F3/E2F6 (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#40BAD7"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.3:like:JUN/JUNB/JUND (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#0C2C84"/>
+                    <discreteMappingEntry attributeValue="islike:E2F1/E2F2/E2F3/E2F6 (interacts with) HMGbox_Sox.HG1.19:like:SOX1/SO" value="#40BAD7"/>
+                    <discreteMappingEntry attributeValue="Anthox1/Ax1 (interacts with) Insm1" value="#B096FF"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032370011.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Ets.HG1.2:ELK1/ELK3/ELK4 (interacts with) zf-C2H2.HG7.4:SCRT1/SCRT2" value="#9ECAE1"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.6:JUN/JUNB/JUND (interacts with) Nvec_vc1.1_XM_032364814.2" value="#171FC0"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_v1g19278" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU (interacts with) OtxB" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.17:ATF3/JDP2 (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#295FE3"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.6:like:RFX6 (interacts with) RFX.HG1.3:like:RFX4/RFX6/RFX8" value="#7BC7BB"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_032387167.2" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) OtxB" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_032384126.2" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_032380374.2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032379465.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) OtxB" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) Nvec_vc1.1_XM_032375635.2" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.3:like:JUN/JUNB/JUND (interacts with) Nvec_vc1.1_XM_032372078.2" value="#0C2C84"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) Nvec_v1g19278" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX (interacts with) Forkhead.HG1.17:like:FOXI1/FOX" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="FoxQ2d (interacts with) Nvec_vc1.1_XM_032363168.2" value="#88419D"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) Nvec_vc1.1_XM_032377792.2" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.3:like:JUN/JUNB/JUND (interacts with) ZNF845" value="#0C2C84"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Pou4" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032384126.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="OtxB (interacts with) Nvec_vc1.1_XM_032366211.2" value="#FDC780"/>
+                    <discreteMappingEntry attributeValue="T-box.HG1.13:TBX1/TBX10/TBX15/ (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#A8D0A7"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032380374.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX (interacts with) Nvec_vc1.1_XM_032384420.2" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) OtxB" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) Nvec_vc1.1_XM_032375635.2" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032372078.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) NvSoxA" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF (interacts with) Nvec_vc1.1_XM_001639547.3" value="#2946D6"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU (interacts with) Cnido-Jun" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) zf-C2H2.HG87.0:NA" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032364814.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032384126.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_vc1.1_XM_001625588.3" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG7.4:SCRT1/SCRT2 (interacts with) Nvec_vc1.1_XM_001637190.3" value="#41AB5D"/>
+                    <discreteMappingEntry attributeValue="T-box.HG1.13:TBX1/TBX10/TBX15/ (interacts with) Cnido-Jun" value="#A8D0A7"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) RFX.HG1.3:like:RFX4/RFX6/RFX8" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) Nvec_vc1.1_XM_032376926.2" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_vc1.1_XM_032380374.2" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) ZNF845" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) NvSoxA" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.17:ATF3/JDP2 (interacts with) Nvec_vc1.1_XM_001639547.3" value="#295FE3"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) Cnido-Jun" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="Cnido-Fos1 (interacts with) Nvec_vc1.1_XM_001639547.3" value="#D01ACA"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG130.0:NA (interacts with) RFX.HG1.6:like:RFX6" value="#78C679"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) OtxB" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032363992.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.57:RAX/RAX2 (interacts with) Insm1" value="#AC7FBA"/>
+                    <discreteMappingEntry attributeValue="Doublesex_DM.HG1.19:like:DMRT1 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#3690C0"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.6:JUN/JUNB/JUND (interacts with) Nvec_vc1.1_XM_032372078.2" value="#171FC0"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_048728967.1" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_vc1.1_XM_032372078.2" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_032372078.2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) Homeodomains.HG1.37:NKX6-1/NKX" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="Ets.HG1.2:ELK1/ELK3/ELK4 (interacts with) Nvec_vc1.1_XM_048732711.1" value="#C8A1D0"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) OtxB" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Forkhead.HG1.17:like:FOXI1/FOX" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) Pou4" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="THAP10 (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#F6E99E"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032387167.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) HMGbox_Sox.HG1.19:like:SOX1/SO" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="THAP10 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#F6E99E"/>
+                    <discreteMappingEntry attributeValue="Insm1 (interacts with) Nvec_vc1.1_XM_032385496.2" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Doublesex_DM.HG1.19:like:DMRT1 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#3690C0"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.34:HMX1/HMX2/ (interacts with) zf-C2H2.HG14.4:PRDM6" value="#EF6548"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Nvec_vc1.1_XM_032366790.2" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.37:NKX6-1/NKX (interacts with) Nvec_vc1.1_XM_001639547.3" value="#EF3B2C"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.3:like:RFX4/RFX6/RFX8 (interacts with) Nvec_vc1.1_XM_032385556.2" value="#018D86"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032366211.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) NvSoxA" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Doublesex_DM.HG1.19:like:DMRT1 (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#3690C0"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU (interacts with) Nvec_vc1.1_XM_032375635.2" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) Nvec_vc1.1_XM_048723292.1" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_001625588.3" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG14.4:PRDM6 (interacts with) Nvec_vc1.1_XM_032375635.2" value="#74C476"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Runt_Runx.HG1.0:RUNX1/RUNX2/RU (interacts with) Nvec_v1g19278" value="#C7E9B4"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) Nvec_vc1.1_XM_032375635.2" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_v1g19278" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) Nvec_vc1.1_XM_032380374.2" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) Nvec_vc1.1_XM_032384126.2" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="FoxQ2d (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#88419D"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_001625588.3" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) zf-C2H2.HG1.35:FEZF1/FEZF2/GFI" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_v1g19278" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.50:HES3 (interacts with) Nvec_v1g19278" value="#7FCDBB"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_048728967.1" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="PaxA (interacts with) Nvec_vc1.1_XM_032380374.2" value="#2171B5"/>
+                    <discreteMappingEntry attributeValue="FoxQ2d (interacts with) Nvec_vc1.1_XM_001625109.3" value="#88419D"/>
+                    <discreteMappingEntry attributeValue="TEAD (interacts with) OtxB" value="#EDF3A7"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) bZIP.HG1.4:ATF2/ATF7/ATF7-NPFF" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032372078.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.17:like:FOXI1/FOX (interacts with) Nvec_v1g19278" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032366211.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="FoxQ2d (interacts with) RFX.HG1.3:like:RFX4/RFX6/RFX8" value="#88419D"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_032377792.2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.6:JUN/JUNB/JUND (interacts with) Nvec_vc1.1_XM_001639547.3" value="#171FC0"/>
+                    <discreteMappingEntry attributeValue="Forkhead.HG1.12:FOXN1/FOXN4/FO (interacts with) Nvec_vc1.1_XM_032375635.2" value="#6A51A3"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) Nvec_vc1.1_XM_048723292.1" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG1.39:BARHL1/BAR (interacts with) Pou4" value="#DD534D"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) Cnido-Jun" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) NvSoxA" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX (interacts with) Nvec_vc1.1_XM_032370011.2" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="islike:E2F1/E2F2/E2F3/E2F6 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#40BAD7"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) Nvec_vc1.1_XM_032377792.2" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="Pou4 (interacts with) Pou4" value="#F768A1"/>
+                    <discreteMappingEntry attributeValue="Insm1 (interacts with) Insm1" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_001641129.3" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="islike:E2F1/E2F2/E2F3/E2F6 (interacts with) Nvec_vc1.1_XM_032376926.2" value="#40BAD7"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) ZNF845" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="TEAD (interacts with) Nvec_v1g19278" value="#EDF3A7"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.29:PAX4/PAX6 (interacts with) zf-C2H2.HG7.4:SCRT1/SCRT2" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="Cnido-Jun (interacts with) Nvec_vc1.1_XM_001639547.3" value="#D05ECC"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) NvSoxA" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="ZNF845 (interacts with) Nvec_vc1.1_XM_032370011.2" value="#FEC44F"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.32:like:AC008758.1 (interacts with) Nvec_vc1.1_XM_032372078.2" value="#66C2A4"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.57:RAX/RAX2 (interacts with) Nvec_vc1.1_XM_001625109.3" value="#AC7FBA"/>
+                    <discreteMappingEntry attributeValue="HMGbox_Sox.HG1.19:like:SOX1/SO (interacts with) Pou4" value="#F16913"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) bZIP.HG1.17:ATF3/JDP2" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="NvSoxA (interacts with) Nvec_vc1.1_XM_032372078.2" value="#FEDA5E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG1.35:FEZF1/FEZF2/GFI (interacts with) Nvec_vc1.1_XM_032375635.2" value="#02818A"/>
+                    <discreteMappingEntry attributeValue="Cnido-Fos1 (interacts with) Nvec_vc1.1_XM_032364814.2" value="#D01ACA"/>
+                    <discreteMappingEntry attributeValue="HLH.HG1.29:MYC/MYCL/MYCN (interacts with) ZNF845" value="#238B45"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.28:PAX3/PAX7 (interacts with) zf-C2H2.HG7.4:SCRT1/SCRT2" value="#CE1256"/>
+                    <discreteMappingEntry attributeValue="Homeodomains.HG2.70:ARX (interacts with) Nvec_vc1.1_XM_032384126.2" value="#AC6391"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Nvec_vc1.1_XM_001641129.3" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="zf-C2H2.HG87.0:NA (interacts with) Runt_Runx.HG1.0:RUNX1/RUNX2/RU" value="#ADDD8E"/>
+                    <discreteMappingEntry attributeValue="bZIP.HG1.14:like:CREB3/CREB3L1 (interacts with) Nvec_v1g19278" value="#405397"/>
+                    <discreteMappingEntry attributeValue="FoxA/D (interacts with) HLH.HG1.29:MYC/MYCL/MYCN" value="#AE017E"/>
+                    <discreteMappingEntry attributeValue="RFX.HG1.3:like:RFX4/RFX6/RFX8 (interacts with) Insm1" value="#018D86"/>
+                </discreteMapping>
+            </visualProperty>
+            <visualProperty default="#000000" name="EDGE_SOURCE_ARROW_UNSELECTED_PAINT"/>
+            <visualProperty default="5.0" name="EDGE_WIDTH">
+                <continuousMapping attributeName="expression_correlation" attributeType="float">
+                    <continuousMappingPoint attrValue="0.0" equalValue="0.6766917293233082" greaterValue="0.6766917293233082" lesserValue="1.0"/>
+                    <continuousMappingPoint attrValue="1.0" equalValue="1.0447170859888981" greaterValue="1.0" lesserValue="1.0447170859888981"/>
+                </continuousMapping>
+            </visualProperty>
+            <visualProperty default="#969696" name="EDGE_STROKE_UNSELECTED_PAINT"/>
+            <visualProperty default="SOLID" name="EDGE_LINE_TYPE"/>
+            <visualProperty default="6.0" name="EDGE_TARGET_ARROW_SIZE"/>
+            <visualProperty default="NONE" name="EDGE_SOURCE_ARROW_SHAPE"/>
+            <visualProperty name="EDGE_BEND"/>
+            <visualProperty default="false" name="EDGE_LABEL_AUTOROTATE"/>
+            <visualProperty default="255" name="EDGE_LABEL_TRANSPARENCY"/>
+            <visualProperty default="true" name="EDGE_CURVED"/>
+            <visualProperty default="#FF0000" name="EDGE_SELECTED_PAINT"/>
+        </edge>
+    </visualStyle>
+</vizmap>
