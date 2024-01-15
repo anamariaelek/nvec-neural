@@ -652,7 +652,7 @@ saveWorkbook(
 
 ## Cnidocytes network
 
-Comparison with Ozment et al. 2021 eLife paper.
+### Comparison with Ozment et al. 2021 eLife paper.
 
 ```{r}
 # load data from paper and translate gene IDs to DToL IDs
@@ -660,13 +660,18 @@ pou_act <- readWorkbook(file.path(pub_dir, "elife-74336-supp6-v3.xlsx"), startRo
 pou_rep <- readWorkbook(file.path(pub_dir, "elife-74336-supp7-v3.xlsx"), startRow = 2, colNames = TRUE)
 setDT(pou_act)
 setDT(pou_rep)
-pou_pub <- rbindlist(list(activated = pou_act, repressed = pou_rep), idcol = "relation")
+pou_pub <- rbindlist(list(activated = pou_act, repressed = pou_rep), idcol = "regulation")
 setnames(pou_pub, "gene", "ID_Vienna")
 dict <- fread(file.path("annotation", "DICTIONARY_Nvec_vienna_vs_Nvec_old_vs_Nvec_DTOL_v2.txt"))[, .(ID_Vienna, ID_DToL)]
 setnames(dict, "ID_DToL", "gene")
 pou_pub <- merge.data.table(pou_pub, dict, all.x = TRUE, sort = FALSE)
-pou_pub <- pou_pub[, .(gene, relation, fold_change, mean_counts, pvalue)]
+pou_pub <- pou_pub[, .(gene, regulation, fold_change, pvalue)]
 setnames(pou_pub, "gene", "target_gene")
+fwrite(
+  pou_pub,
+  file.path(pub_dir, "pou4_targets_elife.tsv"),
+  sep = "\t"
+)
 
 # load our Ncol network
 pou4 <- "Nvec_vc1.1_XM_032363992.2"
@@ -674,9 +679,9 @@ ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
 pou_net <- ncol_dt[gene == pou4]
 
 # overlap of Pou4 targets
-pou_pub_act <- pou_pub[relation == "activated", .(target_gene, fold_change)]
+pou_pub_act <- pou_pub[regulation == "activated", .(target_gene, fold_change)]
 setnames(pou_pub_act, "fold_change", "activated")
-pou_pub_rep <- pou_pub[relation == "repressed", .(target_gene, fold_change)]
+pou_pub_rep <- pou_pub[regulation == "repressed", .(target_gene, fold_change)]
 setnames(pou_pub_rep, "fold_change", "repressed")
 pou_net_gen <- pou_net[, .(target_gene, target_expression_lfc)]
 setnames(pou_net_gen, "target_expression_lfc", "network")
@@ -684,9 +689,11 @@ pou_dt <- merge.data.table(merge.data.table(
   pou_pub_act, pou_pub_rep,
   by = "target_gene", all = TRUE
 ), pou_net_gen, by = "target_gene", all = TRUE)
-pou_mt <- as.matrix(pou_dt[, -1])
-pou_mt[!is.na(pou_mt)] <- 1
-pou_mt[is.na(pou_mt)] <- 0
+pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "network")]
+pou_mt[, target_gene := pou_dt$target_gene]
+setcolorder(pou_mt, "target_gene")
+pou_mt <- unique(pou_mt)
+pou_mt <- as.matrix(pou_mt[, -1])
 
 require(eulerr)
 fit <- euler(pou_mt)
@@ -699,7 +706,7 @@ print(p1)
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "Pou4_targets_ovl.pdf"),
+  file.path(fig_dir, "Pou4_targets_ovl_elife.pdf"),
   width = 4, height = 2
 )
 print(p1)
@@ -748,7 +755,7 @@ gp_pou_exp <- ggplot(pou_expression_dt, aes(annot, target_expression_lfc, fill =
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "Pou4_targets_expression.pdf"),
+  file.path(fig_dir, "Pou4_targets_expression_elife.pdf"),
   width = 4, height = 4
 )
 gp_pou_exp
@@ -759,17 +766,18 @@ Genes in intersect
 
 ```{r}
 pou_int <- pou_net[target_gene %in% target_intersect]
-pou_int <- merge.data.table(
-  pou_int, pou_pub[, .(target_gene, relation)],
+pou_int <- unique(merge.data.table(
+  pou_int, pou_pub[, .(target_gene, regulation)],
   by = "target_gene", all.x = TRUE, sort = FALSE
-)
+))
 pou_int[, target_TF := target_gene %in% tfs_annt$gene]
+
 # plot
 gp_pou_int <- ggplot(pou_int, aes(
   expression_correlation, target_expression_lfc,
   size = 1/n_samples,
   shape = target_TF,
-  fill = relation,
+  fill = regulation,
   label = target_name
 )) +
   ggrepel::geom_text_repel(color = "black") +
@@ -796,16 +804,229 @@ gp_pou_int <- ggplot(pou_int, aes(
   labs(
     x = "Pou4 expression correlation",
     y = "target gene expression logFC",
-    title = "Intersect target genes"
+    title = sprintf("%s target genes in intersect", length(unique(pou_int$target_gene)))
   )
 gp_pou_int
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
-  file.path(fig_dir, "Pou4_targets_intersect.pdf"),
+  file.path(fig_dir, "Pou4_targets_intersect_elife.pdf"),
   width = 14, height = 10
 )
 gp_pou_int
+dev.off()
+```
+
+### Comparison with Tournière et al. 2020 Cell Reports
+
+```{r}
+# load data from paper and translate gene IDs to DToL IDs
+pou_mut <- readWorkbook(file.path(pub_dir, "1-s2.0-S2211124720303454-mmc2.xlsx"), startRow = 1, colNames = TRUE)
+setDT(pou_mut)
+setnames(pou_mut, "ID", "ID_Vienna")
+dict <- fread(file.path("annotation", "DICTIONARY_Nvec_vienna_vs_Nvec_old_vs_Nvec_DTOL_v2.txt"))[, .(ID_Vienna, ID_DToL)]
+setnames(dict, "ID_DToL", "gene")
+pou_mut <- merge.data.table(pou_mut, dict, all.x = TRUE, sort = FALSE)
+setnames(
+  pou_mut,
+  c("gene", "Regulation", "log2FoldChange"),
+  c("target_gene", "regulation", "fold_change")
+)
+pou_mut[regulation == "UP", regulation := "up"]
+pou_mut[regulation == "Down", regulation := "down"]
+pou_mut <- pou_mut[, .(target_gene, regulation, fold_change, padj)]
+fwrite(
+  pou_mut,
+  file.path(pub_dir, "pou4_targets_cellrep.tsv"),
+  sep = "\t"
+)
+
+# load our Ncol network
+pou4 <- "Nvec_vc1.1_XM_032363992.2"
+ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
+pou_net <- ncol_dt[gene == pou4]
+
+# overlap of Pou4 targets
+pou_mut_act <- pou_mut[regulation == "up", .(target_gene, fold_change)]
+setnames(pou_mut_act, "fold_change", "up")
+pou_mut_rep <- pou_mut[regulation == "down", .(target_gene, fold_change)]
+setnames(pou_mut_rep, "fold_change", "down")
+pou_net_gen <- pou_net[, .(target_gene, target_expression_lfc)]
+setnames(pou_net_gen, "target_expression_lfc", "network")
+pou_dt <- unique(merge.data.table(merge.data.table(
+  pou_mut_act, pou_mut_rep,
+  by = "target_gene", all = TRUE
+), pou_net_gen, by = "target_gene", all = TRUE))
+pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("down", "up", "network")]
+pou_mt[, target_gene := pou_dt$target_gene]
+setcolorder(pou_mt, "target_gene")
+pou_mt <- unique(pou_mt)
+pou_mt <- as.matrix(pou_mt[, -1])
+
+require(eulerr)
+fit <- euler(pou_mt)
+p1 <- plot(
+  fit,
+  quantities = TRUE
+)
+print(p1)
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_ovl_cellrep.pdf"),
+  width = 4, height = 2
+)
+print(p1)
+dev.off()
+```
+
+Inspect the differences
+
+```{r}
+# reverse activation and repression sign (mutants)
+pou_dt[, published := -1 * up][is.na(published), published := -1 * down]
+
+# sets of target genes
+missing_in_network <- unique(pou_dt[!is.na(published) & is.na(network)]$target_gene)
+missing_in_network_act <- unique(pou_dt[!is.na(down) & is.na(network)]$target_gene)
+missing_in_network_rep <- unique(pou_dt[!is.na(up) & is.na(network)]$target_gene)
+missing_in_published <- unique(pou_dt[is.na(published)]$target_gene)
+target_intersect <- unique(pou_dt[!is.na(published) & !is.na(network)]$target_gene)
+mo_dt <- fread(
+  file.path(atac_dir, "motifs_genes_targets_long.tsv.gz")
+)
+target_bound <- unique(mo_dt[sample=="Ncol_pos" & gene == pou4]$target_gene)
+
+# expression for target genes
+pou_expression_dt <- unique(ncol_dt[, .(target_gene, target_expression_lfc)])
+# pou_expression_dt[target_gene %in% missing_in_network, annot := "published"]
+pou_expression_dt[target_gene %in% missing_in_network_act, annot := "down"]
+pou_expression_dt[target_gene %in% missing_in_network_rep, annot := "up"]
+pou_expression_dt[target_gene %in% missing_in_published, annot := "network"]
+pou_expression_dt[target_gene %in% target_intersect, annot := "intersect"]
+pou_expression_dt <- pou_expression_dt[!is.na(annot)]
+pou_expression_dt[, bound := ifelse(target_gene %in% target_bound, "binding", "no binding")]
+
+# plot
+pou_expression_dt[, annot := factor(
+  annot, levels = c("network", "intersect", "down", "up")
+)]
+gp_pou_exp <- ggplot(pou_expression_dt, aes(annot, target_expression_lfc, fill = bound)) +
+  geom_boxplot() +
+  ggbeeswarm::geom_quasirandom() +
+  geom_boxplot(outlier.color = NA, alpha = 0.5) +
+  scale_fill_manual(values = c("grey40", "grey80")) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "target genes", y = "expression log FC")
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_expression_cellrep.pdf"),
+  width = 4, height = 4
+)
+gp_pou_exp
+dev.off()
+```
+
+Genes in intersect
+
+```{r}
+pou_int <- pou_net[target_gene %in% target_intersect]
+pou_int <- unique(merge.data.table(
+  pou_int, pou_mut[, .(target_gene, regulation)],
+  by = "target_gene", all.x = TRUE, sort = FALSE
+))
+pou_int[, target_TF := target_gene %in% tfs_annt$gene]
+
+# plot
+gp_pou_int <- ggplot(pou_int, aes(
+  expression_correlation, target_expression_lfc,
+  size = 1/n_samples,
+  shape = target_TF,
+  fill = regulation,
+  label = target_name
+)) +
+  ggrepel::geom_text_repel(color = "black") +
+  geom_point(color = "grey10") +
+  scale_size_continuous(
+    range = c(1, 6),
+    breaks = seq(1/3, 1, length.out = 3),
+    labels = seq(3, 1),
+    name = "target in number of samples\n(Elav, Ncol, Fox)"
+  ) +
+  scale_shape_manual(
+    values = c("TRUE" = 22, "FALSE" = 21),
+    name = "target TF?"
+  ) +
+  scale_fill_manual(
+    values = c("down" = "grey90", "up" = "grey50"),
+    name = "regulation"
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(size = 5, shape = 21)),
+    shape = guide_legend(override.aes = list(size = 5)),
+    size = guide_legend(override.aes = list(shape = 21, fill = "grey60"))
+  ) +
+  labs(
+    x = "Pou4 expression correlation",
+    y = "target gene expression logFC",
+    title = sprintf("%s target genes in intersect", length(unique(pou_int$target_gene)))
+  )
+gp_pou_int
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_intersect_cellrep.pdf"),
+  width = 14, height = 10
+)
+gp_pou_int
+dev.off()
+```
+
+### Combined comparison
+
+```{r}
+# load published data
+pou_cellrep <- fread(file.path(pub_dir, "pou4_targets_cellrep.tsv"))
+pou_elife <- fread(file.path(pub_dir, "pou4_targets_elife.tsv"))
+
+# load our Ncol network
+pou4 <- "Nvec_vc1.1_XM_032363992.2"
+ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
+pou_net <- ncol_dt[gene == pou4]
+
+# overlap of Pou4 targets
+pou_dt <- unique(rbindlist(list(
+  pou_cellrep[, .(target_gene, regulation)],
+  pou_elife[, .(target_gene, regulation)],
+  pou_net[, .(target_gene)][, regulation := "network"]
+)))
+pou_dt <- dcast.data.table(pou_dt, target_gene ~ regulation, value.var = "regulation")
+pou_dt <- unique(pou_dt)
+pou_dt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "down", "up", "network")]
+pou_mt <- as.matrix(pou_dt)
+
+require(eulerr)
+fit <- euler(pou_mt)
+p1 <- plot(
+  fit,
+  quantities = TRUE
+)
+print(p1)
+
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_ovl.pdf"),
+  width = 4, height = 3
+)
+print(p1)
 dev.off()
 ```
