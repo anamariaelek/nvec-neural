@@ -37,6 +37,7 @@ require(ggraph)
 require(igraph)
 source("scripts/functions.R")
 source("../motif-analysis/mta_downstream_functions.R")
+source("../gene-set-analysis/gene-set-analysis.R")
 ```
 
 Data directories and metadata
@@ -650,6 +651,233 @@ saveWorkbook(
 )
 ```
 
+## GO enrichment
+
+```{r eval=FALSE}
+# all networks
+net <- fread(file.path(res_dir, "network.tsv.gz"))
+
+# GO annotations
+go_annotations <- readRDS(file.path("annotation", "Nvec_ensembl.GO.rds"))
+
+# where to save results
+go_dir <- file.path(res_dir, "GO")
+dir.create(go_dir)
+
+# enrichment test per reporter line
+tfs_dt <- rbindlist(lapply(unique(net$reporterline), function(st) {
+
+    message("\n", "Starting GO analysis for ", st, "\n")
+    net_st <- net[reporterline == st]
+
+    # enrichment test per TF
+    tfs <- unique(net_st[, .N, gene][order(-N)][N > 10]$gene)
+    tfs_dt <- rbindlist(lapply(tfs, function(tf) {
+        genes_fg <- unique(net_st[gene == tf]$target_gene)
+        genes_bg <- unique(net$target_gene)
+        message(sprintf(
+            "%s (%s/%s); %s target genes; %s background genes",
+            tf, match(tf, tfs), length(tfs), length(genes_fg), length(genes_bg)
+        ))
+        go_enrichment_table_tf <- gsa_topgo_enrichment(
+            annotation = go_annotations,
+            genes_fg = genes_fg,
+            genes_bg = genes_bg,
+            output_prefix = file.path(go_dir, "GO"),
+            name_fg = sprintf("%s_%s", st, tf),
+            ontologyset = c("BP", "MF", "CC"),
+            tg_test = "fisher",
+            tg_algorithm = "elim",
+            top_markers = 30,
+            nodesize = 10,
+            printfile = FALSE
+        )
+        go_tf <- as.data.table(go_enrichment_table_tf)
+        go_tf[, gene := tf]
+
+    }), fill = TRUE)
+    tfs_dt[, reporterline := st]
+
+}))
+
+# save
+saveRDS(tfs_dt, file.path(res_dir, "go_res_per_tf.rds"))
+
+```
+
+Plot results
+
+```{r}
+# load PFAM enrichment results
+tfs_dt <- readRDS(file.path(res_dir, "go_res_per_tf.rds"))
+setnames(tfs_dt, "GO.ID", "go_id")
+tfs_dt[, annot := paste(Term, go_id, sep = " | ")]
+
+# add TF gene annotations
+tfs_dt <- merge.data.table(
+  tfs_dt, gene_ann, by = "gene", all.x = TRUE, sort = FALSE
+)
+
+for (x in c("Elav", "Ncol", "Fox")) {
+  
+  rep_dt <- tfs_dt[reporterline == x]
+  
+  # select significant categories
+  anns <- rep_dt[pval_adj < 0.1]$annot
+  anns_dt <- rep_dt[annot %in% anns]
+  
+  # cluster categories and genes  
+  anns_dc <- dcast.data.table(anns_dt, gene ~ annot, value.var = "pval_adj")
+  anns_mt <- as.matrix(anns_dc[, -1])
+  rownames(anns_mt) <- anns_dc[[1]]
+  anns_mt[is.na(anns_mt)] <- 1
+  anns_hc <- hclust(dist(anns_mt), method = "ward.D2")
+  anns_mt <- anns_mt[anns_hc$order, ]
+  anns_on <- unique(anns_dt[,.(annot, ontology)])[order(ontology)]
+  anns_ord <- unlist(tapply(anns_on$annot, anns_on$ontology, function(x) {
+    anns_hc <- hclust(dist(t(anns_mt[, x])), method = "ward.D2")
+    x[anns_hc$order]
+  }), use.names = FALSE)
+  anns_ord <- as.character(anns_ord)
+  anns_mt <- anns_mt[, anns_ord]
+  
+  # order
+  anns_dt[, gene := factor(gene, levels = rownames(anns_mt))]
+  anns_dt[, annot := factor(annot, levels = colnames(anns_mt))]
+  setorder(anns_dt, gene, annot)
+  anns_dt[, label := paste(substr(name, 1, 30), str_remove(gene, "Nvec_(vc1.1_)*"), sep = " | ")]
+  anns_dt[, label := factor(label, levels = unique(anns_dt$label))]
+  
+  # plot
+  gp_go <- ggplot(anns_dt, aes(annot, label, color = pval_test, size = Significant)) +
+    #geom_tile(color = "white") +
+    geom_point() +
+    scale_size_continuous(range = c(1, 8)) +
+    scale_color_distiller(palette = "BuPu") +
+    facet_grid(. ~ ontology, scales = "free", space = "free") +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+      panel.grid.major = element_line(linewidth = 0.2, color = "grey90")
+    ) +
+    labs(title = x)
+  ph <- pmax(18, length(unique(anns_dt$label)) / 4)
+  pw <- pmax(15, length(unique(anns_dt$annot)) / 3)
+  pdf(
+    file.path(fig_dir, sprintf("go_annot_%s.pdf", x)),
+    width = pw, height = ph
+  )
+  print(gp_go)
+  dev.off()
+}
+```
+
+## PFAM enrichment
+
+```{r eval=FALSE}
+# all networks
+net <- fread(file.path(res_dir, "network.tsv.gz"))
+
+# PFAM annotations
+pfam_annotations <- gsa_enrichment_load_pfam_list(
+  file.path("annotation", "Nvec_long.pep.pfamscan_archs.csv")
+)
+
+# where to save results
+pfam_dir <- file.path(res_dir, "PFAM")
+dir.create(pfam_dir)
+
+# enrichment test per reporter line
+tfs_dt <- rbindlist(lapply(unique(net$reporterline), function(st) {
+
+    message("\n", "Starting PFAM analysis for ", st, "\n")
+    net_st <- net[reporterline == st]
+
+    # enrichment test per TF
+    tfs <- unique(net_st[, .N, gene][order(-N)][N > 10]$gene)
+    tfs_dt <- rbindlist(lapply(tfs, function(tf) {
+        genes_fg <- unique(net_st[gene == tf]$target_gene)
+        genes_bg <- unique(net$target_gene)
+        message(sprintf(
+            "%s (%s/%s); %s target genes; %s background genes",
+            tf, match(tf, tfs), length(tfs), length(genes_fg), length(genes_bg)
+        ))
+        enrichment_table <- gsa_enrichment_hypergeometric(
+            annotation = pfam_annotations,
+            genes_fg = genes_fg,
+            genes_bg = genes_bg,
+            output_prefix = file.path(pfam_dir, "PFAM"),
+            name_fg = sprintf("%s_%s", st, tf)
+        )
+        pfam_tf <- as.data.table(enrichment_table)
+        pfam_tf[, gene := tf]
+
+    }), fill = TRUE)
+    tfs_dt[, reporterline := st]
+
+}))
+
+# save
+saveRDS(tfs_dt, file.path(res_dir, "pfam_res_per_tf.rds"))
+```
+
+Plot results
+
+```{r}
+# load PFAM enrichment results
+tfs_dt <- readRDS(file.path(res_dir, "pfam_res_per_tf.rds"))
+
+# add TF gene annotations
+tfs_dt <- merge.data.table(
+  tfs_dt, gene_ann, by = "gene", all.x = TRUE, sort = FALSE
+)
+
+for (x in c("Elav", "Ncol", "Fox")) {
+  
+  rep_dt <- tfs_dt[reporterline == x]
+  
+  # select significant categories
+  anns <- rep_dt[pval_adj < 0.05]$annot
+  anns_dt <- rep_dt[annot %in% anns]
+  
+  # cluster categories and genes
+  anns_dc <- dcast.data.table(anns_dt, gene ~ annot, value.var = "pval_adj")
+  anns_mt <- as.matrix(anns_dc[, -1])
+  rownames(anns_mt) <- anns_dc[[1]]
+  anns_mt[is.na(anns_mt)] <- 1
+  anns_hc <- hclust(dist(anns_mt), method = "ward.D2")
+  anns_mt <- anns_mt[anns_hc$order, ]
+  anns_hc <- hclust(dist(t(anns_mt)), method = "ward.D2")
+  anns_mt <- anns_mt[, anns_hc$order]
+  
+  # order
+  anns_dt[, gene := factor(gene, levels = rownames(anns_mt))]
+  anns_dt[, annot := factor(annot, levels = colnames(anns_mt))]
+  setorder(anns_dt, gene, annot)
+  anns_dt[, label := paste(substr(name, 1, 30), str_remove(gene, "Nvec_(vc1.1_)*"), sep = " | ")]
+  anns_dt[, label := factor(label, levels = unique(anns_dt$label))]
+  
+  # plot
+  gp_pfam <- ggplot(anns_dt, aes(annot, label, color = pval_adj, size = freq_in_fg)) +
+    #geom_tile(color = "white") +
+    geom_point() +
+    scale_size_continuous(range = c(1, 8)) +
+    scale_color_distiller(palette = "BuPu") +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+      panel.grid.major = element_line(linewidth = 0.2, color = "grey90")
+    ) +
+    labs(title = x)
+  ph <- pmax(18, length(unique(anns_dt$label)) / 4)
+  pw <- pmax(15, length(unique(anns_dt$annot)) / 3)
+  pdf(
+    file.path(fig_dir, sprintf("pfam_annot_%s.pdf", x)),
+    width = pw, height = ph
+  )
+  print(gp_pfam)
+  dev.off()
+}
+```
+
 ## Cnidocytes network
 
 ### Comparison with Ozment et al. 2021 eLife paper.
@@ -991,6 +1219,8 @@ dev.off()
 
 ### Combined comparison
 
+Overlaps
+
 ```{r}
 # load published data
 pou_cellrep <- fread(file.path(pub_dir, "pou4_targets_cellrep.tsv"))
@@ -1009,7 +1239,7 @@ pou_dt <- unique(rbindlist(list(
 )))
 pou_dt <- dcast.data.table(pou_dt, target_gene ~ regulation, value.var = "regulation")
 pou_dt <- unique(pou_dt)
-pou_dt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "down", "up", "network")]
+pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "down", "up", "network")]
 pou_mt <- as.matrix(pou_dt)
 
 require(eulerr)
@@ -1028,5 +1258,62 @@ pdf(
   width = 4, height = 3
 )
 print(p1)
+dev.off()
+```
+
+Genes in intersect
+
+```{r}
+pou_int <- pou_dt[!is.na(network) & (!is.na(activated) | !is.na(repressed)) & (!is.na(up) | !is.na(down))]
+pou_int <- pou_net[target_gene %in% pou_int$target_gene]
+pou_int <- unique(merge.data.table(
+  pou_int, pou_elife[, .(target_gene, regulation)],
+  by = "target_gene", all.x = TRUE, sort = FALSE
+))
+pou_int[, target_TF := target_gene %in% tfs_annt$gene]
+
+# plot
+gp_pou_int <- ggplot(pou_int, aes(
+  expression_correlation, target_expression_lfc,
+  size = 1/n_samples,
+  shape = target_TF,
+  fill = regulation,
+  label = target_name
+)) +
+  ggrepel::geom_text_repel(color = "black") +
+  geom_point(color = "grey10") +
+  scale_size_continuous(
+    range = c(1, 6),
+    breaks = seq(1/3, 1, length.out = 3),
+    labels = seq(3, 1),
+    name = "target in number of samples\n(Elav, Ncol, Fox)"
+  ) +
+  scale_shape_manual(
+    values = c("TRUE" = 22, "FALSE" = 21),
+    name = "target TF?"
+  ) +
+  scale_fill_manual(
+    values = c("activated" = "grey90", "repressed" = "grey50"),
+    name = "regulation"
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(size = 5, shape = 21)),
+    shape = guide_legend(override.aes = list(size = 5)),
+    size = guide_legend(override.aes = list(shape = 21, fill = "grey60"))
+  ) +
+  labs(
+    x = "Pou4 expression correlation",
+    y = "target gene expression logFC",
+    title = sprintf("%s target genes in intersect", length(unique(pou_int$target_gene)))
+  )
+gp_pou_int
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_intersect.pdf"),
+  width = 14, height = 10
+)
+gp_pou_int
 dev.off()
 ```
