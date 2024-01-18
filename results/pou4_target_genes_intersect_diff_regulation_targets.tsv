@@ -1,0 +1,27 @@
+sample	target_gene	target_name	target_pfam
+Elav_pos	Nvec_vc1.1_XM_032386756.2	""	Usp/
+Elav_pos	Nvec_vc1.1_XM_032366118.2	""	""
+Ncol_pos	Nvec_vc1.1_XM_032386756.2	""	Usp/
+Ncol_pos	Nvec_vc1.1_XM_032366118.2	""	""
+Fox_pos	Nvec_vc1.1_XM_032363386.2	Ankyrin-2	Ank_2/Ank_2/Ank_2/Ank/Ank_2/An
+Ncol_pos	Nvec_vc1.1_XM_032363386.2	Ankyrin-2	Ank_2/Ank_2/Ank_2/Ank/Ank_2/An
+Fox_pos	Nvec_vc1.1_XM_048733827.1	Em:AC004832.5 protein	CRAL_TRIO/
+Ncol_pos	Nvec_vc1.1_XM_048733827.1	Em:AC004832.5 protein	CRAL_TRIO/
+Fox_pos	Nvec_vc1.1_XM_048720925.1	HCG1983504	Tubulin/
+Ncol_pos	Nvec_vc1.1_XM_048720925.1	HCG1983504	Tubulin/
+Elav_pos	Nvec_vc1.1_XM_032384233.2	Kv channel interacting protein	EF-hand_8/EF-hand_7/
+Ncol_pos	Nvec_vc1.1_XM_032384233.2	Kv channel interacting protein	EF-hand_8/EF-hand_7/
+Elav_pos	Nvec_vc1.1_XM_001638276.3	Lipid droplet-associated hydro	DUF2305/
+Ncol_pos	Nvec_vc1.1_XM_001638276.3	Lipid droplet-associated hydro	DUF2305/
+Elav_pos	Nvec_vc1.1_XM_001637260.3	PID:PID1	PID.HG1.10:PID1
+Ncol_pos	Nvec_vc1.1_XM_001637260.3	PID:PID1	PID.HG1.10:PID1
+Elav_pos	Nvec_vc1.1_XM_032377132.2	Shak4 ion channel	ion-NaKCa.HG1.6:KCNA1/KCNA10/K
+Ncol_pos	Nvec_vc1.1_XM_032377132.2	Shak4 ion channel	ion-NaKCa.HG1.6:KCNA1/KCNA10/K
+Elav_pos	Nvec_vc1.1_XM_001623360.3	Tetratricopeptide repeat prote	TPR_1/TPR_12/TPR_7/
+Ncol_pos	Nvec_vc1.1_XM_001623360.3	Tetratricopeptide repeat prote	TPR_1/TPR_12/TPR_7/
+Elav_pos	Nvec_vc1.1_XM_048727104.1	cDNA FLJ57391, highly similar	Trypsin/
+Ncol_pos	Nvec_vc1.1_XM_048727104.1	cDNA FLJ57391, highly similar	Trypsin/
+Elav_pos	Nvec_vc1.1_XM_032371054.2	ion-NaKCa:KCND1/KCND2/KCND3	ion-NaKCa.HG13.1:KCND1/KCND2/K
+Ncol_pos	Nvec_vc1.1_XM_032371054.2	ion-NaKCa:KCND1/KCND2/KCND3	ion-NaKCa.HG13.1:KCND1/KCND2/K
+Elav_pos	Nvec_vc1.1_XM_032375704.2	ion-NaKCa:NA	Ion_trans_2/
+Ncol_pos	Nvec_vc1.1_XM_032375704.2	ion-NaKCa:NA	Ion_trans_2/

@@ -70,6 +70,7 @@ line_cond_cols <- c(
 Gene annotations
 
 ```{r}
+# markers
 marks_gold <- fread(
   file.path("annotation", "golden-marks-231124.tsv"),
   fill = TRUE, sep = "\t", header = FALSE
@@ -77,6 +78,7 @@ marks_gold <- fread(
 setnames(marks_gold, c("gene", "name"))
 marks_gold_v <- structure(marks_gold$name, names = marks_gold$gene)
 
+# annotation
 tfs_annt <- fread(
   file.path("annotation", "tfs.Nvec.tsv"),
   header = TRUE
@@ -94,6 +96,19 @@ gene_ann <- rbindlist(list(
   tfs_annt
 ), use.names = TRUE)
 gene_ann[gene %in% marks_gold$gene, name := marks_gold_v[gene]]
+
+# motif to tf assignment
+dc <- fread(file.path(
+  "annotation",
+  "assignment-archetype-motif-gene.tsv.gz"
+))[, .(gene, archetype_name)]
+dc[, motif := str_extract(archetype_name, "ARCH\\d+")]
+dc[, archetype_name := NULL]
+dc_tf <- merge.data.table(
+  dc, tfs_annt, by = "gene", all.x = TRUE
+)
+dc_tf[gene %in% names(marks_gold_v), name := marks_gold_v[gene]]
+
 ```
 
 ## Peaks counts
@@ -1206,8 +1221,6 @@ Motif to TF assignment
 
 ```{r}
 # assignment
-# _ARCH1151_Homeodomains.HG_NVE7697_Homeodo
-# _ARCH1335_Homeodomains.HG_XM_001632929.3_
 dc <- fread(file.path(
   "annotation",
   "assignment-archetype-motif-gene.tsv.gz"
@@ -1215,10 +1228,12 @@ dc <- fread(file.path(
 dc[, motif := str_extract(archetype_name, "ARCH\\d+")]
 dc[, archetype_name := NULL]
 
-# plot motif logos
-require(ggseqlogo)
+# motifs
 mots_nms <- sapply(mots_lst, function(i) str_extract(i@name, "ARCH\\d+"))
 names(mots_lst) <- mots_nms
+
+# plot motif logos
+require(ggseqlogo)
 pdf(
   file.path(fig_dir, "motifs-tfs-logo.pdf"),
   width = 8, height = 4
@@ -1235,6 +1250,14 @@ for (i in seq_len(nrow(dc))) {
   print(gg_mot)
 }
 dev.off()
+
+# save pwms for TFs
+mots_tfs <- mots_lst[unique(dc$motif)]
+write_meme(
+  mots_tfs,
+  file.path("annotation/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms-tfs.meme"),
+  overwrite = TRUE
+)
 ```
 
 Motif enrichment in groups defined before
@@ -1664,7 +1687,7 @@ bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/"
 out_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetect"
 mkdir ${out_dir}
 peaks="ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks.bed"
-motifs="annotation/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms.meme"
+motifs="annotation/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms-tfs.meme"
 genome="genome/Nvec_vc1.1_gDNA.fasta"
 nth=12
 
@@ -1675,8 +1698,6 @@ nth=12
 
 # alternatively, motifs for TFs only
   x="tfs"
-  motifs="annotation/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms-tfs.meme"
-  #motifs="annotation/ARCH1151_Pit1+1bp_POU4F1_Pit.meme"
 
   line1=Fox
   line2=Elav
@@ -1706,6 +1727,43 @@ nth=12
 #done
 ```
 
+Plot footprints
+
+```{bash}
+mamba activate tobias
+bwg_dir="ATACSEQ/nucleosome_free_regions/footprint/"
+out_dir="ATACSEQ/nucleosome_free_regions/footprint/BINDetect"
+mkdir ${out_dir}
+peaks="ATACSEQ/nucleosome_free_regions/consensus_peaks/consensusSeekeR-peaks.bed"
+motifs="annotation/motif-archetypes-PPM-PCCnorm-0.8-IC0.5-8bp-pwms.meme"
+genome="genome/Nvec_vc1.1_gDNA.fasta"
+nth=12
+x="tfs"
+
+# pou4
+mot="_ARCH1151_Pit11bp_POU4F1_Pit"
+TOBIAS PlotAggregate \
+  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
+  --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
+  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
+  
+
+# paxa
+mot="_ARCH636_Homeodomains_Nvec_vc1."
+TOBIAS PlotAggregate \
+  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
+  --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
+  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
+
+# znf845
+mot="_ARCH292_zf_C2H2_Nvec_vc1.1_XM_"
+TOBIAS PlotAggregate \
+  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
+  --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
+  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
+
+```
+
 Combine motif binding scores 
 
 ```{r eval=FALSE}
@@ -1733,19 +1791,6 @@ Volcano plots
 bind_dt <- fread(file.path(
   bind_dir, "bindetect_results.txt"
 ))
-
-# motif to tf assignment
-dc <- fread(file.path(
-  "annotation",
-  "assignment-archetype-motif-gene.tsv.gz"
-))[, .(gene, archetype_name)]
-dc[, motif := str_extract(archetype_name, "ARCH\\d+")]
-dc[, archetype_name := NULL]
-dc_tf <- merge.data.table(
-  dc, tfs_annt, by = "gene", all.x = TRUE
-)
-setnames(dc_tf, "og", "name")
-dc_tf[gene %in% names(marks_gold_v), name := marks_gold_v[gene]]
 
 # coparisons
 comparas <- list(
@@ -1975,35 +2020,51 @@ bound_dt <- rbindlist(lapply("tfs", function(x) {
   rbindlist(sapply(mot, function(m) {
     message(m)
     fns <- list.files(
-      file.path(mot_dirs[m], "beds"),
-      pattern = "_bound.bed",
+      mot_dirs[m],
+      pattern = "_overview.txt",
       full.names = TRUE
     )
-    names(fns) <- str_extract(basename(fns), "(Elav|Fox|Ncol)_(pos|neg)")
-    rbindlist(sapply(names(fns), function(fn) {
-      fread(fns[fn])
-    }, USE.NAMES = TRUE, simplify = FALSE), idcol = "sample")
+    fread(fns)
   }, simplify = FALSE, USE.NAMES = TRUE))
 }))
-bound_dt[, V11 := V13][, V13 := NULL]
-bed_cols <- c(
-  "seqnames", "start", "end", "motif_name", "score", "strand",
-  "seqnames_peak", "start_peak", "end_peak",
-  "peak", "peak_score", "peak_strand"
-)
-setnames(bound_dt, c("sample", bed_cols))
-bound_dt[, motif_name := str_remove(motif_name, "^_")]
+
+# parse per sample
+ftp_dt <- rbindlist(sapply(paste0(
+  c("Elav", "Ncol", "Fox"), rep(c("_pos", "_neg"), each = 3)
+), function(x) {
+  
+  bnd_cols <- c(
+    "TFBS_chr", "TFBS_start", "TFBS_end", "TFBS_strand", "TFBS_name", "TFBS_score",
+    "peak_chr", "peak_start", "peak_end", "additional_1", paste0(x, "_bound"), paste0(x, "_score")
+  )
+  bed_cols <- c(
+    "seqnames", "start", "end", "strand", "motif_name", "motif_score",
+    "seqnames_peak", "start_peak", "end_peak", "peak", "bound", "footprint_score"
+  )
+  bc <- paste0(x, "_bound")
+  bound_x_dt <- bound_dt[, ..bnd_cols] # [bound_dt[[bc]] == 1]
+  setnames(bound_x_dt, bed_cols)
+  bound_x_dt[, motif_name := str_remove(motif_name, "^_")]
+}, simplify = FALSE, USE.NAMES = TRUE), idcol = "sample")
 
 # add motif-to-gene assignments
-bound_dt[, motif := str_extract(motif_name, "ARCH\\d+")]
-bound_dt <- merge.data.table(
-  bound_dt, dc_tf, by = "motif",
+ftp_dt[, motif := str_extract(motif_name, "ARCH\\d+")]
+ftp_dt <- merge.data.table(
+  ftp_dt, dc_tf, by = "motif",
   all.x = TRUE, sort = FALSE, allow.cartesian = TRUE
 )
 
 # save
 fwrite(
-  bound_dt,
+  ftp_dt,
+  file.path(bind_dir, "motifs_all.tsv.gz"),
+  sep = "\t"
+)
+
+# save only bound motifs
+ftp_dt <- ftp_dt[bound == 1][, bound := NULL]
+fwrite(
+  ftp_dt,
   file.path(bind_dir, "motifs_bound.tsv.gz"),
   sep = "\t"
 )
@@ -2013,7 +2074,7 @@ Subset targets for expressed genes.
 
 ```{r}
 # load motif binding in peaks
-bound_dt <- fread(file.path(bind_dir, "motifs_bound.tsv.gz"))
+bound_dt <- fread(file.path(bind_dir, "motifs_all.tsv.gz"))
 
 # order samples
 bound_dt[, sample := factor(sample, levels = c(
@@ -2023,7 +2084,7 @@ bound_dt[, sample := factor(sample, levels = c(
 ))]
 
 # add peak to target gene assignment
-assign <- fread(file.path(res_dir, "consensusSeekeR-peaks-gene-assignment.tsv"))
+assign <- fread(file.path(dat_dir, "results", "consensusSeekeR-peaks-gene-assignment.tsv"))
 assign <- unique(assign[, .(gene, peak)])
 setnames(assign, "gene", "target_gene")
 bound_dt <- merge.data.table(
@@ -2033,11 +2094,10 @@ bound_dt <- merge.data.table(
 bound_dt <- bound_dt[!is.na(target_gene)]
 
 # parse only motif + gene + target gene + sample info, for pos samples
-mo_dt <- bound_dt[order(score)][, .SD[1], .(motif, gene, target_gene, sample)][grep("pos", sample)]
+mo_dt <- bound_dt[order(-footprint_score)][, .SD[1], .(motif, gene, target_gene, sample)][grep("pos", sample)]
 mo_dt <- unique(mo_dt[, .(
-  motif, motif_name, gene, name, pfam, target_gene, sample
+  motif, motif_name, gene, name, pfam, target_gene, motif_score, footprint_score, bound, sample
 )])
-mo_dt[, n_samples := length(unique(.SD$sample)), .(motif, gene, target_gene)]
 
 # add target gene annotation
 target_gene_ann <- copy(gene_ann)
@@ -2126,13 +2186,13 @@ mo_dt <- merge.data.table(
 
 # save
 mo_dt <- mo_dt[!is.na(target_gene)]
+mo_dt[, bound := as.logical(bound)]
 setcolorder(mo_dt, c(
   "sample", "gene", "target_gene", "name", "pfam", "target_name", "target_pfam",
   "expression_tpm", "target_expression_tpm",
   "expression_lfc", "target_expression_lfc",
   "expressed", "target_expressed",
-  "motif", "motif_name",
-  "n_samples"
+  "motif", "motif_name", "motif_score", "bound", "footprint_score"
 ))
 fwrite(
   mo_dt,
@@ -2144,7 +2204,7 @@ fwrite(
 How many target genes for each TF?
 
 ```{r fig.width=4, fig.height=6}
-hits_dt <- unique(mo_dt[expressed == TRUE][, .(sample, motif, gene, target_gene)])
+hits_dt <- unique(mo_dt[expressed == TRUE][bound == TRUE][, .(sample, motif, gene, target_gene)])
 hits_dt <- hits_dt[, .N, .(motif, sample)]
 
 hits_gp <- ggplot(hits_dt, aes(sample, N, fill = sample)) +
