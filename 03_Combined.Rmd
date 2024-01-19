@@ -1769,20 +1769,22 @@ sub_dt[, regulation := factor(regulation, levels = unique(sum_dt$regulation))]
 # plot
 pou_cols <- c(
   "network" = "#ffecb3ff",
+  "network+activated+down" = "#b1b1dcff",
+  "network+activated" = "#b1b1dcff",
+  "network+down" = "#b1b1dcff",
+  "activated+down" = "#475ee6ff",
+  "activated" = "#475ee6ff",
+  "down" = "#add8e6ff",
   "network+up" = "#fbbea6ff",
+  "network+up+repressed" = "#fbbea6ff",
   "up" = "#f08080ff",
   "up+repressed" = "#e85962ff",
-  "repressed" = "#de2346ff",
-  "network+down" = "#b1b1dcff",
-  "down" = "#add8e6ff",
-  "activated" = "#3949dbff",
-  "activated+down" = "#475ee6ff",
-  "network+activated+down" = "#b1b1dcff",
+  "repressed" = "#de2346ff"
 )
+sub_dt[, regulation := factor(regulation, levels = names(pou_cols))]
 sub_dt[target_expression_lfc < 0, target_expression_lfc := 0]
 sub_dt[is.na(target_expression_lfc), target_expression_lfc := 0]
 sub_dt[is.na(footprint_score), footprint_score := 0]
-sub_dt[, regulation := factor(regulation, levels = names(pou_cols))]
 gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, footprint_score, color = regulation)) +
   geom_point() +
   scale_color_manual(values = pou_cols) +
@@ -1799,6 +1801,10 @@ pdf(
 )
 gp_pou_diff
 dev.off()
+```
+
+```{r}
+sub_dt[regulation == "activated+down"]
 ```
 
 ### Target genes regulation
