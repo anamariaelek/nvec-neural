@@ -1643,11 +1643,11 @@ pou_mt <- pou_dc[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "rep
 pou_mt <- as.matrix(pou_mt)
 
 pou_cols <- c(
+  "network" = "#ffecb3ff",
   "activated" = "#3949dbff",
   "repressed" = "#de2346ff",
   "down" = "#add8e6ff",
-  "up" = "#f08080ff",
-  "network" = "#ffecb3ff"
+  "up" = "#f08080ff"
   # "activated&down" = "#475ee6ff",
   # "activated&network" = "#b19dd7ff",
   # "activated&down&network" = "#b1b1dcff",
@@ -1768,17 +1768,21 @@ sub_dt[, regulation := factor(regulation, levels = unique(sum_dt$regulation))]
 
 # plot
 pou_cols <- c(
-  pou_cols,
-  "activated+down" = "#475ee6ff",
+  "network" = "#ffecb3ff",
+  "network+up" = "#fbbea6ff",
+  "up" = "#f08080ff",
   "up+repressed" = "#e85962ff",
-  "network+activated+down" = "#b1b1dcff",
+  "repressed" = "#de2346ff",
   "network+down" = "#b1b1dcff",
-  "network+up" = "#fbbea6ff"
+  "down" = "#add8e6ff",
+  "activated" = "#3949dbff",
+  "activated+down" = "#475ee6ff",
+  "network+activated+down" = "#b1b1dcff",
 )
 sub_dt[target_expression_lfc < 0, target_expression_lfc := 0]
 sub_dt[is.na(target_expression_lfc), target_expression_lfc := 0]
 sub_dt[is.na(footprint_score), footprint_score := 0]
-
+sub_dt[, regulation := factor(regulation, levels = names(pou_cols))]
 gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, footprint_score, color = regulation)) +
   geom_point() +
   scale_color_manual(values = pou_cols) +
