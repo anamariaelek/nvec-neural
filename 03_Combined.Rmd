@@ -469,7 +469,7 @@ dev.off()
 
 Inspect correlation of binding and expression per gene
 
-```{r fig.width=14, fig.height=14}
+```{r fig.width=14, fig.height=14, warning=FALSE}
 # binding correlations with expression
 dt_comp <- fread(
   file.path(res_dir, "correlation_expression_binding.tsv")
@@ -483,11 +483,11 @@ comp_marks <- dt_comp[gene %in% marks_gold$gene]
 comp_marks_gp <- ggplot(comp_marks, aes(ATAC, RNA, color = reporterline, shape = vs)) +
   scale_color_manual(values = line_cols) +
   scale_shape_manual(values = c("Elav" = 15, "Fox" = 16, "Ncol" = 17, "neg" = 18)) +
+  ggpubr::stat_cor(aes(group = gene), method = "pearson", label.x = -0.5, label.y = 10, color = "black") +
   facet_wrap("name") +
   geom_hline(yintercept = 0, linetype = 2, size = 0.5) +
   geom_vline(xintercept = 0, linetype = 2, size = 0.5) +
   geom_point(size = 2) +
-  ggpubr::stat_cor(method = "pearson", label.x = -0.5, label.y = 10, color = "black") +
   theme(legend.position = "bottom") +
   labs(x = "motif binding logFC", y = "expression logFC")
 comp_marks_gp
@@ -527,7 +527,7 @@ dev.off()
 
 Load bound targets info, select those tfs and target genes that are also expressed in given sample, and add expression correlation info to construct baseline networks.
 
-```{r}
+```{r eval=FALSE}
 # binding correlations with expression
 dt_comp <- fread(
   file.path(res_dir, "correlation_expression_binding.tsv")
@@ -567,7 +567,7 @@ fwrite(
 
 ### Expression distribution
 
-```{r fig.height=6, fig.width=3}
+```{r fig.height=6, fig.width=6}
 mo_dt <- fread(file.path(res_dir, "network.tsv.gz"))
 
 # distribution of expression lfc
@@ -634,7 +634,9 @@ exp_dist_plot <- function(exp_dt, title = "Expression distribution", lfc_thr = 0
 }
 
 gp_tf_exp <- exp_dist_plot(exp_tf_dt, title = "TFs expression")
+gp_tf_exp
 gp_tg_exp <- exp_dist_plot(exp_tg_dt, title = "Target genes expression")
+gp_tg_exp
 ```
 
 ```{r include=FALSE, eval=TRUE}
@@ -657,7 +659,7 @@ setcolorder(mo_dt, c(
   "expression_tpm", "expression_lfc",
   "target_gene", "target_name", "target_pfam",
   "target_expression_tpm", "target_expression_lfc", 
-  "motif", "motif_name", "motif_score", "footprint_score",
+  "motif", "motif_score", "footprint_score",
   "expression_correlation"
 ))
 
@@ -669,7 +671,9 @@ fwrite(
 )
 ```
 
-### Motif binding (i.e. footprint score) distribution
+### Motif binding distribution
+
+Footprint score distribution
 
 ```{r}
 mo_dt <- fread(
@@ -685,11 +689,12 @@ bnd_dt[, bound := factor(bound, levels = c("not bound", "bound"))]
 
 gp_bnd_dist <- ggplot(bnd_dt, aes(footprint_score, color = sample, linetype = bound)) +
   geom_density(alpha = 0.1) +
+  geom_vline(xintercept = 4, color = "red", linetype = 2) +
   scale_color_manual(values = line_cond_cols) +
   scale_linetype_manual(values = c("bound" = 1, "not bound" = 2)) +
   scale_fill_manual(values = c("bound" = "grey60", "not bound" = "grey100")) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
-  scale_x_continuous(expand = expansion(mult = c(0, 0)), limits = c(NA, 40), oob = scales::squish) +
+  scale_x_continuous(breaks = c(0, 4, seq(10, 100, 10)), expand = expansion(mult = c(0, 0)), limits = c(NA, 40), oob = scales::squish) +
   theme(
     legend.position = "bottom", legend.box = "vertical",
     axis.text.y = element_blank(),
@@ -750,6 +755,7 @@ Save network files
 ```{r}
 mo_dt <- fread(file.path(res_dir, "network_expression.tsv.gz"))
 mo_dt[, reporterline := NULL]
+mo_dt[, motif_name := NULL]
 mo_dt[, target_TF := ifelse(target_gene %in% .SD$gene, TRUE, FALSE), sample]
 mo_dt[, name := substr(name, 1, 30)]
 mo_dt[, pfam := substr(pfam, 1, 30)]
@@ -849,7 +855,7 @@ dev.off()
 
 For all TFs, compare sets of targets between cell lines
 
-```{r}
+```{r echo=FALSE}
 require(eulerr)
 mo_dt <- fread(file.path(res_dir, "network_expression.tsv.gz"))
 mo_dt[, gene_n_samples := length(unique(.SD$sample)), .(gene, name, pfam)]
@@ -859,7 +865,7 @@ pdf(
   width = 7, height = 4
 )
 for (tf in unique(mo_dt$gene)) {
-  message(tf)
+  # message(tf)
   nm <- substr(gene_ann[gene == tf]$name, 1, 25)
   pf <- substr(gene_ann[gene == tf]$pfam, 1, 25)
   tf_dt <- mo_dt[gene == tf]
@@ -888,7 +894,7 @@ dev.off()
 For all target genes, compare sets of TFs that regulate them between cell lines
 (i.e. genes upregulated in two or three cell lines, but differently regulated)
 
-```{r}
+```{r eval=FALSE}
 mo_dt <- fread(file.path(res_dir, "network_expression.tsv.gz"))
 
 # count number of cell lines where each tf - target gene is present
@@ -1087,7 +1093,7 @@ saveRDS(tfs_dt, file.path(res_dir, "go_res_per_tf.rds"))
 
 Plot results
 
-```{r}
+```{r eval=FALSE}
 # load PFAM enrichment results
 tfs_dt <- readRDS(file.path(res_dir, "go_res_per_tf.rds"))
 setnames(tfs_dt, "GO.ID", "go_id")
@@ -1205,7 +1211,7 @@ saveRDS(tfs_dt, file.path(res_dir, "pfam_res_per_tf.rds"))
 
 Plot results
 
-```{r}
+```{r eval=FALSE}
 # load PFAM enrichment results
 tfs_dt <- readRDS(file.path(res_dir, "pfam_res_per_tf.rds"))
 
@@ -1267,7 +1273,7 @@ for (x in c("Elav", "Ncol", "Fox")) {
 
 Parse data from paper
 
-```{r}
+```{r eval=FALSE}
 # load data from paper and translate gene IDs to DToL IDs
 pou_act <- readWorkbook(file.path(pub_dir, "elife-74336-supp6-v3.xlsx"), startRow = 2, colNames = TRUE)
 pou_rep <- readWorkbook(file.path(pub_dir, "elife-74336-supp7-v3.xlsx"), startRow = 2, colNames = TRUE)
@@ -1369,7 +1375,7 @@ gp_pou_exp <- ggplot(pou_expression_dt, aes(annot, target_expression_lfc, fill =
   scale_fill_manual(values = c("grey40", "grey80")) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   labs(x = "target genes", y = "expression log FC")
-
+gp_pou_exp
 ```
 
 ```{r include=FALSE, eval=TRUE}
@@ -1394,7 +1400,7 @@ pou_int[, target_TF := target_gene %in% tfs_annt$gene]
 # plot
 gp_pou_int <- ggplot(pou_int, aes(
   expression_correlation, target_expression_lfc,
-  size = 1/n_samples,
+  #size = 1/n_samples,
   shape = target_TF,
   fill = regulation,
   label = target_name
@@ -1574,7 +1580,7 @@ pou_int[, target_TF := target_gene %in% tfs_annt$gene]
 # plot
 gp_pou_int <- ggplot(pou_int, aes(
   expression_correlation, target_expression_lfc,
-  size = 1/n_samples,
+  #size = 1/n_samples,
   shape = target_TF,
   fill = regulation,
   label = target_name
@@ -1639,26 +1645,19 @@ pou_dt <- unique(rbindlist(list(
 )))
 pou_dc <- dcast.data.table(pou_dt, target_gene ~ regulation, value.var = "regulation")
 pou_dc <- unique(pou_dc)
-pou_mt <- pou_dc[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "down", "up", "network")]
+pou_mt <- pou_dc[, lapply(.SD, function(x) !is.na(x)), .SD = c("down", "up", "activated", "repressed", "network")]
 pou_mt <- as.matrix(pou_mt)
 
 pou_cols <- c(
-  "network" = "#ffecb3ff",
+  "down" = "#add8e6ff",
+  "up" = "#f08080ff",
   "activated" = "#3949dbff",
   "repressed" = "#de2346ff",
-  "down" = "#add8e6ff",
-  "up" = "#f08080ff"
-  # "activated&down" = "#475ee6ff",
-  # "activated&network" = "#b19dd7ff",
-  # "activated&down&network" = "#b1b1dcff",
-  # "repressed&up" = "#e85962ff",
-  # "repressed&up&network" = "#e85962ff",
-  # "repressed&network" = "#de2346ff",
-  # "down&network" = "#d8e9daff",
-  # "up&network" = "#fbbea6ff"
+  "network" = "#ffecb3ff"
 )
 
 require(eulerr)
+set.seed(1950)
 fit <- euler(pou_mt)
 p1 <- plot(
   fit,
@@ -1681,7 +1680,7 @@ dev.off()
 Genes in intersect
 
 ```{r}
-pou_int <- pou_dt[!is.na(network) & (!is.na(activated) | !is.na(repressed)) & (!is.na(up) | !is.na(down))]
+pou_int <- pou_dc[!is.na(network) & (!is.na(activated) | !is.na(repressed)) & (!is.na(up) | !is.na(down))]
 pou_int <- pou_net[target_gene %in% pou_int$target_gene]
 pou_int <- unique(merge.data.table(
   pou_int, pou_elife[, .(target_gene, regulation)],
@@ -1697,7 +1696,7 @@ fwrite(
 # plot
 gp_pou_int <- ggplot(pou_int, aes(
   expression_correlation, target_expression_lfc,
-  size = 1/n_samples,
+  #size = 1/n_samples,
   shape = target_TF,
   fill = regulation,
   label = target_name
@@ -1742,7 +1741,7 @@ dev.off()
 
 Difference
 
-```{r}
+```{r fig.height=8}
 # all genes expressed in Ncol, even if they are not bound by Pou4
 mo_dt <- fread(file.path(atac_dir, "motifs_genes_targets_long.tsv.gz"))
 all_dt <- mo_dt[sample == "Ncol_pos"][gene == pou4]
@@ -1792,6 +1791,7 @@ gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, footprint_score, color 
   geom_vline(xintercept = 0, linetype = 2) +
   facet_wrap("regulation") +
   theme(legend.position = "bottom")
+gp_pou_diff
 ```
 
 ```{r include=FALSE, eval=TRUE}
@@ -1803,66 +1803,106 @@ gp_pou_diff
 dev.off()
 ```
 
+How many non-network genes are bound by Pou4?
+
 ```{r}
-sub_dt[regulation == "activated+down"]
+unique(sub_dt[regulation %in% c("activated", "down", "activated+down")][,.(regulation,target_gene,bound)])[,.N,bound]
+unique(sub_dt[regulation %in% c("repressed", "up", "up+repressed")][,.(regulation,target_gene,bound)])[,.N,bound]
 ```
 
-### Target genes regulation
+Cell type level expression for different geroups of Pou4 targets
 
-All genes that are regulated by Pou4 in Ncol line, but not in at least one of the other lines
-
-```{r}
-# "true" Pou4 direct targets
-pou_int <- fread(
-  file.path(res_dir, "pou4_target_genes_intersect.tsv"),
-  sep = "\t"
+```{r echo=FALSE, fig.height=8, fig.width=4}
+require(metacell)
+source("../metacell_downstream_functions/Downstream_functions.R")
+scdb_adult_dir <- "../scRNAseq_nvec_v4/scdb/"
+scdb_init(scdb_adult_dir, force_reinit = TRUE)
+mat_adult <- scdb_mat("Nvec")
+mc_adult <- scdb_mc("Nvec_K30_atlas")
+mc_ann_adult <- fread(file.path(
+    scdb_adult_dir, "annotation.Nvec_K30_atlas.tsv"
+))
+bc <- c(
+    "cnidocyte", "gastrodermis_muscle", "gastrodermis", "muscle",
+    "digestive_filaments", "epidermis", "precursors",
+    "neuron_GATA_Islet", "neuron_Pou4_FoxL2", "neuron", "gland"
 )
+mc_ann_adult[, broad_cell_type := str_extract(cell_type, paste(bc, collapse = "|"))]
+mc_ann_adult[cell_type %in% mc_ann_adult[metacell %in% 99:134]$cell_type,
+    broad_cell_type := "neuron_GATA_Islet"]
+mc_ann_adult[cell_type %in% mc_ann_adult[metacell %in% 135:150]$cell_type,
+    broad_cell_type := "neuron_Pou4_FoxL2"]
 
-# networks for all cell lines
-net <- fread(file.path(res_dir, "network_expression.tsv.gz"))
-net[, reporterline := str_remove(sample, "_pos")]
+ct_adult <- sca_cell_type_fp(mc_ann_adult[, .(metacell, broad_cell_type, color)], mc_adult, mat_adult)
 
-# identify target genes
-pou4 <- "Nvec_vc1.1_XM_032363992.2"
-cands <- unique(
-  net[n_samples_target > 1][n_samples_edge < 3][gene == pou4][sample == "Ncol_pos"]$target_gene
+# expression
+ct_dt <- melt.data.table(as.data.table(
+  ct_adult@mc_fp, keep.rownames = "target_gene"
+), id.vars = "target_gene", variable.name = "cell_type", value.name = "mcfp")
+gs_dt <- unique(sub_dt[, .(target_gene, regulation)])
+ct_dt <- merge.data.table(
+  ct_dt, gs_dt, by = "target_gene", sort = FALSE
 )
-length(cands) # 32
-cands <- cands[cands %in% pou_int$target_gene]
-length(cands) # 13
-cands_dt <- net[target_gene %in% cands][order(target_name, sample, gene)]
-fwrite(
-  cands_dt,
-  file.path(res_dir, "pou4_target_genes_intersect_diff_regulation.tsv"),
-  sep = "\t"
-)
+# colors
+ct_cols_dt <- unique(mc_ann_adult[, .SD[1], .(broad_cell_type)])[,c("cell_type", "metacell") := NULL]
+ct_cols <- ct_cols_dt[, setNames(color, broad_cell_type)]
 
 # plot
-cands_dt[, gene_label := paste(substr(name, 1, 20), str_remove(gene, "Nvec_(vc1.1_)*"), motif, sep = " | ")]
-cands_dt[, target_label := paste(substr(target_name, 1, 20), str_remove(target_gene, "Nvec_(vc1.1_)*"), sep = " | ")]
-setorder(cands_dt, target_gene, expression_correlation)
-cands_dt[, gene_label := factor(gene_label, levels = unique(cands_dt$gene_label))]
-cands_dt[, target_label := factor(target_label, levels = unique(cands_dt$target_label))]
-cands_dt[, n:=.N, .(gene,target_gene)]
-cands_dt[,  expression_correlation := pmax(0, expression_correlation)]
-gp_tar <- ggplot(data = cands_dt, aes(target_label, gene_label, fill = sample, size = expression_correlation)) +
-  geom_point(data = cands_dt[n==1], shape = 21) +
-  geom_point(data = cands_dt[n>1], shape = 21, position = position_jitter(w = 0.2, h = 0)) +
-  scale_fill_manual(values = line_cond_cols) +
-  scale_size_continuous(range = c(1, 8)) +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-    panel.grid.major = element_line(linewidth = 0.2, color = "grey90")
-  ) +
-  guides(
-    fill = guide_legend(override.aes = list(shape = 21, size = 5))
-  )
-pw <- pmax(12, length(unique(cands_dt$target_gene_label)) / 3)
-ph <- pmax(10, length(unique(cands_dt$gene_label)) / 3)
-pdf(
-  file.path(fig_dir, sprintf("pou4_target_genes_intersect_diff_regulation.pdf")),
-  width = pw, height = ph
+ct_dt[, regulation := factor(regulation, levels = levels(sub_dt$regulation))]
+ct_dt[, cell_type := factor(cell_type, levels = names(ct_cols))]
+ct_dt[, mcfp := pmin(mcfp, 4)]
+sub_reg <- c(
+  "network",
+  "network+down", "network+activated+down", "activated+down",
+  "network+up", "network+up+repressed", "up+repressed"
 )
-print(gp_tar)
+ct_sub_dt <- ct_dt[regulation %in% sub_reg]
+ct_sub_dt[, regulation := factor(regulation, levels = sub_reg)]
+gp_ct <- ggplot(
+    ct_sub_dt,
+    aes(cell_type, mcfp)
+  ) +
+  geom_boxplot(aes(color = cell_type), outlier.size = 0.8) +
+  geom_boxplot(aes(fill = cell_type), outlier.colour = NA) +
+  scale_fill_manual(values = ct_cols) +
+  scale_color_manual(values = ct_cols) +
+  facet_wrap(~ regulation, ncol = 1) +
+  theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    strip.text = element_text(hjust = 0, size = 10),
+    strip.background = element_blank(),
+    panel.spacing = unit(0, 'points')
+  )
+gp_ct
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_network_expression_cell_type.pdf"),
+  width = 4, height = 12
+)
+gp_ct
 dev.off()
 ```
+
+Motifs
+
+```{r eval=FALSE, include=FALSE}
+# motif scores
+mta_annt <- fread("ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot.tsv")
+setnames(mta_annt, "motif", "motif_name")
+mta_annt[, motif := str_extract(motif_name, "ARCH\\d+")]
+mta_annt[motif == "ARCH1151"]
+setnames(mta_annt, "gene", "target_gene")
+mta_annt <- mta_annt[order(-score)][, .SD[1], .(motif, target_gene)]
+mta_annt <- mta_annt[target_gene != ""]
+mta_annt <- mta_annt[, .(motif, score, target_gene)]
+setnames(mta_annt, "score", "max_motif_score")
+
+pou_mx <- mta_annt[motif == "ARCH1151"]
+mta_dt <- merge.data.table(sub_dt, pou_mx, all.x = TRUE)
+
+```
+
+

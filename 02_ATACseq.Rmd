@@ -1815,9 +1815,11 @@ gpv_list <- lapply(comparas, function(x) {
   dt <- merge.data.table(dt, dc_tf, by = "motif", all.x = TRUE)
   dt[, motif_label := name]
   dt[motif_label == "", name := pfam]
-  dt[, motif_label := strtrim(motif_label, 45)]
+  dt[, motif_label := str_remove(motif_label, ".+(?<=:)")]
+  dt[, motif_label := strtrim(motif_label, 10)]
   dt[, minuslog10pval := -1 * log10(pvalue)]
   dt[, minuslog10padj := NA]
+  dt <- unique(dt[, .(motif, log2FoldChange, pvalue, minuslog10pval, minuslog10padj, motif_label)])
   ggplotVolcano(
     dt,
     padj_thr = NULL, pval_thr = 0.05,
@@ -1828,8 +1830,9 @@ gpv_list <- lapply(comparas, function(x) {
     title = sprintf("%s vs %s", x[[1]], x[[2]]),
     xlab = "differential binding score",
     y = "-log10(p value)",
-    label_column = "motif_label", label_size = 1, label_segment_alpha = 0.2,
-    label_fc_thr = 0.2
+    label_column = "motif_label", label_size = 3, label_segment_alpha = 0.2,
+    label_fc_thr = 0.2,
+    label_max_overlaps = 20
   ) +
     theme(panel.grid.major = element_line(color = "gray", linewidth = 0.2))
 })

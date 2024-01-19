@@ -114,6 +114,7 @@ ggplotVolcano <- function(
   label_size = 5,
   label_segment_color = "grey50",
   label_segment_alpha = 1,
+  label_max_overlaps = Inf,
   title = "",
   xlab = "log2 fold change",
   ylab = "- log10 adjusted p value",
@@ -294,7 +295,7 @@ ggplotVolcano <- function(
         segment.alpha = label_segment_alpha,
         direction     = "y",
         hjust         = 0,
-        max.overlaps  = Inf,
+        max.overlaps  = label_max_overlaps,
         min.segment.length = 0,
         size          = label_size
       ) +
@@ -307,7 +308,7 @@ ggplotVolcano <- function(
         segment.alpha = label_segment_alpha,
         direction     = "y",
         hjust         = 1,
-        max.overlaps  = Inf,
+        max.overlaps  = label_max_overlaps,
         min.segment.length = 0,
         size          = label_size
       )
