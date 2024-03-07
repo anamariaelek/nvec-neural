@@ -1679,7 +1679,7 @@ TOBIAS PlotAggregate --TFBS ${peaks} \
 
 ## TOBIAS motif scores
 
-Combine motif scores and footprint scores to determine motif binding. 
+Combine motif scores and footprint scores to determine motif binding.
 
 ```{bash eval=FALSE}
 mamba activate tobias
@@ -1764,7 +1764,7 @@ TOBIAS PlotAggregate \
 
 ```
 
-Combine motif binding scores 
+Combine motif binding scores
 
 ```{r eval=FALSE}
 bind_dir <- file.path(dat_dir, "footprint", "BINDetect")
