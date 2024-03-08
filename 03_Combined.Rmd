@@ -891,8 +891,7 @@ for (tf in unique(mo_dt$gene)) {
 dev.off()
 ```
 
-For all target genes, compare sets of TFs that regulate them between cell lines
-(i.e. genes upregulated in two or three cell lines, but differently regulated)
+For all target genes, compare sets of TFs that regulate them between cell lines (i.e. genes upregulated in two or three cell lines, but differently regulated)
 
 ```{r eval=FALSE}
 mo_dt <- fread(file.path(res_dir, "network_expression.tsv.gz"))
@@ -1904,5 +1903,3 @@ pou_mx <- mta_annt[motif == "ARCH1151"]
 mta_dt <- merge.data.table(sub_dt, pou_mx, all.x = TRUE)
 
 ```
-
-
