@@ -1688,6 +1688,7 @@ pou_elife <- fread(file.path(pub_dir, "pou4_targets_elife.tsv"))
 pou4 <- "Nvec_vc1.1_XM_032363992.2"
 ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
 pou_net <- ncol_dt[gene == pou4]
+pou_net <- pou_net[expression_lfc>1.5 & target_expression_lfc>1.5]
 
 # overlap of Pou4 targets
 pou_dt <- unique(rbindlist(list(
@@ -1696,6 +1697,7 @@ pou_dt <- unique(rbindlist(list(
   pou_net[, .(target_gene)][, regulation := "network"]
 )))
 pou_dc <- dcast.data.table(pou_dt, target_gene ~ regulation, value.var = "regulation")
+pou_dc <- pou_dc[!target_gene %in% pou_dc[!is.na(repressed) & !is.na(activated)]$target_gene]
 pou_dc <- unique(pou_dc)
 pou_mt <- pou_dc[, lapply(.SD, function(x) !is.na(x)), .SD = c("down", "up", "activated", "repressed", "network")]
 pou_mt <- as.matrix(pou_mt)
@@ -1848,11 +1850,11 @@ sub_dt[target_expression_lfc < 0, target_expression_lfc := 0]
 sub_dt[is.na(target_expression_lfc), target_expression_lfc := 0]
 sub_dt[is.na(footprint_score), footprint_score := 0]
 sub_dt[is.na(motif_score), motif_score := 0]
-gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, motif_score, color = regulation)) +
+gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, footprint_score, color = regulation)) +
   geom_point() +
   scale_color_manual(values = pou_cols) +
-  # geom_hline(yintercept = 4, linetype = 2) + # footprint score
-  geom_vline(xintercept = 0, linetype = 2) +
+  geom_hline(yintercept = 4, linetype = 2) + # footprint_score
+  geom_vline(xintercept = 1.5, linetype = 2) +
   facet_wrap("regulation") +
   theme(legend.position = "bottom")
 gp_pou_diff
@@ -1948,23 +1950,4 @@ pdf(
 )
 gp_ct
 dev.off()
-```
-
-Motifs
-
-```{r eval=FALSE, include=FALSE}
-# motif scores
-mta_annt <- fread("ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot.tsv")
-setnames(mta_annt, "motif", "motif_name")
-mta_annt[, motif := str_extract(motif_name, "ARCH\\d+")]
-mta_annt[motif == "ARCH1151"]
-setnames(mta_annt, "gene", "target_gene")
-mta_annt <- mta_annt[order(-score)][, .SD[1], .(motif, target_gene)]
-mta_annt <- mta_annt[target_gene != ""]
-mta_annt <- mta_annt[, .(motif, score, target_gene)]
-setnames(mta_annt, "score", "max_motif_score")
-
-pou_mx <- mta_annt[motif == "ARCH1151"]
-mta_dt <- merge.data.table(sub_dt, pou_mx, all.x = TRUE)
-
 ```
