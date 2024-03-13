@@ -1168,15 +1168,15 @@ mta_scores_mona <- mta_gw_motif_score_monalisa(
   index_object = seqdt,
   bin_width = 250,
   subsample_fraction = 0.10,
-  score_quantiles = c(0, 0.25, 0.5, 0.75, 0.95, 0.98, 0.99, 0.995, 0.999, 1.0),
-  score_quantile_thr = 0.95,
+  score_quantiles = c(0, 0.25, 0.5, 0.75, 0.8, 0.9, 0.95, 0.98, 0.99, 0.995, 0.999, 1.0),
+  score_quantile_thr = 0.8,
   do_gw_scan = TRUE,
   given_gr = peaks_gr,
   nthreads = 16
 )
 saveRDS(
   mta_scores_mona, 
-  file.path(res_dir, "motif-scores-archetypes-mona.rds")
+  file.path(res_dir, "motif-scores-archetypes-mona-0.8.rds")
 )
 
 # map motifs back to peaks
@@ -1211,7 +1211,7 @@ mta_annt <- unique(mta_annt)
 # save
 fwrite(
   mta_annt,
-  file.path(res_dir, "motif-scores-archetypes-mona-annot.tsv"),
+  file.path(res_dir, "motif-scores-archetypes-mona-0.8-annot.tsv"),
   sep = "\t"
 )
 
@@ -1357,7 +1357,7 @@ dt[, minuslog10qval := -1 * log10(padj)]
 
 # filtering
 ids <- apply(mat_fc, 1, function(x) max(x) > 1) &
-  apply(mat_qv, 1, function(x) !is.infinite(min(x)) & !min(x) > 0.001)
+  apply(mat_qv, 1, function(x) !is.infinite(min(x)) & !min(x) > 0.05)
 
 # clustering
 hc <- hclust(dist(mat_fc[ids, ]), method = "ward.D2")
@@ -1391,18 +1391,19 @@ marks_tfs <- merge.data.table(
   by = "gene", all = TRUE, sort = FALSE
 )
 marks_tfs[is.na(marks_tfs)] <- ""
-mt_marks_dt <- merge.data.table(
+mt_marks_ <- merge.data.table(
   ds, marks_tfs,
   by = "gene",
   all.x = TRUE
 )
-mt_marks_dt[, motif := factor(motif, levels = levels(ds$motif))]
-setorder(mt_marks_dt, motif)
-mt_marks_dt[is.na(name), name := ""]
-mt_marks_dt[name == "" & pfam != "", name := pfam]
-mt_marks_dt[name == "" & og != "", name := og]
+mt_marks_[, motif := factor(motif, levels = levels(ds$motif))]
+setorder(mt_marks_, motif)
+mt_marks_[is.na(name), name := ""]
 
 # add labels
+mt_marks_dt <- copy(mt_marks_)
+mt_marks_dt[name == "" & pfam != "", name := pfam]
+mt_marks_dt[name == "" & og != "", name := og]
 mt_marks_dt[, label := name]
 mt_marks_dt[label == "", label := archetype_name]
 mt_marks_dt[!grepl("^ARCH", label), label := paste(motif, label)]
@@ -1448,18 +1449,107 @@ gp
 dev.off()
 ```
 
+```{r fig.height=5, fig.width=6.5}
+# clustering
+hc <- hclust(dist(mat_fc), method = "ward.D2")
+ds <- dt[motif %in% rownames(mat_fc)]
+ds[, motif := factor(motif, levels = rev(rownames(mat_fc)))]
+
+# limit -log10FDR range
+ds[, minuslog10qval := pmin(minuslog10qval, 6)]
+
+# golden marks annotations
+marks_gold <- fread(
+  file.path("annotation", "golden-marks-231124.tsv"),
+  sep = "\t", header = FALSE, fill = TRUE
+)[, c(2, 1)]
+setnames(marks_gold, c("gene", "name"))
+
+# tf annotations
+tfs_annt <- fread(
+  file.path("annotation", "tfs.Nvec.tsv"),
+  header = TRUE
+)[, .SD[1], gene]
+
+# add annotations
+marks_tfs <- merge.data.table(
+  tfs_annt,
+  marks_gold,
+  by = "gene", all = TRUE, sort = FALSE
+)
+marks_tfs[is.na(marks_tfs)] <- ""
+mt_marks_ <- merge.data.table(
+  ds, marks_tfs,
+  by = "gene",
+  all.x = TRUE
+)
+
+# selected TFs
+seleceted_tfs <- c(
+  "GATA"  ="Nvec_vc1.1_XM_032367288.2",
+  "Islet" = "Nvec_vc1.1_XM_032362713.2",
+  #"OtxC" = "Nvec_vc1.1_XM_001647471.3",
+  "RFX4/6/8" = "Nvec_vc1.1_XM_032365096.2",
+  "Jun" = "Nvec_vc1.1_XM_032385896.2",
+  #"Fos1" = "Nvec_vc1.1_XM_048730161.1",
+  "FoxQ2d" = "Nvec_vc1.1_XM_032385706.2",
+  "Pou4" = "Nvec_vc1.1_XM_032363992.2",
+  "FoxL2" = "Nvec_vc1.1_XM_032364887.2",
+  "AshA" = "Nvec_vc1.1_XM_032370984.2",
+  "ZNF845" = "Nvec_vc1.1_XM_001641129.3"
+)
+mt_marks_selected_tfs <- mt_marks_[gene %in% seleceted_tfs]
+mt_marks_selected_tfs[, gene := factor(gene, levels = rev(seleceted_tfs))]
+setorder(mt_marks_selected_tfs, gene)
+mt_marks_selected_tfs[, name := factor(name, levels = unique(mt_marks_selected_tfs$name))]
+
+gp <- ggplot(mt_marks_selected_tfs, aes(group, name, size = minuslog10qval, fill = fc)) +
+  geom_point(shape = 21) +  
+  scale_fill_gradientn(
+    name = "enrichmnet\nfold change",
+    colours = c(
+      "white", "#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15", "#7a0105"
+    ),
+    breaks = seq(0, 6, 2)
+  ) +
+  scale_size_continuous(
+    name = "-log10 FDR",
+    range = c(1, 10),
+    breaks = seq(0, 6, 2)
+  )
+gp
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "motifs-tfs-selected-heatmap.pdf"),
+  width = 6, height = 5
+)
+gp
+dev.off()
+```
+
 Significant motifs assigned to TFs enrichment heatmap
 
-```{r fig.height=12, fig.width=10}
-mt_marks_tf <- mt_marks_dt[!is.na(gene)]
+```{r fig.height=8, fig.width=8}
+mt_marks_tf <- mt_marks_[!is.na(gene)]
+
+# one entry per motif
+mt_marks_tf <- mt_marks_tf[, .SD[1], .(motif, group)]
+mt_marks_tf <- mt_marks_tf[order(-name)][,.SD[1], .(motif, group)]
+
+# label
+mt_marks_tf[name == "" & pfam != "", name := pfam]
+mt_marks_tf[name == "" & og != "", name := og]
+mt_marks_tf[, name := substr(name, 1, 45)]
 mt_marks_tf[, label := paste(
-  substr(name, 1, 45), gene, motif, sep = " | "
+  name, gene, motif, sep = " | "
 )]
 mt_marks_tf[, label := factor(label, levels = unique(mt_marks_tf$label))]
-
+mt_marks_tf[, name := factor(name, levels = unique(mt_marks_tf$name))]
 
 # plot
-gp <- ggplot(mt_marks_tf, aes(group, label, label = label)) +
+gp <- ggplot(mt_marks_tf, aes(group, name, label = label)) +
   geom_point(
     aes(size = minuslog10qval, fill = fc),
     shape = 21,
@@ -1740,27 +1830,35 @@ genome="genome/Nvec_vc1.1_gDNA.fasta"
 nth=12
 x="tfs"
 
-# pou4
+# Pou4
 mot="_ARCH1151_Pit11bp_POU4F1_Pit"
+# Jun/Fos
+mot="_ARCH146_bZIP_Nvec_vc1.1_XM_001"
+# PaxA
+mot="_ARCH636_Homeodomains_Nvec_vc1."
+# ZNF845
+mot="_ARCH292_zf_C2H2_Nvec_vc1.1_XM_"
+# FoxL2
+mot="_ARCH671_Forkhead_Nvec_vc1.1_XM"
+# AshA
+mot="_ARCH560_PL0011.1_hlh-2__hlh-4"
+# FoxQ2d
+mot="_ARCH673_Forkhead_Nvec_vc1.1_XM"
+# SoxC
+mot="_ARCH1434_HMGbox_Sox_Nvec_vc1.1"
+
 TOBIAS PlotAggregate \
   --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
   --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
+  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
+
+# GATA
+mot="_ARCH738_GATA_Nvec_vc1.1_XM_032"
+TOBIAS PlotAggregate \
+  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Elav_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Elav_pos_unbound.bed \
+  --signals ${bwg_dir}/ATACorrect/Elav_pos_corrected.bw ${bwg_dir}/ATACorrect/Elav_neg_corrected.bw \
   --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
   
-
-# paxa
-mot="_ARCH636_Homeodomains_Nvec_vc1."
-TOBIAS PlotAggregate \
-  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
-  --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
-  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
-
-# znf845
-mot="_ARCH292_zf_C2H2_Nvec_vc1.1_XM_"
-TOBIAS PlotAggregate \
-  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
-  --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
-  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
 
 ```
 

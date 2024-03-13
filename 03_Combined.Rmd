@@ -565,7 +565,60 @@ fwrite(
 )
 ```
 
+### Distributions
+
+```{r fig.height=3, fig.width=12}
+mo_dt <- fread(file.path(res_dir, "network.tsv.gz"))
+mo_dt <- fread(
+  file.path(atac_dir, "motifs_genes_targets_long.tsv.gz")
+)
+
+# distribution of expression lfc
+exp_tf_dt <- unique(mo_dt[, .(sample, gene, expression_lfc, expression_tpm)])
+exp_tg_dt <- unique(mo_dt[, .(sample, target_gene, target_expression_lfc, target_expression_tpm)])
+setnames(exp_tg_dt, colnames(exp_tg_dt), str_remove(colnames(exp_tg_dt), "target_"))
+exp_dt <- unique(rbindlist(list(
+  exp_tf_dt[,.(sample, gene, expression_lfc)],
+  exp_tg_dt[,.(sample, gene, expression_lfc)]
+)))
+
+# distribution of footprint score
+ftp_dt <- unique(mo_dt[, .(sample, target_gene, footprint_score)])
+setnames(ftp_dt, "target_gene", "gene")
+ftp_thrs <- mo_dt[bound=="TRUE"][order(footprint_score)][1]$footprint_score
+mo_dt[,.N,.(footprint_score>ftp_thrs,bound)]
+
+# plot
+gp_exp <- ggplot(exp_dt, aes(expression_lfc, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = line_cond_cols) +
+  theme(panel.grid.major = element_line()) +
+  #scale_x_continuous(trans = "sqrt", breaks = c(0, 1, 5, 10, 50, 100, 150, 200)) +
+  geom_vline(xintercept = 1) +
+  labs(x = "expression fold change")
+gp_ftp <- ggplot(ftp_dt, aes(footprint_score, color = sample)) +
+  geom_density() +
+  scale_color_manual(values = line_cond_cols) +
+  theme(panel.grid.major = element_line()) +
+  scale_x_continuous(trans = "sqrt", breaks = c(0, 1, 10, 50, 100, 150, 200)) +
+  geom_vline(xintercept = ftp_thrs) +
+  labs(x = "footprint score")
+gp <- gp_exp + gp_ftp + plot_layout(guides = "collect")
+gp
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "expression_footprint_distributions.pdf"),
+  width = 10, height = 3
+)
+gp
+dev.off()
+```
+
 ### Expression distribution
+
+Expression per sample and separately for TFs and target genes
 
 ```{r fig.height=6, fig.width=6}
 mo_dt <- fread(file.path(res_dir, "network.tsv.gz"))
@@ -573,8 +626,8 @@ mo_dt <- fread(file.path(res_dir, "network.tsv.gz"))
 # distribution of expression lfc
 exp_tf_dt <- unique(mo_dt[, .(sample, gene, expression_lfc, expression_tpm)])
 exp_tg_dt <- unique(mo_dt[, .(sample, target_gene, target_expression_lfc, target_expression_tpm)])
-setnames(exp_tg_dt, colnames(exp_tg_dt), str_remove(colnames(exp_tg_dt), "target_"))
 
+# function to plot
 exp_dist_plot <- function(exp_dt, title = "Expression distribution", lfc_thr = 0) {
   gp_scat <- ggplot(
     exp_dt,
@@ -652,7 +705,7 @@ dev.off()
 Filtering by expression
 
 ```{r}
-mo_dt <- mo_dt[expression_lfc > 0][target_expression_lfc > 0]
+mo_dt <- mo_dt[expression_lfc > 1][target_expression_lfc > 1]
 # mo_dt <- mo_dt[expression_tpm > 100][target_expression_tpm > 100]
 setcolorder(mo_dt, c(
   "sample", "gene", "name", "pfam",
@@ -1764,6 +1817,17 @@ sum_dt <- all_dt[,length(unique(.SD$target_gene)),regulation][order(-V1)][V1>1]
 sub_dt <- all_dt[regulation %in% sum_dt$regulation]
 sub_dt[, regulation := factor(regulation, levels = unique(sum_dt$regulation))]
 
+# motif scores
+#mona <- fread(file.path(atac_dir, "motif-scores-archetypes-mona-0.8-annot.tsv"))
+#mona_pou <- unique(mona[grep("ARCH1151", motif)][gene != ""][, .(score, gene)])
+#setorder(mona_pou, -score)
+#mona_pou <- mona_pou[, .SD[1], gene]
+#setnames(mona_pou, c("score", "gene"), c("motif_score_monalisa", "target_gene"))
+#sub_dt <- merge.data.table(sub_dt, mona_pou, by = "target_gene", all.x = TRUE, sort=FALSE)
+#sub_dt[!is.na(motif_score_monalisa)][,.N,is.na(motif_score)]
+#sub_dt[, motif_score := motif_score_monalisa]
+#sub_dt[, motif_score_monalisa := NULL]
+
 # plot
 pou_cols <- c(
   "network" = "#ffecb3ff",
@@ -1783,10 +1847,11 @@ sub_dt[, regulation := factor(regulation, levels = names(pou_cols))]
 sub_dt[target_expression_lfc < 0, target_expression_lfc := 0]
 sub_dt[is.na(target_expression_lfc), target_expression_lfc := 0]
 sub_dt[is.na(footprint_score), footprint_score := 0]
-gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, footprint_score, color = regulation)) +
+sub_dt[is.na(motif_score), motif_score := 0]
+gp_pou_diff <- ggplot(sub_dt, aes(target_expression_lfc, motif_score, color = regulation)) +
   geom_point() +
   scale_color_manual(values = pou_cols) +
-  geom_hline(yintercept = 4, linetype = 2) +
+  # geom_hline(yintercept = 4, linetype = 2) + # footprint score
   geom_vline(xintercept = 0, linetype = 2) +
   facet_wrap("regulation") +
   theme(legend.position = "bottom")
@@ -1809,7 +1874,7 @@ unique(sub_dt[regulation %in% c("activated", "down", "activated+down")][,.(regul
 unique(sub_dt[regulation %in% c("repressed", "up", "up+repressed")][,.(regulation,target_gene,bound)])[,.N,bound]
 ```
 
-Cell type level expression for different geroups of Pou4 targets
+Cell type level expression for different groups of Pou4 targets
 
 ```{r echo=FALSE, fig.height=8, fig.width=4}
 require(metacell)

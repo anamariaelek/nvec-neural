@@ -4,8 +4,9 @@ ATACSEQ/*/bigwig
 ATACSEQ/*/consensus_peaks
 ATACSEQ/*/footprint
 ATACSEQ/nucleosome_free_regions/results/motifs-similarity-PPM-PCCnorm.rds
-ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-annot.tsv
 ATACSEQ/nucleosome_free_regions/results/motif-binding-scores-archetypes-mona-annot-footprints*
+ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-*rds
+ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-*tsv
 ATACSEQ/nucleosome_free_regions/results/diff-motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz
 ATACSEQ/nucleosome_free_regions/results/motifs_genes_targets_long.tsv.gz
 results/go_res_per_tf.rds
