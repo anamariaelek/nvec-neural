@@ -877,6 +877,9 @@ norm_mt <- read.table(
 # row normalize to bring genes to same range
 norm_mt <- (norm_mt + 10) / apply(norm_mt + 10, 1, median) 
 norm_mt <- log2(norm_mt)
+
+# save for shiny app
+saveRDS(norm_mt, file.path(res_dir, "gene_scores.rds"))
 ```
 
 ```{r include=TRUE, eval=TRUE}
@@ -1888,6 +1891,11 @@ Volcano plots
 # bindetect results
 bind_dt <- fread(file.path(
   bind_dir, "bindetect_results.txt"
+))
+
+# save rds
+saveRDS(bind_dt, file.path(
+  res_dir, "bindetect_results.rds"
 ))
 
 # coparisons

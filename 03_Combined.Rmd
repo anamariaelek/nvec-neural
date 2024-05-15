@@ -537,12 +537,12 @@ dt_comp <- fread(
 mo_dt <- fread(
   file.path(atac_dir, "motifs_genes_targets_long.tsv.gz")
 )
+# expressed == TRUE: expression_tpm > 100
 mo_dt <- mo_dt[expressed == TRUE & target_expressed == TRUE & bound == TRUE]
 mo_dt <- mo_dt[grep("pos", sample)]
 mo_dt[, reporterline := str_remove(sample, "_pos")]
 
-
-# add TF-target gene expression correlation
+# add TF-target gene expression correlation (we don't use this in the end)
 g_cors_dt <- unique(mo_dt[, .(gene, target_gene)])
 g_cors_dt <- g_cors_dt[gene %in% rownames(tpms_mt)]
 g_cors_dt <- g_cors_dt[target_gene %in% rownames(tpms_mt)]
@@ -702,11 +702,11 @@ gp_tg_exp
 dev.off()
 ```
 
-Filtering by expression
+Previously we filtered genes by expression (TPM>100). Filtering by expression fold change here.
 
 ```{r}
 mo_dt <- mo_dt[expression_lfc > 1][target_expression_lfc > 1]
-# mo_dt <- mo_dt[expression_tpm > 100][target_expression_tpm > 100]
+mo_dt[, target_TF := ifelse(target_gene %in% .SD$gene, TRUE, FALSE), sample]
 setcolorder(mo_dt, c(
   "sample", "gene", "name", "pfam",
   "expression_tpm", "expression_lfc",
@@ -722,6 +722,7 @@ fwrite(
   file.path(res_dir, "network_expression.tsv.gz"),
   sep = "\t"
 )
+saveRDS(mo_dt, file.path(res_dir, "network_expression.rds"))
 ```
 
 ### Motif binding distribution
@@ -809,7 +810,6 @@ Save network files
 mo_dt <- fread(file.path(res_dir, "network_expression.tsv.gz"))
 mo_dt[, reporterline := NULL]
 mo_dt[, motif_name := NULL]
-mo_dt[, target_TF := ifelse(target_gene %in% .SD$gene, TRUE, FALSE), sample]
 mo_dt[, name := substr(name, 1, 30)]
 mo_dt[, pfam := substr(pfam, 1, 30)]
 mo_dt[, target_name := substr(target_name, 1, 30)]
@@ -830,7 +830,7 @@ for (smp in c("Elav", "Ncol", "Fox")) {
   tfs_orph <- smp_dt[!gene %in% tfs_dt$gene, .SD[1], gene]
   tfs_orph[, target_gene := "none"]
   tfs_orph[, c("target_name", "target_pfam") := ""]
-  tfs_orph[, c("target_expression_tpm", "target_expression_lfc", "expression_correlation") := 0]
+  tfs_orph[, c("target_expression_tpm", "target_expression_lfc") := 0]
   tfs_dt <- rbindlist(list(tfs_dt, tfs_orph), use.names = TRUE)
   addWorksheet(wb, sheetName = paste0(smp, "_TF"))
   writeData(wb, sheet = paste0(smp, "_TF"), tfs_dt)

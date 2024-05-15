@@ -1,10 +1,12 @@
 TF-target gene binding networks files:  
 
-`network.tsv.gz` All networks in one table  
-`network.xslx` All networks in one file, separate sheets for each cell line, all TF-target genes and TF-TF networks  
-`network_Elav.tsv.gz`  Network for elav1 line  
-`network_Fox.tsv.gz`  Network for foxQ2d line  
-`network_Ncol.tsv.gz`  Network for ncol3 line  
+`network.tsv.gz` Networks with all genes (TPM>100), before filtering by expression.
+`network_expression.tsv.gz` Networks after filtering by expression (fold change (pos vs neg) > 1)  
+`network_expression.tsv.gz` Same but in binary format
+`network_expression.xslx` Same as `network_expression.tsv.gz`, with separate sheets for each cell line; includes all TF-target genes and TF-TF networks  
+`network_Elav.tsv.gz`  Same as `network_expression.tsv.gz` but subset only for Elav1 reporter line  
+`network_Fox.tsv.gz`  Same as `network_expression.tsv.gz` but subset only for FoxQ2d reporter line  
+`network_Ncol.tsv.gz` Same as `network_expression.tsv.gz`but subset only for Ncol3 reporter line  
 
 Network columns:  
 
