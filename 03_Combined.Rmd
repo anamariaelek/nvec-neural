@@ -1319,7 +1319,7 @@ for (x in c("Elav", "Ncol", "Fox")) {
 }
 ```
 
-## Cnidocytes network
+## Pou4 networks
 
 ### Comparison with Ozment et al. 2021 eLife paper.
 
@@ -1345,14 +1345,26 @@ fwrite(
 )
 ```
 
+Load our network data
+
+```{r}
+# load our data
+pou4 <- "Nvec_vc1.1_XM_032363992.2"
+ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
+elav_dt <- fread(file.path(res_dir, "network_Elav.tsv.gz"))
+pou_net <- rbindlist(list(
+  ncol_dt[gene == pou4],
+  elav_dt[gene == pou4]
+))
+
+# TF targets of Pou4
+pou_net[target_TF==TRUE][,.N,sample]
+pou_target_tfs <- unique(pou_net[target_TF==TRUE]$target_gene)
+```
+
 Compare targets
 
 ```{r}
-# load data
-pou4 <- "Nvec_vc1.1_XM_032363992.2"
-ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
-pou_net <- ncol_dt[gene == pou4]
-
 # load data from paper
 pou_pub <- fread(file.path(pub_dir, "pou4_targets_elife.tsv"))
 
@@ -1361,35 +1373,119 @@ pou_pub_act <- pou_pub[regulation == "activated", .(target_gene, fold_change)]
 setnames(pou_pub_act, "fold_change", "activated")
 pou_pub_rep <- pou_pub[regulation == "repressed", .(target_gene, fold_change)]
 setnames(pou_pub_rep, "fold_change", "repressed")
-pou_net_gen <- pou_net[, .(target_gene, target_expression_lfc)]
-setnames(pou_net_gen, "target_expression_lfc", "network")
-pou_dt <- merge.data.table(merge.data.table(
-  pou_pub_act, pou_pub_rep,
-  by = "target_gene", all = TRUE
-), pou_net_gen, by = "target_gene", all = TRUE)
-pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "network")]
+pou_nco_gen <- pou_net[sample=="Ncol_pos", .(target_gene, target_expression_lfc)]
+pou_ela_gen <- pou_net[sample=="Elav_pos", .(target_gene, target_expression_lfc)]
+setnames(pou_nco_gen, "target_expression_lfc", "ncol+")
+setnames(pou_ela_gen, "target_expression_lfc", "elav+")
+pou_dt <-
+  merge.data.table(
+    merge.data.table(
+      merge.data.table(
+        pou_pub_act, pou_pub_rep,
+        by = "target_gene", all = TRUE
+      ),
+      pou_nco_gen, by = "target_gene", all = TRUE
+    ),
+    pou_ela_gen, by = "target_gene", all = TRUE
+  )
+
+pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("activated", "repressed", "ncol+", "elav+")]
 pou_mt[, target_gene := pou_dt$target_gene]
-setcolorder(pou_mt, "target_gene")
 pou_mt <- unique(pou_mt)
-pou_mt <- as.matrix(pou_mt[, -1])
+pou_mt[, network := sum(`ncol+`, `elav+`), by = .I]
+setorder(pou_mt, -network)
+setcolorder(pou_mt, c("target_gene", "network", "ncol+", "elav+", "activated", "repressed"))
+pou_mt <- pou_mt[target_gene != pou_mt[activated==TRUE & repressed==TRUE]$target_gene]
+mt <- as.matrix(pou_mt[, -c(1:2)])
 
 require(eulerr)
-fit <- euler(pou_mt)
+fit <- euler(mt, weights = pou_mt$network + 1)
 p1 <- plot(
   fit,
-  quantities = TRUE
+  quantities = TRUE,
+  fills = list(fill = c(line_cols[c("Ncol", "Elav")], c("#92c5de", "#e5998d")))
 )
 print(p1)
+
 ```
 
 ```{r include=FALSE, eval=TRUE}
 pdf(
   file.path(fig_dir, "Pou4_targets_ovl_elife.pdf"),
-  width = 4, height = 2
+  width = 4, height = 4
 )
 print(p1)
 dev.off()
 ```
+
+Expression correlation
+
+```{r}
+# expression data
+require(metacell)
+source("../metacell_downstream_functions/Downstream_functions.R")
+scdb_adult_dir <- "../scRNAseq_nvec_v4/scdb/"
+scdb_init(scdb_adult_dir, force_reinit = TRUE)
+mat <- scdb_mat("Nvec")
+mc <- scdb_mc("Nvec_K30_atlas")
+mcfp <- mc@mc_fp
+
+# genes
+gns <- intersect(c(pou4, pou_dt$target_gene), rownames(mcfp))
+cors <- cor(t(mcfp[gns, ]), mcfp[pou4, ])[,1]
+
+# combinations
+combs <- apply(mt, 1, function(x) paste(colnames(mt)[x], collapse="&"))
+combs <- str_remove_all(combs, "\\+")
+
+pou_dt <- pou_mt[, .(target_gene)][, comb := combs][, corl := cors[target_gene]]
+pou_dt[, comb_agg := comb]
+pou_dt[comb %in% c("ncol","elav","ncol&elav"), comb_agg := "network only"]
+pou_dt[grepl("&activated", comb), comb_agg := "network&activated"]
+pou_dt[grepl("&repressed", comb), comb_agg := "network&repressed"]
+pou_dt[, intersect := "no"][grepl("&", comb_agg), intersect := "yes"]
+pou_dt[, comb_n := .N, comb]
+comb_cols <- c(
+  "ncol" = unname(line_cols["Ncol"]),
+  "elav" = unname(line_cols["Elav"]),
+  "ncol&elav" = "#b69e2eff",
+  "activated" = "#92c5de",
+  "repressed" = "#e5998d",
+  "elav&activated" = "#dda47eff",
+  "elav&repressed" = "#f58c55ff",
+  "ncol&activated" = "#76ba95ff",
+  "ncol&repressed" = "#a4a86cff",
+  "ncol&elav&activated" = "#b4aa6dff",
+  "ncol&elav&repressed" = "#c79d51ff",
+  "network only" = "#878787",
+  "network&activated" = "#2166ac",
+  "network&repressed" = "#b2182b"
+)
+
+gp_cor <- ggplot(
+  pou_dt,#[comb_n > 20][!comb %in% c("ncol","elav","ncol&elav")],
+  aes(corl,color=comb_agg)
+) + 
+  geom_density() +
+  scale_color_manual(values=comb_cols) +
+  facet_grid(intersect ~ .) +
+  labs(x = "expression correlation with Pou4")
+gp_cor
+
+pou_fp <- merge.data.table(pou_dt, pou_net[,.(target_gene, footprint_score)], by="target_gene", allow.cartesian = TRUE)
+ggplot(pou_fp, aes(comb_agg, footprint_score)) + geom_boxplot() + scale_y_log10()
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Pou4_targets_correlation_elife.pdf"),
+  width = 6, height = 4
+)
+gp_cor
+dev.off()
+```
+
+***
 
 Inspect the differences
 
@@ -1522,42 +1618,66 @@ fwrite(
 )
 ```
 
+Load our network data
+
+```{r}
+# load our data
+pou4 <- "Nvec_vc1.1_XM_032363992.2"
+ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
+elav_dt <- fread(file.path(res_dir, "network_Elav.tsv.gz"))
+pou_net <- rbindlist(list(
+  ncol_dt[gene == pou4],
+  elav_dt[gene == pou4]
+))
+
+# TF targets of Pou4
+pou_net[target_TF==TRUE][,.N,sample]
+pou_target_tfs <- unique(pou_net[target_TF==TRUE]$target_gene)
+```
+
 Compare targets
 
 ```{r}
-# load our Ncol network
-pou4 <- "Nvec_vc1.1_XM_032363992.2"
-ncol_dt <- fread(file.path(res_dir, "network_Ncol.tsv.gz"))
-pou_net <- ncol_dt[gene == pou4]
-
 # load data from paper
-pou_mut <- fread(file.path(pub_dir, "pou4_targets_cellrep.tsv"))
+pou_pub <- fread(file.path(pub_dir, "pou4_targets_cellrep.tsv"))
+pou_pub_act <- pou_pub[regulation == "up", .(target_gene, fold_change)]
+setnames(pou_pub_act, "fold_change", "up")
+pou_pub_rep <- pou_pub[regulation == "down", .(target_gene, fold_change)]
+setnames(pou_pub_rep, "fold_change", "down")
+pou_gen <- pou_net[,.(target_gene, target_expression_lfc)]
+setnames(pou_gen, "target_expression_lfc", "net")
+pou_nco_gen <- pou_net[sample=="Ncol_pos", .(target_gene, target_expression_lfc)]
+pou_ela_gen <- pou_net[sample=="Elav_pos", .(target_gene, target_expression_lfc)]
+setnames(pou_nco_gen, "target_expression_lfc", "ncol+")
+setnames(pou_ela_gen, "target_expression_lfc", "elav+")
+pou_dt <-merge.data.table(
+  merge.data.table(
+    pou_pub_act, pou_pub_rep,
+    by = "target_gene", all = TRUE
+  ),
+  pou_gen, by = "target_gene", all = TRUE
+)
 
-# overlap of Pou4 targets
-pou_mut_act <- pou_mut[regulation == "up", .(target_gene, fold_change)]
-setnames(pou_mut_act, "fold_change", "up")
-pou_mut_rep <- pou_mut[regulation == "down", .(target_gene, fold_change)]
-setnames(pou_mut_rep, "fold_change", "down")
-pou_net_gen <- pou_net[, .(target_gene, target_expression_lfc)]
-setnames(pou_net_gen, "target_expression_lfc", "network")
-pou_dt <- unique(merge.data.table(merge.data.table(
-  pou_mut_act, pou_mut_rep,
-  by = "target_gene", all = TRUE
-), pou_net_gen, by = "target_gene", all = TRUE))
-pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("down", "up", "network")]
+pou_mt <- pou_dt[, lapply(.SD, function(x) !is.na(x)), .SD = c("up", "down", "net")]
 pou_mt[, target_gene := pou_dt$target_gene]
-setcolorder(pou_mt, "target_gene")
 pou_mt <- unique(pou_mt)
-pou_mt <- as.matrix(pou_mt[, -1])
+setcolorder(pou_mt, c("target_gene", "net", "up", "down"))
+mt <- as.matrix(pou_mt[, -c(1)])
 
 require(eulerr)
-fit <- euler(pou_mt)
+fit <- euler(mt)
 p1 <- plot(
   fit,
-  quantities = TRUE
+  quantities = TRUE,
+  fills = list(fill = c("#a4a86cff", "#92c5de", "#e5998d"))
 )
 print(p1)
 
+
+combs <- apply(mt, 1, function(x) paste(colnames(mt)[x], collapse="&"))
+combs <- str_remove_all(combs, "\\+")
+
+pou_dt <- pou_mt[, .(target_gene)][, comb := combs]
 ```
 
 ```{r include=FALSE, eval=TRUE}
