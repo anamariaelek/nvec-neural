@@ -9,6 +9,7 @@ ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-*rds
 ATACSEQ/nucleosome_free_regions/results/motif-scores-archetypes-mona-*tsv
 ATACSEQ/nucleosome_free_regions/results/diff-motif-binding-scores-archetypes-mona-annot-footprints.tsv.gz
 ATACSEQ/nucleosome_free_regions/results/motifs_genes_targets_long.tsv.gz
+RNASEQ_QUANTIFICATION/bw/
 results/go_res_per_tf.rds
 CisBP
 genome

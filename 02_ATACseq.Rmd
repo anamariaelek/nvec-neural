@@ -74,8 +74,8 @@ Gene annotations
 marks_gold <- fread(
   file.path("annotation", "golden-marks-231124.tsv"),
   fill = TRUE, sep = "\t", header = FALSE
-)[, c(2:1)]
-setnames(marks_gold, c("gene", "name"))
+)#[, c(2:1)]
+setnames(marks_gold, c("gene", "name", "cts"))
 marks_gold_v <- structure(marks_gold$name, names = marks_gold$gene)
 
 # annotation
@@ -1618,7 +1618,6 @@ group_dt[, group := factor(
 message(sprintf(
   "Total genes: %i", length(group_dt$gene)
 ))
-# 20535
 
 # expressed genes
 con_mt <- read.table(
@@ -1629,14 +1628,12 @@ expr_genes <- names(which(apply(con_mt, 1, function(x) sum(x) > 100) == TRUE))
 message(sprintf(
   "Expressed genes: %i", length(expr_genes)
 ))
-# 19288
 
 # expressed TFs
 expr_tfs <- expr_genes[expr_genes %in% tfs_annt$gene]
 message(sprintf(
   "Expressed TFs: %i", length(expr_tfs)
 ))
-# 740
 
 # motif to tf assignment
 dc <- fread(file.path(
@@ -1658,7 +1655,6 @@ message(sprintf(
   length(expr_tfs_mot), length(expr_tfs),
   length(expr_tfs_mot) / length(expr_tfs) * 100
 ))
-# 589/740 (79.59%)
 ```
 
 ## Footprinting
@@ -1820,7 +1816,15 @@ nth=12
 #done
 ```
 
-Plot footprints
+Plot footprints for selected TFs
+
+```{r}
+dt=unique(fread("annotation/assignment-archetype-motif-gene.tsv.gz")[,.(archetype_name,gene)])
+gold=fread("annotation/golden-marks-231124.tsv",header=FALSE)
+setnames(gold,c("name","gene","cts"))
+unique(merge.data.table(dt,gold,by="gene")[,.(archetype_name,gene,name)])
+gold_dt=unique(merge.data.table(dt,gold,by="gene")[,.(archetype_name,gene,name,cts)])[order(cts)][,archetype_name:=str_extract(archetype_name,"ARCH\\d+")]
+```
 
 ```{bash}
 mamba activate tobias
@@ -1833,36 +1837,190 @@ genome="genome/Nvec_vc1.1_gDNA.fasta"
 nth=12
 x="tfs"
 
-# Pou4
-mot="_ARCH1151_Pit11bp_POU4F1_Pit"
+# GATA
+mot="_ARCH738_GATA_Nvec_vc1.1_XM_032"
+line="Elav"
+
+# Islet
+mot="_ARCH906_Homeodomains_Nvec_vc1."
+line="Elav"
+line="Ncol"
+
+# Rfx4/6/8
+mot="_ARCH1358_RFX_Nvec_vc1.1_XM_032"
+line="Fox"
+
 # Jun/Fos
 mot="_ARCH146_bZIP_Nvec_vc1.1_XM_001"
-# PaxA
-mot="_ARCH636_Homeodomains_Nvec_vc1."
-# ZNF845
-mot="_ARCH292_zf_C2H2_Nvec_vc1.1_XM_"
-# FoxL2
-mot="_ARCH671_Forkhead_Nvec_vc1.1_XM"
-# AshA
-mot="_ARCH560_PL0011.1_hlh-2__hlh-4"
+line="Fox"
+
 # FoxQ2d
 mot="_ARCH673_Forkhead_Nvec_vc1.1_XM"
+line="Ncol"
+
+# Pou4
+mot="_ARCH1151_Pit11bp_POU4F1_Pit"
+line="Ncol"
+
+# FoxL2
+mot="_ARCH671_Forkhead_Nvec_vc1.1_XM"
+line="Ncol"
+
+# AshA
+mot="_ARCH560_PL0011.1_hlh-2__hlh-4"
+line="Ncol"
+
+# ZNF845
+mot="_ARCH292_zf_C2H2_Nvec_vc1.1_XM_"
+line="Ncol"
+
+# PaxA
+mot="_ARCH636_Homeodomains_Nvec_vc1."
+
 # SoxC
 mot="_ARCH1434_HMGbox_Sox_Nvec_vc1.1"
 
-TOBIAS PlotAggregate \
-  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Ncol_pos_unbound.bed \
-  --signals ${bwg_dir}/ATACorrect/Ncol_pos_corrected.bw ${bwg_dir}/ATACorrect/Ncol_neg_corrected.bw \
-  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
+# Nvec_vc1.1_XM_032363168.2 ZMAT1/ZMAT3/ZMAT4/ZNF346/ZNF385A/ZNF385B/ZNF385C/ZNF385D
+# Nvec_vc1.1_XM_032363951.2 NFYB_NFYC.HG1.5:NFYB
+mot="_ARCH202_OCT_OCT_OCT_OCT_OCT_"
 
-# GATA
-mot="_ARCH738_GATA_Nvec_vc1.1_XM_032"
+# Nvec_NVE7697 like:LEUTX
+# Nvec_vc1.1_XM_032377390.2 VAX1/VAX2 (expressed in ElavPos)...
+mot="_ARCH956_Homeodomains_Nvec_vc1."
+
+# pos vs neg for chooesn line
 TOBIAS PlotAggregate \
-  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_Elav_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_Elav_pos_unbound.bed \
-  --signals ${bwg_dir}/ATACorrect/Elav_pos_corrected.bw ${bwg_dir}/ATACorrect/Elav_neg_corrected.bw \
-  --output ${out_dir}/${x}/${mot}/plots/${mot}_footprint.png --share_y sites --plot_boundaries
+  --TFBS ${out_dir}/${x}/${mot}/beds/${mot}_${line}_pos_bound.bed ${out_dir}/${x}/${mot}/beds/${mot}_${line}_pos_unbound.bed \
+  --signals ${bwg_dir}/ATACorrect/${line}_pos_corrected.bw ${bwg_dir}/ATACorrect/${line}_neg_corrected.bw \
+  --output ${out_dir}/${x}/${mot}/plots/${mot}_${line}_footprint.png --share_y sites --plot_boundaries
+
+# pos line1 vs line2 vs line3
+line1="Elav"
+line2="Fox"
+line3="Ncol"
+TOBIAS PlotAggregate \
+  --TFBS \
+  ${out_dir}/${x}/${mot}/beds/${mot}_${line1}_pos_bound.bed \
+  ${out_dir}/${x}/${mot}/beds/${mot}_${line2}_pos_bound.bed \
+  ${out_dir}/${x}/${mot}/beds/${mot}_${line3}_pos_bound.bed \
+  ${out_dir}/${x}/${mot}/beds/${mot}_${line1}_pos_unbound.bed \
+  ${out_dir}/${x}/${mot}/beds/${mot}_${line2}_pos_unbound.bed \
+  ${out_dir}/${x}/${mot}/beds/${mot}_${line3}_pos_unbound.bed \
+  --signals \
+  ${bwg_dir}/ATACorrect/${line1}_pos_corrected.bw \
+  ${bwg_dir}/ATACorrect/${line2}_pos_corrected.bw \
+  ${bwg_dir}/ATACorrect/${line3}_pos_corrected.bw \
+  --output ${out_dir}/${x}/${mot}/plots/${mot}_${line1}_${line2}_${line3}_footprint.pdf \
+  --output-txt ${out_dir}/${x}/${mot}/plots/${mot}_${line1}_${line2}_${line3}_footprint.txt \
+  --share_y sites --plot_boundaries
+
+# loop
+mots=$(for file in ATACSEQ/nucleosome_free_regions/footprint/BINDetect/tfs/_*/_*png; do basename "$file" .png; done)
+for mot in $mots
+do
+  for line in Elav Ncol Fox
+  do
+      echo ${mot} ${line}
+      TOBIAS PlotAggregate \
+        --TFBS \
+        ${out_dir}/${x}/${mot}/beds/${mot}_${line}_pos_bound.bed \
+        ${out_dir}/${x}/${mot}/beds/${mot}_${line}_pos_unbound.bed \
+        --signals \
+        ${bwg_dir}/ATACorrect/${line}_pos_corrected.bw \
+        ${bwg_dir}/ATACorrect/${line}_neg_corrected.bw \
+        --output \
+        ${out_dir}/${x}/${mot}/plots/${mot}_${line}_footprint.png \
+        --share_y sites --plot_boundaries
+  done
+done
+```
+
+```{r fig.height=12, fig.width=12}
+# function to parse footprints txt files saved by TOBIAS PlotAggregate
+parse_footprints <- function(ftp_fn) {
+  ftp_dt <- fread(ftp_fn, skip = 1)
+  setnames(ftp_dt, c("sample", "region", "signals"))
+  # split values in signals by "," into individual columns
+  ftp_dt[, paste0("p", seq_len(120)) := tstrsplit(signals, ",", fixed = TRUE)]
+  ftp_dt[, signals := NULL]
+  # melt to long format for plotting
+  ftp_dt <- melt(ftp_dt, id.vars = c("sample", "region"), variable.name = "position", value.name = "signal")
+  ftp_dt[, position := as.integer(str_remove(position, "p"))]
+  ftp_dt[, signal := as.numeric(signal)]
+  # fix names
+  ftp_dt[, sample := str_remove(sample, "_corrected")]
+  ftp_dt[, region := str_extract(region, "(Elav|Ncol|Fox)_(pos|neg)_(un)*bound")]
+  # return
+  return(ftp_dt)
+}
+
+# motif to tf assignment
+dc <- fread(file.path(
+  "annotation",
+  "assignment-archetype-motif-gene.tsv.gz"
+))[, .(gene, archetype_name)]
+
+# golden marker tfs
+marks_neuro <- marks_gold[grepl("neuro|cnido",cts)]
+marks_gold_tfs <- marks_neuro[,setNames(gene, name)]
+
+# loop for all marker tfs
+ftp_ls <-lapply(seq_along(marks_gold_tfs), function(i) {
   
+  # gene ID and name
+  tf_name <- unname(marks_gold_tfs[i])
+  tf <- names(marks_gold_tfs[i])
+  print(sprintf("%s/%s: %s (%s)",i, length(marks_gold_tfs) , tf_name, tf))
+  
+  # find motif
+  arch <- str_extract(dc[gene==tf]$archetype_name[1], "ARCH\\d+_")
+  if (!is.na(arch)) {
+    mot_dir <- grep(arch, list.dirs(file.path(ftp_dir,"BINDetect","tfs"), recursive=FALSE), value=TRUE)
+    mot <- basename(mot_dir)
+    
+    # load footprint data, create if doesn't exist
+    ftp_fn <- file.path(mot_dir,"plots",sprintf("%s_%s_%s_%s_footprint.txt",mot,line1,line2,line3))
+    if (!file.exists(ftp_fn)) {
+      tobias_plot_cmd <- sprintf(
+        "TOBIAS PlotAggregate --TFBS %s/beds/*bed --signals %s/footprint/ATACorrect/*_pos_corrected.bw --output %s/plots/%s_Elav_Fox_Ncol_footprint.pdf --output-txt  %s/plots/%s_Elav_Fox_Ncol_footprint.txt --share_y sites --plot_boundaries",
+        mot_dir, dat_dir, mot_dir, basename(mot_dir), mot_dir, basename(mot_dir)
+      )
+      #system(tobias_plot_cmd)
+      print(tobias_plot_cmd)
+      print("")
+    } else {
+      ftp_dt <- parse_footprints(ftp_fn)
+      ftp_dt[, gene := tf][, gene_name := tf_name]
+      ftp_dt
+    }
+  }
+})
+ftp_dt <- rbindlist(ftp_ls[ftp_ls!=""])
 
+# plot
+ftp_dt[, bound := str_extract(region, "(un)*bound")]
+ftp_dt[, ovl := grepl(sample,region), by=1:nrow(ftp_dt)]
+ftp_dt[, centered_position := position - max(position) / 2]
+ftp_gp <- ggplot(ftp_dt[ovl==TRUE], aes(centered_position, signal, color = sample, linetype = bound)) +
+  geom_line(size = 0.25) +
+  theme(legend.position = "bottom") +
+  scale_color_manual(values = line_cond_cols) +
+  facet_wrap("gene_name", scales = "free") +
+  labs(x = "distance from motif center") +
+  theme(
+    panel.grid.major = element_line(color = "gray", linewidth = 0.1),
+    text = element_text(size = 18), strip.text = element_text(size = 18)
+  )
+ftp_gp
+```
+
+```{r include=FALSE, eval=TRUE}
+pdf(
+  file.path(fig_dir, "Footprint_neuron_markers.pdf"),
+  width = 11, height = 10
+)
+ftp_gp
+dev.off()
 ```
 
 Combine motif binding scores
