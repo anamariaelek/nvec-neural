@@ -1,510 +1,1933 @@
 GO.ID	Term	Annotated	Significant	Expected	pval_test	pval_adj	ontology
-GO:0006103	2-oxoglutarate metabolic process	1	1	0.02	0.017	1	BP
-GO:0043171	peptide catabolic process	1	1	0.02	0.017	1	BP
-GO:0006751	glutathione catabolic process	1	1	0.02	0.017	1	BP
-GO:2000016	negative regulation of determination of ...	1	1	0.02	0.017	1	BP
-GO:0032095	regulation of response to food	1	1	0.02	0.017	1	BP
-GO:0032096	negative regulation of response to food	1	1	0.02	0.017	1	BP
-GO:0032098	regulation of appetite	1	1	0.02	0.017	1	BP
-GO:0032099	negative regulation of appetite	1	1	0.02	0.017	1	BP
-GO:1903318	negative regulation of protein maturatio...	1	1	0.02	0.017	1	BP
-GO:0006570	tyrosine metabolic process	1	1	0.02	0.017	1	BP
-GO:0006572	tyrosine catabolic process	1	1	0.02	0.017	1	BP
-GO:0048264	determination of ventral identity	1	1	0.02	0.017	1	BP
-GO:0044273	sulfur compound catabolic process	1	1	0.02	0.017	1	BP
-GO:0032104	regulation of response to extracellular ...	1	1	0.02	0.017	1	BP
-GO:0032105	negative regulation of response to extra...	1	1	0.02	0.017	1	BP
-GO:0032107	regulation of response to nutrient level...	1	1	0.02	0.017	1	BP
-GO:0032108	negative regulation of response to nutri...	1	1	0.02	0.017	1	BP
-GO:0010955	negative regulation of protein processin...	1	1	0.02	0.017	1	BP
-GO:0007269	neurotransmitter secretion	14	2	0.24	0.021	1	BP
-GO:0099643	signal release from synapse	14	2	0.24	0.021	1	BP
-GO:0009395	phospholipid catabolic process	2	1	0.03	0.034	1	BP
-GO:0009072	aromatic amino acid family metabolic pro...	2	1	0.03	0.034	1	BP
-GO:0009074	aromatic amino acid family catabolic pro...	2	1	0.03	0.034	1	BP
-GO:2000015	regulation of determination of dorsal id...	2	1	0.03	0.034	1	BP
-GO:0070291	N-acylethanolamine metabolic process	2	1	0.03	0.034	1	BP
-GO:0043508	negative regulation of JUN kinase activi...	2	1	0.03	0.034	1	BP
-GO:0046475	glycerophospholipid catabolic process	2	1	0.03	0.034	1	BP
-GO:0032094	response to food	2	1	0.03	0.034	1	BP
-GO:0042439	ethanolamine-containing compound metabol...	2	1	0.03	0.034	1	BP
-GO:0006558	L-phenylalanine metabolic process	2	1	0.03	0.034	1	BP
-GO:0006559	L-phenylalanine catabolic process	2	1	0.03	0.034	1	BP
-GO:0070613	regulation of protein processing	2	1	0.03	0.034	1	BP
-GO:1902221	erythrose 4-phosphate/phosphoenolpyruvat...	2	1	0.03	0.034	1	BP
-GO:1902222	erythrose 4-phosphate/phosphoenolpyruvat...	2	1	0.03	0.034	1	BP
-GO:0048262	determination of dorsal/ventral asymmetr...	2	1	0.03	0.034	1	BP
-GO:0048263	determination of dorsal identity	2	1	0.03	0.034	1	BP
-GO:0046329	negative regulation of JNK cascade	2	1	0.03	0.034	1	BP
-GO:0046689	response to mercury ion	2	1	0.03	0.034	1	BP
-GO:0042219	cellular modified amino acid catabolic p...	2	1	0.03	0.034	1	BP
-GO:0006836	neurotransmitter transport	20	2	0.34	0.041	1	BP
-GO:0043496	regulation of protein homodimerization a...	3	1	0.05	0.051	1	BP
-GO:0043053	dauer entry	3	1	0.05	0.051	1	BP
-GO:0034308	primary alcohol metabolic process	3	1	0.05	0.051	1	BP
-GO:0051590	positive regulation of neurotransmitter ...	3	1	0.05	0.051	1	BP
-GO:1903317	regulation of protein maturation	3	1	0.05	0.051	1	BP
-GO:0046503	glycerolipid catabolic process	3	1	0.05	0.051	1	BP
-GO:0001956	positive regulation of neurotransmitter ...	3	1	0.05	0.051	1	BP
-GO:0043407	negative regulation of MAP kinase activi...	3	1	0.05	0.051	1	BP
-GO:0070303	negative regulation of stress-activated ...	3	1	0.05	0.051	1	BP
-GO:0022611	dormancy process	3	1	0.05	0.051	1	BP
-GO:0032873	negative regulation of stress-activated ...	3	1	0.05	0.051	1	BP
-GO:0006536	glutamate metabolic process	3	1	0.05	0.051	1	BP
-GO:0044242	cellular lipid catabolic process	3	1	0.05	0.051	1	BP
-GO:0055115	entry into diapause	3	1	0.05	0.051	1	BP
-GO:0001505	regulation of neurotransmitter levels	23	2	0.39	0.054	1	BP
-GO:0023052	signaling	202	6	3.47	0.058	1	BP
-GO:0007154	cell communication	203	6	3.48	0.059	1	BP
-GO:0019319	hexose biosynthetic process	4	1	0.07	0.067	1	BP
-GO:0071901	negative regulation of protein serine/th...	4	1	0.07	0.067	1	BP
-GO:0006094	gluconeogenesis	4	1	0.07	0.067	1	BP
-GO:0043648	dicarboxylic acid metabolic process	4	1	0.07	0.067	1	BP
-GO:1901606	alpha-amino acid catabolic process	4	1	0.07	0.067	1	BP
-GO:0043408	regulation of MAPK cascade	28	2	0.48	0.077	1	BP
-GO:0006750	glutathione biosynthetic process	5	1	0.09	0.083	1	BP
-GO:0040024	dauer larval development	5	1	0.09	0.083	1	BP
-GO:0006749	glutathione metabolic process	5	1	0.09	0.083	1	BP
-GO:0019184	nonribosomal peptide biosynthetic proces...	5	1	0.09	0.083	1	BP
-GO:0016485	protein processing	5	1	0.09	0.083	1	BP
-GO:0046364	monosaccharide biosynthetic process	5	1	0.09	0.083	1	BP
-GO:0009063	cellular amino acid catabolic process	5	1	0.09	0.083	1	BP
-GO:0000165	MAPK cascade	31	2	0.53	0.092	1	BP
-GO:1901575	organic substance catabolic process	69	3	1.18	0.098	1	BP
-GO:0070059	intrinsic apoptotic signaling pathway in...	6	1	0.1	0.099	1	BP
-GO:0042398	cellular modified amino acid biosyntheti...	6	1	0.1	0.099	1	BP
-GO:0016079	synaptic vesicle exocytosis	6	1	0.1	0.099	1	BP
-GO:0016042	lipid catabolic process	6	1	0.1	0.099	1	BP
-GO:0045746	negative regulation of Notch signaling p...	6	1	0.1	0.099	1	BP
-GO:0009064	glutamine family amino acid metabolic pr...	6	1	0.1	0.099	1	BP
-GO:0032269	negative regulation of cellular protein ...	33	2	0.57	0.103	1	BP
-GO:0044248	cellular catabolic process	72	3	1.24	0.108	1	BP
-GO:0051248	negative regulation of protein metabolic...	34	2	0.58	0.109	1	BP
-GO:0051384	response to glucocorticoid	7	1	0.12	0.115	1	BP
-GO:0046928	regulation of neurotransmitter secretion	7	1	0.12	0.115	1	BP
-GO:0031960	response to corticosteroid	7	1	0.12	0.115	1	BP
-GO:0043506	regulation of JUN kinase activity	7	1	0.12	0.115	1	BP
-GO:0046395	carboxylic acid catabolic process	7	1	0.12	0.115	1	BP
-GO:0016054	organic acid catabolic process	7	1	0.12	0.115	1	BP
-GO:0043409	negative regulation of MAPK cascade	7	1	0.12	0.115	1	BP
-GO:0006576	cellular biogenic amine metabolic proces...	7	1	0.12	0.115	1	BP
-GO:0051588	regulation of neurotransmitter transport	7	1	0.12	0.115	1	BP
-GO:0046328	regulation of JNK cascade	7	1	0.12	0.115	1	BP
-GO:0044272	sulfur compound biosynthetic process	7	1	0.12	0.115	1	BP
-GO:0017156	calcium-ion regulated exocytosis	8	1	0.14	0.13	1	BP
-GO:0045861	negative regulation of proteolysis	8	1	0.14	0.13	1	BP
-GO:0044106	cellular amine metabolic process	8	1	0.14	0.13	1	BP
-GO:0097480	establishment of synaptic vesicle locali...	8	1	0.14	0.13	1	BP
-GO:0009308	amine metabolic process	8	1	0.14	0.13	1	BP
-GO:0070302	regulation of stress-activated protein k...	8	1	0.14	0.13	1	BP
-GO:0032872	regulation of stress-activated MAPK casc...	8	1	0.14	0.13	1	BP
-GO:0051604	protein maturation	8	1	0.14	0.13	1	BP
-GO:0006790	sulfur compound metabolic process	8	1	0.14	0.13	1	BP
-GO:0032268	regulation of cellular protein metabolic...	78	3	1.34	0.131	1	BP
-GO:1901564	organonitrogen compound metabolic proces...	179	5	3.07	0.137	1	BP
-GO:0023061	signal release	40	2	0.69	0.144	1	BP
-GO:0009799	specification of symmetry	9	1	0.15	0.146	1	BP
-GO:0033673	negative regulation of kinase activity	9	1	0.15	0.146	1	BP
-GO:0007254	JNK cascade	9	1	0.15	0.146	1	BP
-GO:0051348	negative regulation of transferase activ...	9	1	0.15	0.146	1	BP
-GO:0016051	carbohydrate biosynthetic process	9	1	0.15	0.146	1	BP
-GO:0099504	synaptic vesicle cycle	9	1	0.15	0.146	1	BP
-GO:0006469	negative regulation of protein kinase ac...	9	1	0.15	0.146	1	BP
-GO:0009855	determination of bilateral symmetry	9	1	0.15	0.146	1	BP
-GO:1901605	alpha-amino acid metabolic process	9	1	0.15	0.146	1	BP
-GO:0048585	negative regulation of response to stimu...	82	3	1.41	0.148	1	BP
-GO:0009056	catabolic process	83	3	1.42	0.152	1	BP
-GO:0051246	regulation of protein metabolic process	84	3	1.44	0.157	1	BP
-GO:0048489	synaptic vesicle transport	10	1	0.17	0.161	1	BP
-GO:0097479	synaptic vesicle localization	10	1	0.17	0.161	1	BP
-GO:0046434	organophosphate catabolic process	10	1	0.17	0.161	1	BP
-GO:0006520	cellular amino acid metabolic process	10	1	0.17	0.161	1	BP
-GO:0001932	regulation of protein phosphorylation	43	2	0.74	0.162	1	BP
-GO:0007268	chemical synaptic transmission	45	2	0.77	0.175	1	BP
-GO:0098916	anterograde trans-synaptic signaling	45	2	0.77	0.175	1	BP
-GO:0099536	synaptic signaling	45	2	0.77	0.175	1	BP
-GO:0099537	trans-synaptic signaling	45	2	0.77	0.175	1	BP
-GO:0097193	intrinsic apoptotic signaling pathway	11	1	0.19	0.175	1	BP
-GO:0099003	vesicle-mediated transport in synapse	11	1	0.19	0.175	1	BP
-GO:0019318	hexose metabolic process	11	1	0.19	0.175	1	BP
-GO:0006006	glucose metabolic process	11	1	0.19	0.175	1	BP
-GO:0051403	stress-activated MAPK cascade	11	1	0.19	0.175	1	BP
-GO:0006575	cellular modified amino acid metabolic p...	11	1	0.19	0.175	1	BP
-GO:0044282	small molecule catabolic process	11	1	0.19	0.175	1	BP
-GO:0010469	regulation of signaling receptor activit...	12	1	0.21	0.19	1	BP
-GO:0008593	regulation of Notch signaling pathway	12	1	0.21	0.19	1	BP
-GO:0005996	monosaccharide metabolic process	12	1	0.21	0.19	1	BP
-GO:0031098	stress-activated protein kinase signalin...	12	1	0.21	0.19	1	BP
-GO:0006066	alcohol metabolic process	12	1	0.21	0.19	1	BP
-GO:0010646	regulation of cell communication	141	4	2.42	0.191	1	BP
-GO:1901565	organonitrogen compound catabolic proces...	48	2	0.82	0.194	1	BP
-GO:0023051	regulation of signaling	142	4	2.44	0.195	1	BP
-GO:0006650	glycerophospholipid metabolic process	13	1	0.22	0.204	1	BP
-GO:0051650	establishment of vesicle localization	13	1	0.22	0.204	1	BP
-GO:0051648	vesicle localization	13	1	0.22	0.204	1	BP
-GO:0035556	intracellular signal transduction	97	3	1.66	0.217	1	BP
-GO:0050806	positive regulation of synaptic transmis...	14	1	0.24	0.218	1	BP
-GO:0043393	regulation of protein binding	14	1	0.24	0.218	1	BP
-GO:0046486	glycerolipid metabolic process	14	1	0.24	0.218	1	BP
-GO:0042325	regulation of phosphorylation	52	2	0.89	0.22	1	BP
-GO:0006793	phosphorus metabolic process	98	3	1.68	0.222	1	BP
-GO:0006796	phosphate-containing compound metabolic ...	98	3	1.68	0.222	1	BP
-GO:0071805	potassium ion transmembrane transport	15	1	0.26	0.232	1	BP
-GO:1901361	organic cyclic compound catabolic proces...	16	1	0.27	0.246	1	BP
-GO:0006644	phospholipid metabolic process	16	1	0.27	0.246	1	BP
-GO:0001933	negative regulation of protein phosphory...	16	1	0.27	0.246	1	BP
-GO:0019439	aromatic compound catabolic process	16	1	0.27	0.246	1	BP
-GO:0031399	regulation of protein modification proce...	58	2	1	0.261	1	BP
-GO:0006468	protein phosphorylation	59	2	1.01	0.268	1	BP
-GO:0010647	positive regulation of cell communicatio...	59	2	1.01	0.268	1	BP
-GO:0048545	response to steroid hormone	18	1	0.31	0.273	1	BP
-GO:0009953	dorsal/ventral pattern formation	18	1	0.31	0.273	1	BP
-GO:0023056	positive regulation of signaling	60	2	1.03	0.275	1	BP
-GO:0044281	small molecule metabolic process	61	2	1.05	0.282	1	BP
-GO:0006813	potassium ion transport	19	1	0.33	0.286	1	BP
-GO:1903532	positive regulation of secretion by cell	19	1	0.33	0.286	1	BP
-GO:0030162	regulation of proteolysis	19	1	0.33	0.286	1	BP
-GO:0034976	response to endoplasmic reticulum stress	19	1	0.33	0.286	1	BP
-GO:0043043	peptide biosynthetic process	19	1	0.33	0.286	1	BP
-GO:0007219	Notch signaling pathway	19	1	0.33	0.286	1	BP
-GO:0043405	regulation of MAP kinase activity	19	1	0.33	0.286	1	BP
-GO:0009968	negative regulation of signal transducti...	62	2	1.06	0.289	1	BP
-GO:0019220	regulation of phosphate metabolic proces...	63	2	1.08	0.296	1	BP
-GO:0051174	regulation of phosphorus metabolic proce...	63	2	1.08	0.296	1	BP
-GO:0043086	negative regulation of catalytic activit...	20	1	0.34	0.298	1	BP
-GO:0051656	establishment of organelle localization	20	1	0.34	0.298	1	BP
-GO:0051098	regulation of binding	20	1	0.34	0.298	1	BP
-GO:0032940	secretion by cell	64	2	1.1	0.302	1	BP
-GO:0051047	positive regulation of secretion	21	1	0.36	0.311	1	BP
-GO:0043410	positive regulation of MAPK cascade	21	1	0.36	0.311	1	BP
-GO:0042326	negative regulation of phosphorylation	21	1	0.36	0.311	1	BP
-GO:0002119	nematode larval development	21	1	0.36	0.311	1	BP
-GO:0006518	peptide metabolic process	21	1	0.36	0.311	1	BP
-GO:0140352	export from cell	66	2	1.13	0.316	1	BP
-GO:0009966	regulation of signal transduction	116	3	1.99	0.317	1	BP
-GO:0043604	amide biosynthetic process	22	1	0.38	0.324	1	BP
-GO:0010038	response to metal ion	22	1	0.38	0.324	1	BP
-GO:0031400	negative regulation of protein modificat...	23	1	0.39	0.336	1	BP
-GO:0071900	regulation of protein serine/threonine k...	23	1	0.39	0.336	1	BP
-GO:0032102	negative regulation of response to exter...	23	1	0.39	0.336	1	BP
-GO:0097190	apoptotic signaling pathway	24	1	0.41	0.348	1	BP
-GO:0045055	regulated exocytosis	24	1	0.41	0.348	1	BP
-GO:0005975	carbohydrate metabolic process	24	1	0.41	0.348	1	BP
-GO:0016310	phosphorylation	71	2	1.22	0.351	1	BP
-GO:0010648	negative regulation of cell communicatio...	71	2	1.22	0.351	1	BP
-GO:0023057	negative regulation of signaling	71	2	1.22	0.351	1	BP
-GO:1902531	regulation of intracellular signal trans...	72	2	1.24	0.358	1	BP
-GO:0046903	secretion	72	2	1.24	0.358	1	BP
-GO:0043603	cellular amide metabolic process	26	1	0.45	0.372	1	BP
-GO:0051640	organelle localization	26	1	0.45	0.372	1	BP
-GO:0006887	exocytosis	26	1	0.45	0.372	1	BP
-GO:1902532	negative regulation of intracellular sig...	27	1	0.46	0.383	1	BP
-GO:0045936	negative regulation of phosphate metabol...	27	1	0.46	0.383	1	BP
-GO:0002164	larval development	27	1	0.46	0.383	1	BP
-GO:0044283	small molecule biosynthetic process	27	1	0.46	0.383	1	BP
-GO:1901615	organic hydroxy compound metabolic proce...	27	1	0.46	0.383	1	BP
-GO:0010563	negative regulation of phosphorus metabo...	27	1	0.46	0.383	1	BP
-GO:0007267	cell-cell signaling	78	2	1.34	0.399	1	BP
-GO:0006979	response to oxidative stress	29	1	0.5	0.406	1	BP
-GO:0044255	cellular lipid metabolic process	29	1	0.5	0.406	1	BP
-GO:0007165	signal transduction	187	4	3.21	0.409	1	BP
-GO:0080135	regulation of cellular response to stres...	30	1	0.51	0.417	1	BP
-GO:0033554	cellular response to stress	81	2	1.39	0.42	1	BP
-GO:0019752	carboxylic acid metabolic process	31	1	0.53	0.427	1	BP
-GO:0050804	modulation of chemical synaptic transmis...	32	1	0.55	0.438	1	BP
-GO:0099177	regulation of trans-synaptic signaling	32	1	0.55	0.438	1	BP
-GO:0043436	oxoacid metabolic process	32	1	0.55	0.438	1	BP
-GO:0044267	cellular protein metabolic process	138	3	2.37	0.441	1	BP
-GO:0044092	negative regulation of molecular functio...	33	1	0.57	0.448	1	BP
-GO:0031667	response to nutrient levels	33	1	0.57	0.448	1	BP
-GO:0033993	response to lipid	33	1	0.57	0.448	1	BP
-GO:0045859	regulation of protein kinase activity	33	1	0.57	0.448	1	BP
-GO:0006082	organic acid metabolic process	33	1	0.57	0.448	1	BP
-GO:0001934	positive regulation of protein phosphory...	34	1	0.58	0.459	1	BP
-GO:0006807	nitrogen compound metabolic process	254	5	4.36	0.469	1	BP
-GO:0019637	organophosphate metabolic process	36	1	0.62	0.479	1	BP
-GO:0009991	response to extracellular stimulus	36	1	0.62	0.479	1	BP
-GO:0042327	positive regulation of phosphorylation	36	1	0.62	0.479	1	BP
-GO:0043549	regulation of kinase activity	38	1	0.65	0.498	1	BP
-GO:0045937	positive regulation of phosphate metabol...	38	1	0.65	0.498	1	BP
-GO:0010562	positive regulation of phosphorus metabo...	38	1	0.65	0.498	1	BP
-GO:0019538	protein metabolic process	149	3	2.56	0.503	1	BP
-GO:1902533	positive regulation of intracellular sig...	39	1	0.67	0.508	1	BP
-GO:0051338	regulation of transferase activity	39	1	0.67	0.508	1	BP
-GO:0051172	negative regulation of nitrogen compound...	96	2	1.65	0.519	1	BP
-GO:0007275	multicellular organism development	208	4	3.57	0.522	1	BP
-GO:0048583	regulation of response to stimulus	153	3	2.63	0.525	1	BP
-GO:0006950	response to stress	153	3	2.63	0.525	1	BP
-GO:0051649	establishment of localization in cell	97	2	1.66	0.525	1	BP
-GO:0010035	response to inorganic substance	41	1	0.7	0.526	1	BP
-GO:0032101	regulation of response to external stimu...	41	1	0.7	0.526	1	BP
-GO:0098662	inorganic cation transmembrane transport	41	1	0.7	0.526	1	BP
-GO:0022008	neurogenesis	98	2	1.68	0.532	1	BP
-GO:0006629	lipid metabolic process	42	1	0.72	0.535	1	BP
-GO:0044238	primary metabolic process	267	5	4.58	0.542	1	BP
-GO:1903530	regulation of secretion by cell	43	1	0.74	0.544	1	BP
-GO:0003002	regionalization	43	1	0.74	0.544	1	BP
-GO:0007186	G protein-coupled receptor signaling pat...	43	1	0.74	0.544	1	BP
-GO:0060341	regulation of cellular localization	43	1	0.74	0.544	1	BP
-GO:0007389	pattern specification process	44	1	0.75	0.553	1	BP
-GO:0010605	negative regulation of macromolecule met...	102	2	1.75	0.557	1	BP
-GO:0065008	regulation of biological quality	159	3	2.73	0.558	1	BP
-GO:0031401	positive regulation of protein modificat...	45	1	0.77	0.562	1	BP
-GO:0031324	negative regulation of cellular metaboli...	103	2	1.77	0.563	1	BP
-GO:0048856	anatomical structure development	217	4	3.72	0.57	1	BP
-GO:0051093	negative regulation of developmental pro...	46	1	0.79	0.57	1	BP
-GO:0050896	response to stimulus	272	5	4.67	0.571	1	BP
-GO:0065009	regulation of molecular function	105	2	1.8	0.575	1	BP
-GO:0051716	cellular response to stimulus	218	4	3.74	0.575	1	BP
-GO:0006508	proteolysis	47	1	0.81	0.578	1	BP
-GO:0051046	regulation of secretion	47	1	0.81	0.578	1	BP
-GO:0030001	metal ion transport	47	1	0.81	0.578	1	BP
-GO:0014070	response to organic cyclic compound	48	1	0.82	0.586	1	BP
-GO:0071704	organic substance metabolic process	277	5	4.75	0.599	1	BP
-GO:0065007	biological regulation	330	6	5.66	0.601	1	BP
-GO:0009967	positive regulation of signal transducti...	50	1	0.86	0.602	1	BP
-GO:0098655	cation transmembrane transport	50	1	0.86	0.602	1	BP
-GO:0098660	inorganic ion transmembrane transport	51	1	0.88	0.61	1	BP
-GO:0044237	cellular metabolic process	279	5	4.79	0.61	1	BP
-GO:1901566	organonitrogen compound biosynthetic pro...	52	1	0.89	0.618	1	BP
-GO:0009892	negative regulation of metabolic process	113	2	1.94	0.622	1	BP
-GO:0032990	cell part morphogenesis	54	1	0.93	0.633	1	BP
-GO:0120039	plasma membrane bounded cell projection ...	54	1	0.93	0.633	1	BP
-GO:0032270	positive regulation of cellular protein ...	54	1	0.93	0.633	1	BP
-GO:0048858	cell projection morphogenesis	54	1	0.93	0.633	1	BP
-GO:0009725	response to hormone	54	1	0.93	0.633	1	BP
-GO:0048812	neuron projection morphogenesis	54	1	0.93	0.633	1	BP
-GO:0080134	regulation of response to stress	54	1	0.93	0.633	1	BP
-GO:0051641	cellular localization	116	2	1.99	0.638	1	BP
-GO:0009791	post-embryonic development	55	1	0.94	0.64	1	BP
-GO:0051171	regulation of nitrogen compound metaboli...	175	3	3	0.643	1	BP
-GO:0032502	developmental process	233	4	4	0.653	1	BP
-GO:0051050	positive regulation of transport	57	1	0.98	0.654	1	BP
-GO:0080090	regulation of primary metabolic process	179	3	3.07	0.663	1	BP
-GO:0060255	regulation of macromolecule metabolic pr...	179	3	3.07	0.663	1	BP
-GO:0036211	protein modification process	122	2	2.09	0.671	1	BP
-GO:0006464	cellular protein modification process	122	2	2.09	0.671	1	BP
-GO:0008152	metabolic process	290	5	4.98	0.672	1	BP
-GO:0051247	positive regulation of protein metabolic...	60	1	1.03	0.675	1	BP
-GO:0046907	intracellular transport	61	1	1.05	0.681	1	BP
-GO:0043412	macromolecule modification	125	2	2.14	0.686	1	BP
-GO:0006812	cation transport	62	1	1.06	0.687	1	BP
-GO:0051241	negative regulation of multicellular org...	62	1	1.06	0.687	1	BP
-GO:0034220	ion transmembrane transport	63	1	1.08	0.694	1	BP
-GO:0031175	neuron projection development	65	1	1.12	0.706	1	BP
-GO:0006915	apoptotic process	65	1	1.12	0.706	1	BP
-GO:0050794	regulation of cellular process	297	5	5.1	0.71	1	BP
-GO:0032989	cellular component morphogenesis	66	1	1.13	0.712	1	BP
-GO:0000902	cell morphogenesis	66	1	1.13	0.712	1	BP
-GO:0031323	regulation of cellular metabolic process	190	3	3.26	0.715	1	BP
-GO:0007399	nervous system development	131	2	2.25	0.716	1	BP
-GO:0048584	positive regulation of response to stimu...	67	1	1.15	0.718	1	BP
-GO:0012501	programmed cell death	67	1	1.15	0.718	1	BP
-GO:0032501	multicellular organismal process	253	4	4.34	0.75	1	BP
-GO:0055085	transmembrane transport	73	1	1.25	0.751	1	BP
-GO:0019222	regulation of metabolic process	199	3	3.41	0.755	1	BP
-GO:0048519	negative regulation of biological proces...	200	3	3.43	0.759	1	BP
-GO:0050789	regulation of biological process	307	5	5.27	0.763	1	BP
-GO:0008219	cell death	76	1	1.3	0.767	1	BP
-GO:0050790	regulation of catalytic activity	76	1	1.3	0.767	1	BP
-GO:0048666	neuron development	77	1	1.32	0.771	1	BP
-GO:0120036	plasma membrane bounded cell projection ...	78	1	1.34	0.776	1	BP
-GO:0016192	vesicle-mediated transport	79	1	1.36	0.781	1	BP
-GO:0030030	cell projection organization	79	1	1.36	0.781	1	BP
-GO:0006811	ion transport	82	1	1.41	0.795	1	BP
-GO:0009719	response to endogenous stimulus	83	1	1.42	0.799	1	BP
-GO:0010629	negative regulation of gene expression	85	1	1.46	0.808	1	BP
-GO:0009987	cellular process	396	7	6.79	0.81	1	BP
-GO:0030182	neuron differentiation	86	1	1.48	0.812	1	BP
-GO:2000026	regulation of multicellular organismal d...	88	1	1.51	0.82	1	BP
-GO:0044260	cellular macromolecule metabolic process	216	3	3.71	0.821	1	BP
-GO:0048699	generation of neurons	89	1	1.53	0.824	1	BP
-GO:0030154	cell differentiation	159	2	2.73	0.83	1	BP
-GO:0048869	cellular developmental process	159	2	2.73	0.83	1	BP
-GO:0051049	regulation of transport	91	1	1.56	0.832	1	BP
-GO:0042221	response to chemical	173	2	2.97	0.873	1	BP
-GO:0034641	cellular nitrogen compound metabolic pro...	174	2	2.99	0.875	1	BP
-GO:0007166	cell surface receptor signaling pathway	106	1	1.82	0.88	1	BP
-GO:0006810	transport	176	2	3.02	0.881	1	BP
-GO:0050793	regulation of developmental process	107	1	1.84	0.883	1	BP
-GO:0048522	positive regulation of cellular process	179	2	3.07	0.889	1	BP
-GO:1901576	organic substance biosynthetic process	179	2	3.07	0.889	1	BP
-GO:0051234	establishment of localization	180	2	3.09	0.891	1	BP
-GO:0009058	biosynthetic process	180	2	3.09	0.891	1	BP
-GO:0043170	macromolecule metabolic process	239	3	4.1	0.891	1	BP
-GO:0048731	system development	185	2	3.17	0.903	1	BP
-GO:0051173	positive regulation of nitrogen compound...	115	1	1.97	0.903	1	BP
-GO:0031325	positive regulation of cellular metaboli...	119	1	2.04	0.912	1	BP
-GO:0032879	regulation of localization	119	1	2.04	0.912	1	BP
-GO:0048523	negative regulation of cellular process	190	2	3.26	0.914	1	BP
-GO:0009605	response to external stimulus	120	1	2.06	0.915	1	BP
-GO:0048468	cell development	121	1	2.08	0.917	1	BP
-GO:0009653	anatomical structure morphogenesis	122	1	2.09	0.919	1	BP
-GO:0048518	positive regulation of biological proces...	195	2	3.35	0.923	1	BP
-GO:0010604	positive regulation of macromolecule met...	125	1	2.14	0.925	1	BP
-GO:0010033	response to organic substance	127	1	2.18	0.928	1	BP
-GO:0009893	positive regulation of metabolic process	132	1	2.26	0.937	1	BP
-GO:0051239	regulation of multicellular organismal p...	135	1	2.32	0.941	1	BP
-GO:0010468	regulation of gene expression	142	1	2.44	0.951	1	BP
-GO:0051179	localization	216	2	3.71	0.956	1	BP
-GO:0044271	cellular nitrogen compound biosynthetic ...	150	1	2.57	0.961	1	BP
-GO:0010467	gene expression	155	1	2.66	0.966	1	BP
-GO:0006725	cellular aromatic compound metabolic pro...	159	1	2.73	0.97	1	BP
-GO:1901360	organic cyclic compound metabolic proces...	169	1	2.9	0.977	1	BP
-GO:0044249	cellular biosynthetic process	179	1	3.07	0.983	1	BP
-GO:0016043	cellular component organization	213	1	3.65	0.995	1	BP
-GO:0071840	cellular component organization or bioge...	214	1	3.67	0.995	1	BP
-GO:0008150	biological_process	408	7	7	1	1	BP
-GO:0043168	anion binding	55	4	1.06	0.012	1	MF
-GO:0005112	Notch binding	1	1	0.02	0.019	1	MF
-GO:0047395	glycerophosphoinositol glycerophosphodie...	1	1	0.02	0.019	1	MF
-GO:0008083	growth factor activity	1	1	0.02	0.019	1	MF
-GO:0008483	transaminase activity	1	1	0.02	0.019	1	MF
-GO:0003839	gamma-glutamylcyclotransferase activity	1	1	0.02	0.019	1	MF
-GO:0070547	L-tyrosine aminotransferase activity	1	1	0.02	0.019	1	MF
-GO:0008889	glycerophosphodiester phosphodiesterase ...	1	1	0.02	0.019	1	MF
-GO:0004838	L-tyrosine:2-oxoglutarate aminotransfera...	1	1	0.02	0.019	1	MF
-GO:0005228	intracellular sodium activated potassium...	1	1	0.02	0.019	1	MF
-GO:0035091	phosphatidylinositol binding	16	2	0.31	0.033	1	MF
-GO:0030545	signaling receptor regulator activity	2	1	0.04	0.038	1	MF
-GO:0030546	signaling receptor activator activity	2	1	0.04	0.038	1	MF
-GO:0005544	calcium-dependent phospholipid binding	2	1	0.04	0.038	1	MF
-GO:0015269	calcium-activated potassium channel acti...	2	1	0.04	0.038	1	MF
-GO:0016769	transferase activity, transferring nitro...	2	1	0.04	0.038	1	MF
-GO:0016840	carbon-nitrogen lyase activity	2	1	0.04	0.038	1	MF
-GO:0016842	amidine-lyase activity	2	1	0.04	0.038	1	MF
-GO:0008429	phosphatidylethanolamine binding	2	1	0.04	0.038	1	MF
-GO:0048018	receptor ligand activity	2	1	0.04	0.038	1	MF
-GO:0043167	ion binding	78	4	1.5	0.041	1	MF
-GO:0004622	lysophospholipase activity	4	1	0.08	0.075	1	MF
-GO:0005227	calcium activated cation channel activit...	4	1	0.08	0.075	1	MF
-GO:0050997	quaternary ammonium group binding	4	1	0.08	0.075	1	MF
-GO:0031210	phosphatidylcholine binding	4	1	0.08	0.075	1	MF
-GO:0005543	phospholipid binding	26	2	0.5	0.083	1	MF
-GO:0016597	amino acid binding	5	1	0.1	0.093	1	MF
-GO:0008289	lipid binding	30	2	0.58	0.106	1	MF
-GO:0070405	ammonium ion binding	6	1	0.12	0.111	1	MF
-GO:0031406	carboxylic acid binding	6	1	0.12	0.111	1	MF
-GO:0043177	organic acid binding	6	1	0.12	0.111	1	MF
-GO:0016829	lyase activity	7	1	0.13	0.128	1	MF
-GO:0052689	carboxylic ester hydrolase activity	7	1	0.13	0.128	1	MF
-GO:0015271	outward rectifier potassium channel acti...	7	1	0.13	0.128	1	MF
-GO:0005249	voltage-gated potassium channel activity	9	1	0.17	0.162	1	MF
-GO:0004620	phospholipase activity	9	1	0.17	0.162	1	MF
-GO:0036094	small molecule binding	39	2	0.75	0.166	1	MF
-GO:0008081	phosphoric diester hydrolase activity	10	1	0.19	0.179	1	MF
-GO:0015079	potassium ion transmembrane transporter ...	12	1	0.23	0.211	1	MF
-GO:0005267	potassium channel activity	12	1	0.23	0.211	1	MF
-GO:0016298	lipase activity	12	1	0.23	0.211	1	MF
-GO:0005102	signaling receptor binding	47	2	0.9	0.225	1	MF
-GO:0005509	calcium ion binding	13	1	0.25	0.226	1	MF
-GO:0022843	voltage-gated cation channel activity	14	1	0.27	0.242	1	MF
-GO:0005524	ATP binding	14	1	0.27	0.242	1	MF
-GO:0005244	voltage-gated ion channel activity	15	1	0.29	0.257	1	MF
-GO:0022832	voltage-gated channel activity	15	1	0.29	0.257	1	MF
-GO:0035639	purine ribonucleoside triphosphate bindi...	17	1	0.33	0.287	1	MF
-GO:0042578	phosphoric ester hydrolase activity	17	1	0.33	0.287	1	MF
-GO:0032559	adenyl ribonucleotide binding	19	1	0.37	0.315	1	MF
-GO:0030554	adenyl nucleotide binding	20	1	0.38	0.329	1	MF
-GO:0032553	ribonucleotide binding	23	1	0.44	0.369	1	MF
-GO:0032555	purine ribonucleotide binding	23	1	0.44	0.369	1	MF
-GO:1901265	nucleoside phosphate binding	24	1	0.46	0.382	1	MF
-GO:0000166	nucleotide binding	24	1	0.46	0.382	1	MF
-GO:0017076	purine nucleotide binding	24	1	0.46	0.382	1	MF
-GO:0005261	cation channel activity	26	1	0.5	0.407	1	MF
-GO:0016788	hydrolase activity, acting on ester bond...	26	1	0.5	0.407	1	MF
-GO:0022839	ion gated channel activity	27	1	0.52	0.42	1	MF
-GO:0046873	metal ion transmembrane transporter acti...	28	1	0.54	0.432	1	MF
-GO:0022836	gated channel activity	28	1	0.54	0.432	1	MF
-GO:0097367	carbohydrate derivative binding	28	1	0.54	0.432	1	MF
-GO:0005488	binding	275	6	5.29	0.457	1	MF
-GO:0046872	metal ion binding	32	1	0.62	0.478	1	MF
-GO:0022890	inorganic cation transmembrane transport...	35	1	0.67	0.51	1	MF
-GO:0005216	ion channel activity	35	1	0.67	0.51	1	MF
-GO:0008324	cation transmembrane transporter activit...	36	1	0.69	0.521	1	MF
-GO:0022803	passive transmembrane transporter activi...	36	1	0.69	0.521	1	MF
-GO:0015267	channel activity	36	1	0.69	0.521	1	MF
-GO:0043169	cation binding	37	1	0.71	0.531	1	MF
-GO:0019904	protein domain specific binding	38	1	0.73	0.541	1	MF
-GO:0003824	catalytic activity	144	3	2.77	0.572	1	MF
-GO:0015318	inorganic molecular entity transmembrane...	48	1	0.92	0.632	1	MF
-GO:0015075	ion transmembrane transporter activity	48	1	0.92	0.632	1	MF
-GO:0022857	transmembrane transporter activity	52	1	1	0.663	1	MF
-GO:0098772	molecular function regulator activity	52	1	1	0.663	1	MF
-GO:0005215	transporter activity	58	1	1.12	0.707	1	MF
-GO:0005515	protein binding	220	4	4.23	0.72	1	MF
-GO:0016740	transferase activity	64	1	1.23	0.745	1	MF
-GO:0042802	identical protein binding	68	1	1.31	0.768	1	MF
-GO:0016787	hydrolase activity	71	1	1.37	0.784	1	MF
-GO:1901363	heterocyclic compound binding	95	1	1.83	0.882	1	MF
-GO:0097159	organic cyclic compound binding	99	1	1.9	0.894	1	MF
-GO:0003674	molecular_function	364	7	7	1	1	MF
-GO:0044232	organelle membrane contact site	2	1	0.03	0.035	1	CC
-GO:0031234	extrinsic component of cytoplasmic side ...	4	1	0.07	0.068	1	CC
-GO:0005887	integral component of plasma membrane	59	3	1.03	0.068	1	CC
-GO:0031226	intrinsic component of plasma membrane	64	3	1.11	0.084	1	CC
-GO:0019897	extrinsic component of plasma membrane	5	1	0.09	0.084	1	CC
-GO:0008076	voltage-gated potassium channel complex	8	1	0.14	0.132	1	CC
-GO:0034705	potassium channel complex	8	1	0.14	0.132	1	CC
-GO:0030176	integral component of endoplasmic reticu...	11	1	0.19	0.178	1	CC
-GO:0019898	extrinsic component of membrane	11	1	0.19	0.178	1	CC
-GO:0009898	cytoplasmic side of plasma membrane	11	1	0.19	0.178	1	CC
-GO:0031227	intrinsic component of endoplasmic retic...	11	1	0.19	0.178	1	CC
-GO:0005615	extracellular space	13	1	0.23	0.207	1	CC
-GO:0005802	trans-Golgi network	13	1	0.23	0.207	1	CC
-GO:0098562	cytoplasmic side of membrane	13	1	0.23	0.207	1	CC
-GO:0034703	cation channel complex	15	1	0.26	0.235	1	CC
-GO:0008021	synaptic vesicle	15	1	0.26	0.235	1	CC
-GO:0016021	integral component of membrane	100	3	1.74	0.24	1	CC
-GO:1902495	transmembrane transporter complex	16	1	0.28	0.249	1	CC
-GO:0034702	ion channel complex	16	1	0.28	0.249	1	CC
-GO:1990351	transporter complex	16	1	0.28	0.249	1	CC
-GO:0070382	exocytic vesicle	16	1	0.28	0.249	1	CC
-GO:0031984	organelle subcompartment	57	2	0.99	0.26	1	CC
-GO:0098552	side of membrane	17	1	0.3	0.263	1	CC
-GO:0031224	intrinsic component of membrane	105	3	1.83	0.266	1	CC
-GO:0031300	intrinsic component of organelle membran...	18	1	0.31	0.276	1	CC
-GO:0031301	integral component of organelle membrane	18	1	0.31	0.276	1	CC
-GO:0030133	transport vesicle	20	1	0.35	0.302	1	CC
-GO:0016020	membrane	220	5	3.83	0.309	1	CC
-GO:0098797	plasma membrane protein complex	22	1	0.38	0.328	1	CC
-GO:0005576	extracellular region	26	1	0.45	0.376	1	CC
-GO:0005789	endoplasmic reticulum membrane	28	1	0.49	0.399	1	CC
-GO:0042175	nuclear outer membrane-endoplasmic retic...	28	1	0.49	0.399	1	CC
-GO:0098796	membrane protein complex	29	1	0.5	0.41	1	CC
-GO:0098791	Golgi apparatus subcompartment	30	1	0.52	0.421	1	CC
-GO:0098827	endoplasmic reticulum subcompartment	31	1	0.54	0.432	1	CC
-GO:0005739	mitochondrion	31	1	0.54	0.432	1	CC
-GO:0099503	secretory vesicle	34	1	0.59	0.464	1	CC
-GO:0098793	presynapse	34	1	0.59	0.464	1	CC
-GO:0012505	endomembrane system	141	3	2.46	0.47	1	CC
-GO:0005886	plasma membrane	159	3	2.77	0.571	1	CC
-GO:0030424	axon	46	1	0.8	0.576	1	CC
-GO:0071944	cell periphery	168	3	2.93	0.62	1	CC
-GO:0005794	Golgi apparatus	60	1	1.04	0.68	1	CC
-GO:0045202	synapse	61	1	1.06	0.687	1	CC
-GO:0005783	endoplasmic reticulum	71	1	1.24	0.746	1	CC
-GO:0097708	intracellular vesicle	74	1	1.29	0.762	1	CC
-GO:0031410	cytoplasmic vesicle	74	1	1.29	0.762	1	CC
-GO:0030054	cell junction	75	1	1.31	0.767	1	CC
-GO:0043005	neuron projection	75	1	1.31	0.767	1	CC
-GO:0005829	cytosol	141	2	2.46	0.77	1	CC
-GO:0031982	vesicle	78	1	1.36	0.782	1	CC
-GO:0031090	organelle membrane	92	1	1.6	0.84	1	CC
-GO:0005654	nucleoplasm	94	1	1.64	0.848	1	CC
-GO:0120025	plasma membrane bounded cell projection	96	1	1.67	0.854	1	CC
-GO:0042995	cell projection	96	1	1.67	0.854	1	CC
-GO:0031981	nuclear lumen	107	1	1.86	0.888	1	CC
-GO:0005737	cytoplasm	288	4	5.01	0.896	1	CC
-GO:0043231	intracellular membrane-bounded organelle	297	4	5.17	0.92	1	CC
-GO:0043227	membrane-bounded organelle	300	4	5.22	0.928	1	CC
-GO:0043233	organelle lumen	127	1	2.21	0.932	1	CC
-GO:0070013	intracellular organelle lumen	127	1	2.21	0.932	1	CC
-GO:0031974	membrane-enclosed lumen	127	1	2.21	0.932	1	CC
-GO:0032991	protein-containing complex	135	1	2.35	0.944	1	CC
-GO:0043229	intracellular organelle	310	4	5.4	0.949	1	CC
-GO:0043226	organelle	315	4	5.49	0.958	1	CC
-GO:0005622	intracellular anatomical structure	354	5	6.16	0.96	1	CC
-GO:0005634	nucleus	184	1	3.2	0.987	1	CC
-GO:0005575	cellular_component	402	7	7	1	1	CC
-GO:0110165	cellular anatomical entity	402	7	7	1	1	CC
+GO:0046689	response to mercury ion	4	2	0.06	0.0014	1	BP
+GO:0045676	regulation of R7 cell differentiation	7	2	0.11	0.0046	1	BP
+GO:0022611	dormancy process	8	2	0.12	0.0061	1	BP
+GO:0046503	glycerolipid catabolic process	9	2	0.14	0.0077	1	BP
+GO:0048771	tissue remodeling	29	3	0.45	0.0092	1	BP
+GO:0072350	tricarboxylic acid metabolic process	10	2	0.15	0.0096	1	BP
+GO:0001974	blood vessel remodeling	11	2	0.17	0.0116	1	BP
+GO:0006614	SRP-dependent cotranslational protein ta...	11	2	0.17	0.0116	1	BP
+GO:0006613	cotranslational protein targeting to mem...	12	2	0.19	0.0138	1	BP
+GO:0007477	notum development	1	1	0.02	0.0154	1	BP
+GO:1905167	positive regulation of lysosomal protein...	1	1	0.02	0.0154	1	BP
+GO:0030647	aminoglycoside antibiotic metabolic proc...	1	1	0.02	0.0154	1	BP
+GO:1901881	positive regulation of protein depolymer...	1	1	0.02	0.0154	1	BP
+GO:1904352	positive regulation of protein catabolic...	1	1	0.02	0.0154	1	BP
+GO:1901304	regulation of spermidine biosynthetic pr...	1	1	0.02	0.0154	1	BP
+GO:1901307	positive regulation of spermidine biosyn...	1	1	0.02	0.0154	1	BP
+GO:0033189	response to vitamin A	1	1	0.02	0.0154	1	BP
+GO:1904987	regulation of endothelial cell activatio...	1	1	0.02	0.0154	1	BP
+GO:1904988	negative regulation of endothelial cell ...	1	1	0.02	0.0154	1	BP
+GO:0032782	bile acid secretion	1	1	0.02	0.0154	1	BP
+GO:0010967	regulation of polyamine biosynthetic pro...	1	1	0.02	0.0154	1	BP
+GO:2000516	positive regulation of CD4-positive, alp...	1	1	0.02	0.0154	1	BP
+GO:0042431	indole metabolic process	1	1	0.02	0.0154	1	BP
+GO:0045873	negative regulation of sevenless signali...	1	1	0.02	0.0154	1	BP
+GO:0046203	spermidine catabolic process	1	1	0.02	0.0154	1	BP
+GO:0046208	spermine catabolic process	1	1	0.02	0.0154	1	BP
+GO:2000016	negative regulation of determination of ...	1	1	0.02	0.0154	1	BP
+GO:2000185	regulation of phosphate transmembrane tr...	1	1	0.02	0.0154	1	BP
+GO:0110118	negative regulation of compound eye phot...	1	1	0.02	0.0154	1	BP
+GO:0060134	prepulse inhibition	1	1	0.02	0.0154	1	BP
+GO:2000187	positive regulation of phosphate transme...	1	1	0.02	0.0154	1	BP
+GO:0043372	positive regulation of CD4-positive, alp...	1	1	0.02	0.0154	1	BP
+GO:0042088	T-helper 1 type immune response	1	1	0.02	0.0154	1	BP
+GO:0045945	positive regulation of transcription by ...	1	1	0.02	0.0154	1	BP
+GO:1901128	gentamycin metabolic process	1	1	0.02	0.0154	1	BP
+GO:1901684	arsenate ion transmembrane transport	1	1	0.02	0.0154	1	BP
+GO:0031117	positive regulation of microtubule depol...	1	1	0.02	0.0154	1	BP
+GO:1903797	positive regulation of inorganic anion t...	1	1	0.02	0.0154	1	BP
+GO:0048802	notum morphogenesis	1	1	0.02	0.0154	1	BP
+GO:0006598	polyamine catabolic process	1	1	0.02	0.0154	1	BP
+GO:0098719	sodium ion import across plasma membrane	1	1	0.02	0.0154	1	BP
+GO:2000270	negative regulation of fibroblast apopto...	1	1	0.02	0.0154	1	BP
+GO:0045063	T-helper 1 cell differentiation	1	1	0.02	0.0154	1	BP
+GO:0045501	regulation of sevenless signaling pathwa...	1	1	0.02	0.0154	1	BP
+GO:0071638	negative regulation of monocyte chemotac...	1	1	0.02	0.0154	1	BP
+GO:0046340	diacylglycerol catabolic process	1	1	0.02	0.0154	1	BP
+GO:0003226	right ventricular compact myocardium mor...	1	1	0.02	0.0154	1	BP
+GO:0045677	negative regulation of R7 cell different...	1	1	0.02	0.0154	1	BP
+GO:0097699	vascular endothelial cell response to fl...	1	1	0.02	0.0154	1	BP
+GO:0045624	positive regulation of T-helper cell dif...	1	1	0.02	0.0154	1	BP
+GO:0045625	regulation of T-helper 1 cell differenti...	1	1	0.02	0.0154	1	BP
+GO:0045627	positive regulation of T-helper 1 cell d...	1	1	0.02	0.0154	1	BP
+GO:0045628	regulation of T-helper 2 cell differenti...	1	1	0.02	0.0154	1	BP
+GO:0045629	negative regulation of T-helper 2 cell d...	1	1	0.02	0.0154	1	BP
+GO:0009445	putrescine metabolic process	1	1	0.02	0.0154	1	BP
+GO:0009446	putrescine biosynthetic process	1	1	0.02	0.0154	1	BP
+GO:0009447	putrescine catabolic process	1	1	0.02	0.0154	1	BP
+GO:0002825	regulation of T-helper 1 type immune res...	1	1	0.02	0.0154	1	BP
+GO:0002827	positive regulation of T-helper 1 type i...	1	1	0.02	0.0154	1	BP
+GO:0006642	triglyceride mobilization	1	1	0.02	0.0154	1	BP
+GO:0045047	protein targeting to ER	13	2	0.2	0.0161	1	BP
+GO:0040024	dauer larval development	14	2	0.22	0.0186	1	BP
+GO:0072599	establishment of protein localization to...	14	2	0.22	0.0186	1	BP
+GO:0003208	cardiac ventricle morphogenesis	14	2	0.22	0.0186	1	BP
+GO:0006605	protein targeting	68	4	1.05	0.0187	1	BP
+GO:0016054	organic acid catabolic process	38	3	0.59	0.0194	1	BP
+GO:0046395	carboxylic acid catabolic process	38	3	0.59	0.0194	1	BP
+GO:0030901	midbrain development	15	2	0.23	0.0213	1	BP
+GO:0009062	fatty acid catabolic process	16	2	0.25	0.0241	1	BP
+GO:0043648	dicarboxylic acid metabolic process	17	2	0.26	0.0271	1	BP
+GO:0046660	female sex differentiation	17	2	0.26	0.0271	1	BP
+GO:0016999	antibiotic metabolic process	17	2	0.26	0.0271	1	BP
+GO:0070972	protein localization to endoplasmic reti...	17	2	0.26	0.0271	1	BP
+GO:0048264	determination of ventral identity	2	1	0.03	0.0306	1	BP
+GO:0046533	negative regulation of photoreceptor cel...	2	1	0.03	0.0306	1	BP
+GO:1905165	regulation of lysosomal protein cataboli...	2	1	0.03	0.0306	1	BP
+GO:0030643	cellular phosphate ion homeostasis	2	1	0.03	0.0306	1	BP
+GO:1904350	regulation of protein catabolic process ...	2	1	0.03	0.0306	1	BP
+GO:0036302	atrioventricular canal development	2	1	0.03	0.0306	1	BP
+GO:1903166	cellular response to polycyclic arene	2	1	0.03	0.0306	1	BP
+GO:0007175	negative regulation of epidermal growth ...	2	1	0.03	0.0306	1	BP
+GO:0006768	biotin metabolic process	2	1	0.03	0.0306	1	BP
+GO:0006751	glutathione catabolic process	2	1	0.03	0.0306	1	BP
+GO:0070291	N-acylethanolamine metabolic process	2	1	0.03	0.0306	1	BP
+GO:0048752	semicircular canal morphogenesis	2	1	0.03	0.0306	1	BP
+GO:0051013	microtubule severing	2	1	0.03	0.0306	1	BP
+GO:0071981	exit from diapause	2	1	0.03	0.0306	1	BP
+GO:0048742	regulation of skeletal muscle fiber deve...	2	1	0.03	0.0306	1	BP
+GO:0010955	negative regulation of protein processin...	2	1	0.03	0.0306	1	BP
+GO:0035216	haltere disc development	2	1	0.03	0.0306	1	BP
+GO:0036066	protein O-linked fucosylation	2	1	0.03	0.0306	1	BP
+GO:0006359	regulation of transcription by RNA polym...	2	1	0.03	0.0306	1	BP
+GO:2000120	positive regulation of sodium-dependent ...	2	1	0.03	0.0306	1	BP
+GO:0061384	heart trabecula morphogenesis	2	1	0.03	0.0306	1	BP
+GO:2000118	regulation of sodium-dependent phosphate...	2	1	0.03	0.0306	1	BP
+GO:1903795	regulation of inorganic anion transmembr...	2	1	0.03	0.0306	1	BP
+GO:0006595	polyamine metabolic process	2	1	0.03	0.0306	1	BP
+GO:0006596	polyamine biosynthetic process	2	1	0.03	0.0306	1	BP
+GO:1904682	cellular response to 3-methylcholanthren...	2	1	0.03	0.0306	1	BP
+GO:2000269	regulation of fibroblast apoptotic proce...	2	1	0.03	0.0306	1	BP
+GO:0006572	tyrosine catabolic process	2	1	0.03	0.0306	1	BP
+GO:0008295	spermidine biosynthetic process	2	1	0.03	0.0306	1	BP
+GO:0045064	T-helper 2 cell differentiation	2	1	0.03	0.0306	1	BP
+GO:0035864	response to potassium ion	2	1	0.03	0.0306	1	BP
+GO:0071637	regulation of monocyte chemotactic prote...	2	1	0.03	0.0306	1	BP
+GO:0071605	monocyte chemotactic protein-1 productio...	2	1	0.03	0.0306	1	BP
+GO:0046339	diacylglycerol metabolic process	2	1	0.03	0.0306	1	BP
+GO:0008215	spermine metabolic process	2	1	0.03	0.0306	1	BP
+GO:0008216	spermidine metabolic process	2	1	0.03	0.0306	1	BP
+GO:0003221	right ventricular cardiac muscle tissue ...	2	1	0.03	0.0306	1	BP
+GO:0003222	ventricular trabecula myocardium morphog...	2	1	0.03	0.0306	1	BP
+GO:1903318	negative regulation of protein maturatio...	2	1	0.03	0.0306	1	BP
+GO:0043054	dauer exit	2	1	0.03	0.0306	1	BP
+GO:0045622	regulation of T-helper cell differentiat...	2	1	0.03	0.0306	1	BP
+GO:0003214	cardiac left ventricle morphogenesis	2	1	0.03	0.0306	1	BP
+GO:0045623	negative regulation of T-helper cell dif...	2	1	0.03	0.0306	1	BP
+GO:0097187	dentinogenesis	2	1	0.03	0.0306	1	BP
+GO:0003243	circumferential growth involved in left ...	2	1	0.03	0.0306	1	BP
+GO:1903961	positive regulation of anion transmembra...	2	1	0.03	0.0306	1	BP
+GO:0043696	dedifferentiation	2	1	0.03	0.0306	1	BP
+GO:0043697	cell dedifferentiation	2	1	0.03	0.0306	1	BP
+GO:0044341	sodium-dependent phosphate transport	2	1	0.03	0.0306	1	BP
+GO:0044346	fibroblast apoptotic process	2	1	0.03	0.0306	1	BP
+GO:0002829	negative regulation of type 2 immune res...	2	1	0.03	0.0306	1	BP
+GO:0072501	cellular divalent inorganic anion homeos...	2	1	0.03	0.0306	1	BP
+GO:0072502	cellular trivalent inorganic anion homeo...	2	1	0.03	0.0306	1	BP
+GO:1902685	positive regulation of receptor localiza...	2	1	0.03	0.0306	1	BP
+GO:0032682	negative regulation of chemokine product...	2	1	0.03	0.0306	1	BP
+GO:0035435	phosphate ion transmembrane transport	2	1	0.03	0.0306	1	BP
+GO:0007482	haltere development	2	1	0.03	0.0306	1	BP
+GO:0032102	negative regulation of response to exter...	46	3	0.71	0.0321	1	BP
+GO:0072329	monocarboxylic acid catabolic process	19	2	0.29	0.0334	1	BP
+GO:0006576	cellular biogenic amine metabolic proces...	19	2	0.29	0.0334	1	BP
+GO:0030098	lymphocyte differentiation	48	3	0.74	0.0358	1	BP
+GO:0006650	glycerophospholipid metabolic process	50	3	0.77	0.0398	1	BP
+GO:0044106	cellular amine metabolic process	21	2	0.32	0.0403	1	BP
+GO:0032355	response to estradiol	21	2	0.32	0.0403	1	BP
+GO:0032436	positive regulation of proteasomal ubiqu...	21	2	0.32	0.0403	1	BP
+GO:1903131	mononuclear cell differentiation	51	3	0.79	0.0418	1	BP
+GO:0007269	neurotransmitter secretion	51	3	0.79	0.0418	1	BP
+GO:0099643	signal release from synapse	51	3	0.79	0.0418	1	BP
+GO:2000060	positive regulation of ubiquitin-depende...	22	2	0.34	0.0439	1	BP
+GO:0009308	amine metabolic process	22	2	0.34	0.0439	1	BP
+GO:0046928	regulation of neurotransmitter secretion	22	2	0.34	0.0439	1	BP
+GO:0009063	cellular amino acid catabolic process	22	2	0.34	0.0439	1	BP
+GO:0032105	negative regulation of response to extra...	3	1	0.05	0.0456	1	BP
+GO:0032108	negative regulation of response to nutri...	3	1	0.05	0.0456	1	BP
+GO:0061009	common bile duct development	3	1	0.05	0.0456	1	BP
+GO:0048263	determination of dorsal identity	3	1	0.05	0.0456	1	BP
+GO:0007512	adult heart development	3	1	0.05	0.0456	1	BP
+GO:1902221	erythrose 4-phosphate/phosphoenolpyruvat...	3	1	0.05	0.0456	1	BP
+GO:1902222	erythrose 4-phosphate/phosphoenolpyruvat...	3	1	0.05	0.0456	1	BP
+GO:1905146	lysosomal protein catabolic process	3	1	0.05	0.0456	1	BP
+GO:2000301	negative regulation of synaptic vesicle ...	3	1	0.05	0.0456	1	BP
+GO:1903165	response to polycyclic arene	3	1	0.05	0.0456	1	BP
+GO:0007039	protein catabolic process in the vacuole	3	1	0.05	0.0456	1	BP
+GO:2000515	negative regulation of CD4-positive, alp...	3	1	0.05	0.0456	1	BP
+GO:0006383	transcription by RNA polymerase III	3	1	0.05	0.0456	1	BP
+GO:0042439	ethanolamine-containing compound metabol...	3	1	0.05	0.0456	1	BP
+GO:0042092	type 2 immune response	3	1	0.05	0.0456	1	BP
+GO:0060123	regulation of growth hormone secretion	3	1	0.05	0.0456	1	BP
+GO:0042402	cellular biogenic amine catabolic proces...	3	1	0.05	0.0456	1	BP
+GO:0072733	response to staurosporine	3	1	0.05	0.0456	1	BP
+GO:0072734	cellular response to staurosporine	3	1	0.05	0.0456	1	BP
+GO:2000015	regulation of determination of dorsal id...	3	1	0.05	0.0456	1	BP
+GO:0043371	negative regulation of CD4-positive, alp...	3	1	0.05	0.0456	1	BP
+GO:0071404	cellular response to low-density lipopro...	3	1	0.05	0.0456	1	BP
+GO:0042118	endothelial cell activation	3	1	0.05	0.0456	1	BP
+GO:0001922	B-1 B cell homeostasis	3	1	0.05	0.0456	1	BP
+GO:1904681	response to 3-methylcholanthrene	3	1	0.05	0.0456	1	BP
+GO:0048484	enteric nervous system development	3	1	0.05	0.0456	1	BP
+GO:0035360	positive regulation of peroxisome prolif...	3	1	0.05	0.0456	1	BP
+GO:1904612	response to 2,3,7,8-tetrachlorodibenzodi...	3	1	0.05	0.0456	1	BP
+GO:0006558	L-phenylalanine metabolic process	3	1	0.05	0.0456	1	BP
+GO:1904613	cellular response to 2,3,7,8-tetrachloro...	3	1	0.05	0.0456	1	BP
+GO:0006559	L-phenylalanine catabolic process	3	1	0.05	0.0456	1	BP
+GO:0021553	olfactory nerve development	3	1	0.05	0.0456	1	BP
+GO:0035358	regulation of peroxisome proliferator ac...	3	1	0.05	0.0456	1	BP
+GO:0006570	tyrosine metabolic process	3	1	0.05	0.0456	1	BP
+GO:0045500	sevenless signaling pathway	3	1	0.05	0.0456	1	BP
+GO:0055094	response to lipoprotein particle	3	1	0.05	0.0456	1	BP
+GO:0032095	regulation of response to food	3	1	0.05	0.0456	1	BP
+GO:0032096	negative regulation of response to food	3	1	0.05	0.0456	1	BP
+GO:0032098	regulation of appetite	3	1	0.05	0.0456	1	BP
+GO:0032099	negative regulation of appetite	3	1	0.05	0.0456	1	BP
+GO:0003223	ventricular compact myocardium morphogen...	3	1	0.05	0.0456	1	BP
+GO:0043508	negative regulation of JUN kinase activi...	3	1	0.05	0.0456	1	BP
+GO:0003241	growth involved in heart morphogenesis	3	1	0.05	0.0456	1	BP
+GO:0006620	post-translational protein targeting to ...	3	1	0.05	0.0456	1	BP
+GO:0002828	regulation of type 2 immune response	3	1	0.05	0.0456	1	BP
+GO:1902683	regulation of receptor localization to s...	3	1	0.05	0.0456	1	BP
+GO:0006616	SRP-dependent cotranslational protein ta...	3	1	0.05	0.0456	1	BP
+GO:0042758	long-chain fatty acid catabolic process	3	1	0.05	0.0456	1	BP
+GO:0044282	small molecule catabolic process	55	3	0.85	0.0506	1	BP
+GO:0007588	excretion	24	2	0.37	0.0514	1	BP
+GO:0010469	regulation of signaling receptor activit...	24	2	0.37	0.0514	1	BP
+GO:0003231	cardiac ventricle development	24	2	0.37	0.0514	1	BP
+GO:0003206	cardiac chamber morphogenesis	24	2	0.37	0.0514	1	BP
+GO:0007613	memory	57	3	0.88	0.0553	1	BP
+GO:0060537	muscle tissue development	57	3	0.88	0.0553	1	BP
+GO:0006790	sulfur compound metabolic process	58	3	0.9	0.0577	1	BP
+GO:0016079	synaptic vesicle exocytosis	26	2	0.4	0.0594	1	BP
+GO:0001889	liver development	26	2	0.4	0.0594	1	BP
+GO:0051384	response to glucocorticoid	26	2	0.4	0.0594	1	BP
+GO:0030707	ovarian follicle cell development	59	3	0.91	0.0602	1	BP
+GO:0032107	regulation of response to nutrient level...	4	1	0.06	0.0604	1	BP
+GO:0009074	aromatic amino acid family catabolic pro...	4	1	0.06	0.0604	1	BP
+GO:0048262	determination of dorsal/ventral asymmetr...	4	1	0.06	0.0604	1	BP
+GO:0060872	semicircular canal development	4	1	0.06	0.0604	1	BP
+GO:0072102	glomerulus morphogenesis	4	1	0.06	0.0604	1	BP
+GO:0035116	embryonic hindlimb morphogenesis	4	1	0.06	0.0604	1	BP
+GO:1904321	response to forskolin	4	1	0.06	0.0604	1	BP
+GO:1904322	cellular response to forskolin	4	1	0.06	0.0604	1	BP
+GO:0019433	triglyceride catabolic process	4	1	0.06	0.0604	1	BP
+GO:0030252	growth hormone secretion	4	1	0.06	0.0604	1	BP
+GO:0060416	response to growth hormone	4	1	0.06	0.0604	1	BP
+GO:0046639	negative regulation of alpha-beta T cell...	4	1	0.06	0.0604	1	BP
+GO:0021772	olfactory bulb development	4	1	0.06	0.0604	1	BP
+GO:0010966	regulation of phosphate transport	4	1	0.06	0.0604	1	BP
+GO:0060547	negative regulation of necrotic cell dea...	4	1	0.06	0.0604	1	BP
+GO:0006363	termination of RNA polymerase I transcri...	4	1	0.06	0.0604	1	BP
+GO:0002293	alpha-beta T cell differentiation involv...	4	1	0.06	0.0604	1	BP
+GO:0002294	CD4-positive, alpha-beta T cell differen...	4	1	0.06	0.0604	1	BP
+GO:0042093	T-helper cell differentiation	4	1	0.06	0.0604	1	BP
+GO:0002287	alpha-beta T cell activation involved in...	4	1	0.06	0.0604	1	BP
+GO:0033240	positive regulation of cellular amine me...	4	1	0.06	0.0604	1	BP
+GO:0021988	olfactory lobe development	4	1	0.06	0.0604	1	BP
+GO:1902804	negative regulation of synaptic vesicle ...	4	1	0.06	0.0604	1	BP
+GO:0043928	exonucleolytic catabolism of deadenylate...	4	1	0.06	0.0604	1	BP
+GO:0035357	peroxisome proliferator activated recept...	4	1	0.06	0.0604	1	BP
+GO:0043584	nose development	4	1	0.06	0.0604	1	BP
+GO:0003215	cardiac right ventricle morphogenesis	4	1	0.06	0.0604	1	BP
+GO:0030540	female genitalia development	4	1	0.06	0.0604	1	BP
+GO:0043171	peptide catabolic process	4	1	0.06	0.0604	1	BP
+GO:0046475	glycerophospholipid catabolic process	4	1	0.06	0.0604	1	BP
+GO:0032104	regulation of response to extracellular ...	4	1	0.06	0.0604	1	BP
+GO:0061008	hepaticobiliary system development	27	2	0.42	0.0636	1	BP
+GO:0051588	regulation of neurotransmitter transport	27	2	0.42	0.0636	1	BP
+GO:0046620	regulation of organ growth	27	2	0.42	0.0636	1	BP
+GO:0031960	response to corticosteroid	28	2	0.43	0.0679	1	BP
+GO:1901800	positive regulation of proteasomal prote...	28	2	0.43	0.0679	1	BP
+GO:0035120	post-embryonic appendage morphogenesis	63	3	0.97	0.0706	1	BP
+GO:0035114	imaginal disc-derived appendage morphoge...	63	3	0.97	0.0706	1	BP
+GO:1903052	positive regulation of proteolysis invol...	29	2	0.45	0.0722	1	BP
+GO:0032434	regulation of proteasomal ubiquitin-depe...	29	2	0.45	0.0722	1	BP
+GO:0097164	ammonium ion metabolic process	29	2	0.45	0.0722	1	BP
+GO:0006612	protein targeting to membrane	29	2	0.45	0.0722	1	BP
+GO:0048737	imaginal disc-derived appendage developm...	64	3	0.99	0.0733	1	BP
+GO:0006644	phospholipid metabolic process	64	3	0.99	0.0733	1	BP
+GO:0009072	aromatic amino acid family metabolic pro...	5	1	0.08	0.0749	1	BP
+GO:0060841	venous blood vessel development	5	1	0.08	0.0749	1	BP
+GO:0035137	hindlimb morphogenesis	5	1	0.08	0.0749	1	BP
+GO:0016137	glycoside metabolic process	5	1	0.08	0.0749	1	BP
+GO:0070613	regulation of protein processing	5	1	0.08	0.0749	1	BP
+GO:0071312	cellular response to alkaloid	5	1	0.08	0.0749	1	BP
+GO:0062009	secondary palate development	5	1	0.08	0.0749	1	BP
+GO:2000514	regulation of CD4-positive, alpha-beta T...	5	1	0.08	0.0749	1	BP
+GO:0036065	fucosylation	5	1	0.08	0.0749	1	BP
+GO:0002292	T cell differentiation involved in immun...	5	1	0.08	0.0749	1	BP
+GO:0043370	regulation of CD4-positive, alpha-beta T...	5	1	0.08	0.0749	1	BP
+GO:0006817	phosphate ion transport	5	1	0.08	0.0749	1	BP
+GO:0071402	cellular response to lipoprotein particl...	5	1	0.08	0.0749	1	BP
+GO:0000291	nuclear-transcribed mRNA catabolic proce...	5	1	0.08	0.0749	1	BP
+GO:0031112	positive regulation of microtubule polym...	5	1	0.08	0.0749	1	BP
+GO:0009395	phospholipid catabolic process	5	1	0.08	0.0749	1	BP
+GO:0043496	regulation of protein homodimerization a...	5	1	0.08	0.0749	1	BP
+GO:0030888	regulation of B cell proliferation	5	1	0.08	0.0749	1	BP
+GO:0009310	amine catabolic process	5	1	0.08	0.0749	1	BP
+GO:2000272	negative regulation of signaling recepto...	5	1	0.08	0.0749	1	BP
+GO:0061478	response to platelet aggregation inhibit...	5	1	0.08	0.0749	1	BP
+GO:0046856	phosphatidylinositol dephosphorylation	5	1	0.08	0.0749	1	BP
+GO:0055062	phosphate ion homeostasis	5	1	0.08	0.0749	1	BP
+GO:0042219	cellular modified amino acid catabolic p...	5	1	0.08	0.0749	1	BP
+GO:0048072	compound eye pigmentation	5	1	0.08	0.0749	1	BP
+GO:0043053	dauer entry	5	1	0.08	0.0749	1	BP
+GO:0010288	response to lead ion	5	1	0.08	0.0749	1	BP
+GO:1903959	regulation of anion transmembrane transp...	5	1	0.08	0.0749	1	BP
+GO:0035909	aorta morphogenesis	5	1	0.08	0.0749	1	BP
+GO:0046461	neutral lipid catabolic process	5	1	0.08	0.0749	1	BP
+GO:0046464	acylglycerol catabolic process	5	1	0.08	0.0749	1	BP
+GO:0072505	divalent inorganic anion homeostasis	5	1	0.08	0.0749	1	BP
+GO:0072506	trivalent inorganic anion homeostasis	5	1	0.08	0.0749	1	BP
+GO:0006103	2-oxoglutarate metabolic process	5	1	0.08	0.0749	1	BP
+GO:0007465	R7 cell fate commitment	5	1	0.08	0.0749	1	BP
+GO:0007616	long-term memory	30	2	0.46	0.0766	1	BP
+GO:0007298	border follicle cell migration	30	2	0.46	0.0766	1	BP
+GO:0003205	cardiac chamber development	30	2	0.46	0.0766	1	BP
+GO:2000058	regulation of ubiquitin-dependent protei...	31	2	0.48	0.0812	1	BP
+GO:1903364	positive regulation of cellular protein ...	31	2	0.48	0.0812	1	BP
+GO:0006836	neurotransmitter transport	68	3	1.05	0.0846	1	BP
+GO:0030217	T cell differentiation	32	2	0.49	0.0858	1	BP
+GO:0017156	calcium-ion regulated exocytosis	32	2	0.49	0.0858	1	BP
+GO:0023061	signal release	111	4	1.71	0.0874	1	BP
+GO:0060384	innervation	6	1	0.09	0.0892	1	BP
+GO:0014904	myotube cell development	6	1	0.09	0.0892	1	BP
+GO:1903514	release of sequestered calcium ion into ...	6	1	0.09	0.0892	1	BP
+GO:2000300	regulation of synaptic vesicle exocytosi...	6	1	0.09	0.0892	1	BP
+GO:0043243	positive regulation of protein-containin...	6	1	0.09	0.0892	1	BP
+GO:0070296	sarcoplasmic reticulum calcium ion trans...	6	1	0.09	0.0892	1	BP
+GO:0046636	negative regulation of alpha-beta T cell...	6	1	0.09	0.0892	1	BP
+GO:0046638	positive regulation of alpha-beta T cell...	6	1	0.09	0.0892	1	BP
+GO:0098659	inorganic cation import across plasma me...	6	1	0.09	0.0892	1	BP
+GO:0010880	regulation of release of sequestered cal...	6	1	0.09	0.0892	1	BP
+GO:0048741	skeletal muscle fiber development	6	1	0.09	0.0892	1	BP
+GO:0048745	smooth muscle tissue development	6	1	0.09	0.0892	1	BP
+GO:0032715	negative regulation of interleukin-6 pro...	6	1	0.09	0.0892	1	BP
+GO:0010830	regulation of myotube differentiation	6	1	0.09	0.0892	1	BP
+GO:0006361	transcription initiation from RNA polyme...	6	1	0.09	0.0892	1	BP
+GO:0045955	negative regulation of calcium ion-depen...	6	1	0.09	0.0892	1	BP
+GO:0009750	response to fructose	6	1	0.09	0.0892	1	BP
+GO:0061383	trabecula morphogenesis	6	1	0.09	0.0892	1	BP
+GO:0001956	positive regulation of neurotransmitter ...	6	1	0.09	0.0892	1	BP
+GO:0045906	negative regulation of vasoconstriction	6	1	0.09	0.0892	1	BP
+GO:0006805	xenobiotic metabolic process	6	1	0.09	0.0892	1	BP
+GO:0099587	inorganic ion import across plasma membr...	6	1	0.09	0.0892	1	BP
+GO:0048800	antennal morphogenesis	6	1	0.09	0.0892	1	BP
+GO:0042100	B cell proliferation	6	1	0.09	0.0892	1	BP
+GO:0040010	positive regulation of growth rate	6	1	0.09	0.0892	1	BP
+GO:0055010	ventricular cardiac muscle tissue morpho...	6	1	0.09	0.0892	1	BP
+GO:1903317	regulation of protein maturation	6	1	0.09	0.0892	1	BP
+GO:0003229	ventricular cardiac muscle tissue develo...	6	1	0.09	0.0892	1	BP
+GO:0055115	entry into diapause	6	1	0.09	0.0892	1	BP
+GO:0006107	oxaloacetate metabolic process	6	1	0.09	0.0892	1	BP
+GO:0014808	release of sequestered calcium ion into ...	6	1	0.09	0.0892	1	BP
+GO:0007297	ovarian follicle cell migration	33	2	0.51	0.0904	1	BP
+GO:0072001	renal system development	71	3	1.1	0.0936	1	BP
+GO:0002066	columnar/cuboidal epithelial cell develo...	71	3	1.1	0.0936	1	BP
+GO:0045785	positive regulation of cell adhesion	34	2	0.52	0.0952	1	BP
+GO:0002521	leukocyte differentiation	73	3	1.13	0.0998	1	BP
+GO:0001655	urogenital system development	74	3	1.14	0.103	1	BP
+GO:0060324	face development	7	1	0.11	0.1033	1	BP
+GO:0032602	chemokine production	7	1	0.11	0.1033	1	BP
+GO:0051589	negative regulation of neurotransmitter ...	7	1	0.11	0.1033	1	BP
+GO:0035176	social behavior	7	1	0.11	0.1033	1	BP
+GO:0007176	regulation of epidermal growth factor-ac...	7	1	0.11	0.1033	1	BP
+GO:0071374	cellular response to parathyroid hormone...	7	1	0.11	0.1033	1	BP
+GO:0046635	positive regulation of alpha-beta T cell...	7	1	0.11	0.1033	1	BP
+GO:0071498	cellular response to fluid shear stress	7	1	0.11	0.1033	1	BP
+GO:0042430	indole-containing compound metabolic pro...	7	1	0.11	0.1033	1	BP
+GO:0010454	negative regulation of cell fate commitm...	7	1	0.11	0.1033	1	BP
+GO:0042532	negative regulation of tyrosine phosphor...	7	1	0.11	0.1033	1	BP
+GO:0002286	T cell activation involved in immune res...	7	1	0.11	0.1033	1	BP
+GO:0033227	dsRNA transport	7	1	0.11	0.1033	1	BP
+GO:0040039	inductive cell migration	7	1	0.11	0.1033	1	BP
+GO:0001569	branching involved in blood vessel morph...	7	1	0.11	0.1033	1	BP
+GO:0097066	response to thyroid hormone	7	1	0.11	0.1033	1	BP
+GO:0061099	negative regulation of protein tyrosine ...	7	1	0.11	0.1033	1	BP
+GO:0046839	phospholipid dephosphorylation	7	1	0.11	0.1033	1	BP
+GO:0046929	negative regulation of neurotransmitter ...	7	1	0.11	0.1033	1	BP
+GO:0097120	receptor localization to synapse	7	1	0.11	0.1033	1	BP
+GO:0002824	positive regulation of adaptive immune r...	7	1	0.11	0.1033	1	BP
+GO:1903306	negative regulation of regulated secreto...	7	1	0.11	0.1033	1	BP
+GO:0007469	antennal development	7	1	0.11	0.1033	1	BP
+GO:0032642	regulation of chemokine production	7	1	0.11	0.1033	1	BP
+GO:0035265	organ growth	36	2	0.56	0.1049	1	BP
+GO:1901565	organonitrogen compound catabolic proces...	217	6	3.35	0.1082	1	BP
+GO:0007568	aging	121	4	1.87	0.1116	1	BP
+GO:0009060	aerobic respiration	38	2	0.59	0.1149	1	BP
+GO:0010259	multicellular organism aging	78	3	1.2	0.1161	1	BP
+GO:0072662	protein localization to peroxisome	8	1	0.12	0.1172	1	BP
+GO:0072663	establishment of protein localization to...	8	1	0.12	0.1172	1	BP
+GO:0030002	cellular anion homeostasis	8	1	0.12	0.1172	1	BP
+GO:1904893	negative regulation of receptor signalin...	8	1	0.12	0.1172	1	BP
+GO:0034308	primary alcohol metabolic process	8	1	0.12	0.1172	1	BP
+GO:0001782	B cell homeostasis	8	1	0.12	0.1172	1	BP
+GO:0045898	regulation of RNA polymerase II transcri...	8	1	0.12	0.1172	1	BP
+GO:0045899	positive regulation of RNA polymerase II...	8	1	0.12	0.1172	1	BP
+GO:0042401	cellular biogenic amine biosynthetic pro...	8	1	0.12	0.1172	1	BP
+GO:0043367	CD4-positive, alpha-beta T cell differen...	8	1	0.12	0.1172	1	BP
+GO:0045838	positive regulation of membrane potentia...	8	1	0.12	0.1172	1	BP
+GO:0034405	response to fluid shear stress	8	1	0.12	0.1172	1	BP
+GO:0044273	sulfur compound catabolic process	8	1	0.12	0.1172	1	BP
+GO:0001964	startle response	8	1	0.12	0.1172	1	BP
+GO:1902803	regulation of synaptic vesicle transport	8	1	0.12	0.1172	1	BP
+GO:0030320	cellular monovalent inorganic anion home...	8	1	0.12	0.1172	1	BP
+GO:0045581	negative regulation of T cell differenti...	8	1	0.12	0.1172	1	BP
+GO:0071107	response to parathyroid hormone	8	1	0.12	0.1172	1	BP
+GO:0006536	glutamate metabolic process	8	1	0.12	0.1172	1	BP
+GO:0009309	amine biosynthetic process	8	1	0.12	0.1172	1	BP
+GO:0032094	response to food	8	1	0.12	0.1172	1	BP
+GO:0030421	defecation	8	1	0.12	0.1172	1	BP
+GO:0045620	negative regulation of lymphocyte differ...	8	1	0.12	0.1172	1	BP
+GO:0002821	positive regulation of adaptive immune r...	8	1	0.12	0.1172	1	BP
+GO:0055008	cardiac muscle tissue morphogenesis	8	1	0.12	0.1172	1	BP
+GO:0006625	protein targeting to peroxisome	8	1	0.12	0.1172	1	BP
+GO:0046426	negative regulation of receptor signalin...	8	1	0.12	0.1172	1	BP
+GO:0007548	sex differentiation	79	3	1.22	0.1194	1	BP
+GO:0048489	synaptic vesicle transport	40	2	0.62	0.1252	1	BP
+GO:0097479	synaptic vesicle localization	40	2	0.62	0.1252	1	BP
+GO:0007560	imaginal disc morphogenesis	81	3	1.25	0.1263	1	BP
+GO:0046649	lymphocyte activation	81	3	1.25	0.1263	1	BP
+GO:0001505	regulation of neurotransmitter levels	82	3	1.27	0.1298	1	BP
+GO:0061136	regulation of proteasomal protein catabo...	41	2	0.63	0.1304	1	BP
+GO:0042706	eye photoreceptor cell fate commitment	9	1	0.14	0.1309	1	BP
+GO:0045776	negative regulation of blood pressure	9	1	0.14	0.1309	1	BP
+GO:0006750	glutathione biosynthetic process	9	1	0.14	0.1309	1	BP
+GO:0033173	calcineurin-NFAT signaling cascade	9	1	0.14	0.1309	1	BP
+GO:0046637	regulation of alpha-beta T cell differen...	9	1	0.14	0.1309	1	BP
+GO:0001752	compound eye photoreceptor fate commitme...	9	1	0.14	0.1309	1	BP
+GO:0097720	calcineurin-mediated signaling	9	1	0.14	0.1309	1	BP
+GO:0035285	appendage segmentation	9	1	0.14	0.1309	1	BP
+GO:0010939	regulation of necrotic cell death	9	1	0.14	0.1309	1	BP
+GO:0036011	imaginal disc-derived leg segmentation	9	1	0.14	0.1309	1	BP
+GO:0045920	negative regulation of exocytosis	9	1	0.14	0.1309	1	BP
+GO:0106056	regulation of calcineurin-mediated signa...	9	1	0.14	0.1309	1	BP
+GO:0003085	negative regulation of systemic arterial...	9	1	0.14	0.1309	1	BP
+GO:0035710	CD4-positive, alpha-beta T cell activati...	9	1	0.14	0.1309	1	BP
+GO:0030850	prostate gland development	9	1	0.14	0.1309	1	BP
+GO:0098739	import across plasma membrane	9	1	0.14	0.1309	1	BP
+GO:0006099	tricarboxylic acid cycle	9	1	0.14	0.1309	1	BP
+GO:0070884	regulation of calcineurin-NFAT signaling...	9	1	0.14	0.1309	1	BP
+GO:0040009	regulation of growth rate	9	1	0.14	0.1309	1	BP
+GO:0046329	negative regulation of JNK cascade	9	1	0.14	0.1309	1	BP
+GO:0048536	spleen development	9	1	0.14	0.1309	1	BP
+GO:0043574	peroxisomal transport	9	1	0.14	0.1309	1	BP
+GO:0007379	segment specification	9	1	0.14	0.1309	1	BP
+GO:0051703	biological process involved in intraspec...	9	1	0.14	0.1309	1	BP
+GO:0032026	response to magnesium ion	9	1	0.14	0.1309	1	BP
+GO:0006656	phosphatidylcholine biosynthetic process	9	1	0.14	0.1309	1	BP
+GO:0035904	aorta development	9	1	0.14	0.1309	1	BP
+GO:0043029	T cell homeostasis	9	1	0.14	0.1309	1	BP
+GO:0006101	citrate metabolic process	9	1	0.14	0.1309	1	BP
+GO:0048563	post-embryonic animal organ morphogenesi...	83	3	1.28	0.1333	1	BP
+GO:0019637	organophosphate metabolic process	179	5	2.76	0.1348	1	BP
+GO:0006469	negative regulation of protein kinase ac...	42	2	0.65	0.1356	1	BP
+GO:0002065	columnar/cuboidal epithelial cell differ...	85	3	1.31	0.1404	1	BP
+GO:0035107	appendage morphogenesis	85	3	1.31	0.1404	1	BP
+GO:0099504	synaptic vesicle cycle	43	2	0.66	0.1409	1	BP
+GO:0051590	positive regulation of neurotransmitter ...	10	1	0.15	0.1444	1	BP
+GO:1903523	negative regulation of blood circulation	10	1	0.15	0.1444	1	BP
+GO:0090659	walking behavior	10	1	0.15	0.1444	1	BP
+GO:0007026	negative regulation of microtubule depol...	10	1	0.15	0.1444	1	BP
+GO:0071385	cellular response to glucocorticoid stim...	10	1	0.15	0.1444	1	BP
+GO:0007031	peroxisome organization	10	1	0.15	0.1444	1	BP
+GO:0046622	positive regulation of organ growth	10	1	0.15	0.1444	1	BP
+GO:0071320	cellular response to cAMP	10	1	0.15	0.1444	1	BP
+GO:0007628	adult walking behavior	10	1	0.15	0.1444	1	BP
+GO:0019184	nonribosomal peptide biosynthetic proces...	10	1	0.15	0.1444	1	BP
+GO:0007260	tyrosine phosphorylation of STAT protein	10	1	0.15	0.1444	1	BP
+GO:0042509	regulation of tyrosine phosphorylation o...	10	1	0.15	0.1444	1	BP
+GO:0048844	artery morphogenesis	10	1	0.15	0.1444	1	BP
+GO:0010092	specification of animal organ identity	10	1	0.15	0.1444	1	BP
+GO:1903793	positive regulation of anion transport	10	1	0.15	0.1444	1	BP
+GO:0032922	circadian regulation of gene expression	10	1	0.15	0.1444	1	BP
+GO:0046717	acid secretion	10	1	0.15	0.1444	1	BP
+GO:0045582	positive regulation of T cell differenti...	10	1	0.15	0.1444	1	BP
+GO:0001541	ovarian follicle development	10	1	0.15	0.1444	1	BP
+GO:0045621	positive regulation of lymphocyte differ...	10	1	0.15	0.1444	1	BP
+GO:1903050	regulation of proteolysis involved in ce...	44	2	0.68	0.1463	1	BP
+GO:0031331	positive regulation of cellular cataboli...	87	3	1.34	0.1477	1	BP
+GO:0072594	establishment of protein localization to...	87	3	1.34	0.1477	1	BP
+GO:1901575	organic substance catabolic process	323	9	4.99	0.1511	1	BP
+GO:0009791	post-embryonic development	187	5	2.89	0.1543	1	BP
+GO:0033673	negative regulation of kinase activity	46	2	0.71	0.1571	1	BP
+GO:0045333	cellular respiration	46	2	0.71	0.1571	1	BP
+GO:0040013	negative regulation of locomotion	46	2	0.71	0.1571	1	BP
+GO:0032635	interleukin-6 production	11	1	0.17	0.1577	1	BP
+GO:0009651	response to salt stress	11	1	0.17	0.1577	1	BP
+GO:1901880	negative regulation of protein depolymer...	11	1	0.17	0.1577	1	BP
+GO:0071384	cellular response to corticosteroid stim...	11	1	0.17	0.1577	1	BP
+GO:0050732	negative regulation of peptidyl-tyrosine...	11	1	0.17	0.1577	1	BP
+GO:0051123	RNA polymerase II preinitiation complex ...	11	1	0.17	0.1577	1	BP
+GO:0006749	glutathione metabolic process	11	1	0.17	0.1577	1	BP
+GO:0008586	imaginal disc-derived wing vein morphoge...	11	1	0.17	0.1577	1	BP
+GO:0017158	regulation of calcium ion-dependent exoc...	11	1	0.17	0.1577	1	BP
+GO:0030718	germ-line stem cell population maintenan...	11	1	0.17	0.1577	1	BP
+GO:0051279	regulation of release of sequestered cal...	11	1	0.17	0.1577	1	BP
+GO:2000178	negative regulation of neural precursor ...	11	1	0.17	0.1577	1	BP
+GO:0032873	negative regulation of stress-activated ...	11	1	0.17	0.1577	1	BP
+GO:0006493	protein O-linked glycosylation	11	1	0.17	0.1577	1	BP
+GO:0031114	regulation of microtubule depolymerizati...	11	1	0.17	0.1577	1	BP
+GO:0065002	intracellular protein transmembrane tran...	11	1	0.17	0.1577	1	BP
+GO:0000288	nuclear-transcribed mRNA catabolic proce...	11	1	0.17	0.1577	1	BP
+GO:0048483	autonomic nervous system development	11	1	0.17	0.1577	1	BP
+GO:0048069	eye pigmentation	11	1	0.17	0.1577	1	BP
+GO:0070303	negative regulation of stress-activated ...	11	1	0.17	0.1577	1	BP
+GO:0055083	monovalent inorganic anion homeostasis	11	1	0.17	0.1577	1	BP
+GO:0046843	dorsal appendage formation	11	1	0.17	0.1577	1	BP
+GO:0048016	inositol phosphate-mediated signaling	11	1	0.17	0.1577	1	BP
+GO:0006120	mitochondrial electron transport, NADH t...	11	1	0.17	0.1577	1	BP
+GO:0046470	phosphatidylcholine metabolic process	11	1	0.17	0.1577	1	BP
+GO:0032675	regulation of interleukin-6 production	11	1	0.17	0.1577	1	BP
+GO:0048641	regulation of skeletal muscle tissue dev...	11	1	0.17	0.1577	1	BP
+GO:0048608	reproductive structure development	90	3	1.39	0.1588	1	BP
+GO:0048736	appendage development	90	3	1.39	0.1588	1	BP
+GO:0048707	instar larval or pupal morphogenesis	91	3	1.4	0.1626	1	BP
+GO:0006352	DNA-templated transcription, initiation	47	2	0.73	0.1626	1	BP
+GO:0030522	intracellular receptor signaling pathway	47	2	0.73	0.1626	1	BP
+GO:0051348	negative regulation of transferase activ...	47	2	0.73	0.1626	1	BP
+GO:0007552	metamorphosis	92	3	1.42	0.1664	1	BP
+GO:0061458	reproductive system development	92	3	1.42	0.1664	1	BP
+GO:0051249	regulation of lymphocyte activation	48	2	0.74	0.1681	1	BP
+GO:1901879	regulation of protein depolymerization	12	1	0.19	0.1708	1	BP
+GO:0050777	negative regulation of immune response	12	1	0.19	0.1708	1	BP
+GO:0046632	alpha-beta T cell differentiation	12	1	0.19	0.1708	1	BP
+GO:0046634	regulation of alpha-beta T cell activati...	12	1	0.19	0.1708	1	BP
+GO:0060415	muscle tissue morphogenesis	12	1	0.19	0.1708	1	BP
+GO:0071806	protein transmembrane transport	12	1	0.19	0.1708	1	BP
+GO:0032392	DNA geometric change	12	1	0.19	0.1708	1	BP
+GO:0060021	roof of mouth development	12	1	0.19	0.1708	1	BP
+GO:0002260	lymphocyte homeostasis	12	1	0.19	0.1708	1	BP
+GO:0033273	response to vitamin	12	1	0.19	0.1708	1	BP
+GO:0033238	regulation of cellular amine metabolic p...	12	1	0.19	0.1708	1	BP
+GO:0008049	male courtship behavior	12	1	0.19	0.1708	1	BP
+GO:0006084	acetyl-CoA metabolic process	12	1	0.19	0.1708	1	BP
+GO:0032508	DNA duplex unwinding	12	1	0.19	0.1708	1	BP
+GO:0048644	muscle organ morphogenesis	12	1	0.19	0.1708	1	BP
+GO:0001676	long-chain fatty acid metabolic process	12	1	0.19	0.1708	1	BP
+GO:0046552	photoreceptor cell fate commitment	12	1	0.19	0.1708	1	BP
+GO:0007455	eye-antennal disc morphogenesis	12	1	0.19	0.1708	1	BP
+GO:0046580	negative regulation of Ras protein signa...	12	1	0.19	0.1708	1	BP
+GO:1902106	negative regulation of leukocyte differe...	12	1	0.19	0.1708	1	BP
+GO:0046486	glycerolipid metabolic process	61	4	0.94	0.1709	1	BP
+GO:0006066	alcohol metabolic process	49	2	0.76	0.1736	1	BP
+GO:0034765	regulation of ion transmembrane transpor...	49	2	0.76	0.1736	1	BP
+GO:0002064	epithelial cell development	94	3	1.45	0.174	1	BP
+GO:2000027	regulation of animal organ morphogenesis	50	2	0.77	0.1792	1	BP
+GO:1903362	regulation of cellular protein catabolic...	50	2	0.77	0.1792	1	BP
+GO:0006631	fatty acid metabolic process	50	2	0.77	0.1792	1	BP
+GO:0043627	response to estrogen	13	1	0.2	0.1836	1	BP
+GO:0035162	embryonic hemopoiesis	13	1	0.2	0.1836	1	BP
+GO:0035166	post-embryonic hemopoiesis	13	1	0.2	0.1836	1	BP
+GO:0043242	negative regulation of protein-containin...	13	1	0.2	0.1836	1	BP
+GO:0007019	microtubule depolymerization	13	1	0.2	0.1836	1	BP
+GO:0051058	negative regulation of small GTPase medi...	13	1	0.2	0.1836	1	BP
+GO:0006767	water-soluble vitamin metabolic process	13	1	0.2	0.1836	1	BP
+GO:0060420	regulation of heart growth	13	1	0.2	0.1836	1	BP
+GO:0050864	regulation of B cell activation	13	1	0.2	0.1836	1	BP
+GO:0042475	odontogenesis of dentin-containing tooth	13	1	0.2	0.1836	1	BP
+GO:0008585	female gonad development	13	1	0.2	0.1836	1	BP
+GO:0006353	DNA-templated transcription, termination	13	1	0.2	0.1836	1	BP
+GO:0031111	negative regulation of microtubule polym...	13	1	0.2	0.1836	1	BP
+GO:0032835	glomerulus development	13	1	0.2	0.1836	1	BP
+GO:0043050	pharyngeal pumping	13	1	0.2	0.1836	1	BP
+GO:0007611	learning or memory	97	3	1.5	0.1858	1	BP
+GO:0009886	post-embryonic animal morphogenesis	97	3	1.5	0.1858	1	BP
+GO:0007476	imaginal disc-derived wing morphogenesis	52	2	0.8	0.1904	1	BP
+GO:0042110	T cell activation	52	2	0.8	0.1904	1	BP
+GO:0003007	heart morphogenesis	52	2	0.8	0.1904	1	BP
+GO:0099003	vesicle-mediated transport in synapse	52	2	0.8	0.1904	1	BP
+GO:0007472	wing disc morphogenesis	53	2	0.82	0.1961	1	BP
+GO:0090150	establishment of protein localization to...	53	2	0.82	0.1961	1	BP
+GO:0040029	regulation of gene expression, epigeneti...	53	2	0.82	0.1961	1	BP
+GO:0014706	striated muscle tissue development	53	2	0.82	0.1961	1	BP
+GO:0046545	development of primary female sexual cha...	14	1	0.22	0.1963	1	BP
+GO:1904892	regulation of receptor signaling pathway...	14	1	0.22	0.1963	1	BP
+GO:0050779	RNA destabilization	14	1	0.22	0.1963	1	BP
+GO:0046686	response to cadmium ion	14	1	0.22	0.1963	1	BP
+GO:0098693	regulation of synaptic vesicle cycle	14	1	0.22	0.1963	1	BP
+GO:0002698	negative regulation of immune effector p...	14	1	0.22	0.1963	1	BP
+GO:0070265	necrotic cell death	14	1	0.22	0.1963	1	BP
+GO:0001776	leukocyte homeostasis	14	1	0.22	0.1963	1	BP
+GO:0035214	eye-antennal disc development	14	1	0.22	0.1963	1	BP
+GO:0032981	mitochondrial respiratory chain complex ...	14	1	0.22	0.1963	1	BP
+GO:0060261	positive regulation of transcription ini...	14	1	0.22	0.1963	1	BP
+GO:0070897	transcription preinitiation complex asse...	14	1	0.22	0.1963	1	BP
+GO:0010257	NADH dehydrogenase complex assembly	14	1	0.22	0.1963	1	BP
+GO:0002822	regulation of adaptive immune response b...	14	1	0.22	0.1963	1	BP
+GO:0061157	mRNA destabilization	14	1	0.22	0.1963	1	BP
+GO:0006641	triglyceride metabolic process	14	1	0.22	0.1963	1	BP
+GO:0061014	positive regulation of mRNA catabolic pr...	14	1	0.22	0.1963	1	BP
+GO:0046425	regulation of receptor signaling pathway...	14	1	0.22	0.1963	1	BP
+GO:0032269	negative regulation of cellular protein ...	151	4	2.33	0.1994	1	BP
+GO:0045732	positive regulation of protein catabolic...	54	2	0.83	0.2018	1	BP
+GO:0008406	gonad development	54	2	0.83	0.2018	1	BP
+GO:0006520	cellular amino acid metabolic process	54	2	0.83	0.2018	1	BP
+GO:0045137	development of primary sexual characteri...	54	2	0.83	0.2018	1	BP
+GO:0042398	cellular modified amino acid biosyntheti...	15	1	0.23	0.2088	1	BP
+GO:0060840	artery development	15	1	0.23	0.2088	1	BP
+GO:0006766	vitamin metabolic process	15	1	0.23	0.2088	1	BP
+GO:1903038	negative regulation of leukocyte cell-ce...	15	1	0.23	0.2088	1	BP
+GO:0060411	cardiac septum morphogenesis	15	1	0.23	0.2088	1	BP
+GO:0007614	short-term memory	15	1	0.23	0.2088	1	BP
+GO:0050868	negative regulation of T cell activation	15	1	0.23	0.2088	1	BP
+GO:0006360	transcription by RNA polymerase I	15	1	0.23	0.2088	1	BP
+GO:0010453	regulation of cell fate commitment	15	1	0.23	0.2088	1	BP
+GO:0042059	negative regulation of epidermal growth ...	15	1	0.23	0.2088	1	BP
+GO:1901185	negative regulation of ERBB signaling pa...	15	1	0.23	0.2088	1	BP
+GO:0060260	regulation of transcription initiation f...	15	1	0.23	0.2088	1	BP
+GO:0014823	response to activity	15	1	0.23	0.2088	1	BP
+GO:0002819	regulation of adaptive immune response	15	1	0.23	0.2088	1	BP
+GO:0006638	neutral lipid metabolic process	15	1	0.23	0.2088	1	BP
+GO:0006639	acylglycerol metabolic process	15	1	0.23	0.2088	1	BP
+GO:0007154	cell communication	740	14	11.42	0.2094	1	BP
+GO:0002165	instar larval or pupal development	103	3	1.59	0.2098	1	BP
+GO:0060284	regulation of cell development	208	5	3.21	0.2109	1	BP
+GO:0051248	negative regulation of protein metabolic...	155	4	2.39	0.2126	1	BP
+GO:0048514	blood vessel morphogenesis	57	2	0.88	0.219	1	BP
+GO:0006796	phosphate-containing compound metabolic ...	440	9	6.79	0.2192	1	BP
+GO:0045793	positive regulation of cell size	16	1	0.25	0.2212	1	BP
+GO:0050728	negative regulation of inflammatory resp...	16	1	0.25	0.2212	1	BP
+GO:0046631	alpha-beta T cell activation	16	1	0.25	0.2212	1	BP
+GO:0051153	regulation of striated muscle cell diffe...	16	1	0.25	0.2212	1	BP
+GO:0060419	heart growth	16	1	0.25	0.2212	1	BP
+GO:0007259	receptor signaling pathway via JAK-STAT	16	1	0.25	0.2212	1	BP
+GO:0051250	negative regulation of lymphocyte activa...	16	1	0.25	0.2212	1	BP
+GO:0010522	regulation of calcium ion transport into...	16	1	0.25	0.2212	1	BP
+GO:1901606	alpha-amino acid catabolic process	16	1	0.25	0.2212	1	BP
+GO:0019751	polyol metabolic process	16	1	0.25	0.2212	1	BP
+GO:0046849	bone remodeling	16	1	0.25	0.2212	1	BP
+GO:0097696	receptor signaling pathway via STAT	16	1	0.25	0.2212	1	BP
+GO:0007304	chorion-containing eggshell formation	16	1	0.25	0.2212	1	BP
+GO:0007306	eggshell chorion assembly	16	1	0.25	0.2212	1	BP
+GO:1902107	positive regulation of leukocyte differe...	16	1	0.25	0.2212	1	BP
+GO:0009064	glutamine family amino acid metabolic pr...	16	1	0.25	0.2212	1	BP
+GO:0006793	phosphorus metabolic process	441	9	6.81	0.2214	1	BP
+GO:0044248	cellular catabolic process	357	9	5.51	0.2214	1	BP
+GO:0050890	cognition	106	3	1.64	0.2222	1	BP
+GO:0009896	positive regulation of catabolic process	107	3	1.65	0.2263	1	BP
+GO:0030162	regulation of proteolysis	108	3	1.67	0.2305	1	BP
+GO:0002694	regulation of leukocyte activation	59	2	0.91	0.2305	1	BP
+GO:0048585	negative regulation of response to stimu...	271	6	4.18	0.2312	1	BP
+GO:0030183	B cell differentiation	17	1	0.26	0.2333	1	BP
+GO:0002695	negative regulation of leukocyte activat...	17	1	0.26	0.2333	1	BP
+GO:1903039	positive regulation of leukocyte cell-ce...	17	1	0.26	0.2333	1	BP
+GO:0007619	courtship behavior	17	1	0.26	0.2333	1	BP
+GO:0050870	positive regulation of T cell activation	17	1	0.26	0.2333	1	BP
+GO:0019646	aerobic electron transport chain	17	1	0.26	0.2333	1	BP
+GO:0051261	protein depolymerization	17	1	0.26	0.2333	1	BP
+GO:2000144	positive regulation of DNA-templated tra...	17	1	0.26	0.2333	1	BP
+GO:0003073	regulation of systemic arterial blood pr...	17	1	0.26	0.2333	1	BP
+GO:0051209	release of sequestered calcium ion into ...	17	1	0.26	0.2333	1	BP
+GO:0055081	anion homeostasis	17	1	0.26	0.2333	1	BP
+GO:0043407	negative regulation of MAP kinase activi...	17	1	0.26	0.2333	1	BP
+GO:0016441	post-transcriptional gene silencing	17	1	0.26	0.2333	1	BP
+GO:0042755	eating behavior	17	1	0.26	0.2333	1	BP
+GO:0007444	imaginal disc development	109	3	1.68	0.2346	1	BP
+GO:0001822	kidney development	60	2	0.93	0.2363	1	BP
+GO:0006629	lipid metabolic process	183	6	2.82	0.2371	1	BP
+GO:0098662	inorganic cation transmembrane transport	110	3	1.7	0.2388	1	BP
+GO:0044242	cellular lipid catabolic process	28	3	0.43	0.242	1	BP
+GO:0050865	regulation of cell activation	61	2	0.94	0.2421	1	BP
+GO:0048545	response to steroid hormone	61	2	0.94	0.2421	1	BP
+GO:0002460	adaptive immune response based on somati...	18	1	0.28	0.2452	1	BP
+GO:0051591	response to cAMP	18	1	0.28	0.2452	1	BP
+GO:0045746	negative regulation of Notch signaling p...	18	1	0.28	0.2452	1	BP
+GO:0042476	odontogenesis	18	1	0.28	0.2452	1	BP
+GO:0002285	lymphocyte activation involved in immune...	18	1	0.28	0.2452	1	BP
+GO:2000142	regulation of DNA-templated transcriptio...	18	1	0.28	0.2452	1	BP
+GO:0031110	regulation of microtubule polymerization...	18	1	0.28	0.2452	1	BP
+GO:0019730	antimicrobial humoral response	18	1	0.28	0.2452	1	BP
+GO:0001701	in utero embryonic development	62	2	0.96	0.2479	1	BP
+GO:0043687	post-translational protein modification	62	2	0.96	0.2479	1	BP
+GO:0034762	regulation of transmembrane transport	62	2	0.96	0.2479	1	BP
+GO:1902532	negative regulation of intracellular sig...	113	3	1.74	0.2515	1	BP
+GO:0042773	ATP synthesis coupled electron transport	19	1	0.29	0.257	1	BP
+GO:0042775	mitochondrial ATP synthesis coupled elec...	19	1	0.29	0.257	1	BP
+GO:0007478	leg disc morphogenesis	19	1	0.29	0.257	1	BP
+GO:0070059	intrinsic apoptotic signaling pathway in...	19	1	0.29	0.257	1	BP
+GO:1903169	regulation of calcium ion transmembrane ...	19	1	0.29	0.257	1	BP
+GO:0050866	negative regulation of cell activation	19	1	0.29	0.257	1	BP
+GO:0035218	leg disc development	19	1	0.29	0.257	1	BP
+GO:0060179	male mating behavior	19	1	0.29	0.257	1	BP
+GO:0051282	regulation of sequestering of calcium io...	19	1	0.29	0.257	1	BP
+GO:0051283	negative regulation of sequestering of c...	19	1	0.29	0.257	1	BP
+GO:0030703	eggshell formation	19	1	0.29	0.257	1	BP
+GO:0048806	genitalia development	19	1	0.29	0.257	1	BP
+GO:0035383	thioester metabolic process	19	1	0.29	0.257	1	BP
+GO:0006094	gluconeogenesis	19	1	0.29	0.257	1	BP
+GO:0021545	cranial nerve development	19	1	0.29	0.257	1	BP
+GO:0008217	regulation of blood pressure	19	1	0.29	0.257	1	BP
+GO:1903313	positive regulation of mRNA metabolic pr...	19	1	0.29	0.257	1	BP
+GO:0043506	regulation of JUN kinase activity	19	1	0.29	0.257	1	BP
+GO:0006637	acyl-CoA metabolic process	19	1	0.29	0.257	1	BP
+GO:0019319	hexose biosynthetic process	19	1	0.29	0.257	1	BP
+GO:0007480	imaginal disc-derived leg morphogenesis	19	1	0.29	0.257	1	BP
+GO:0009968	negative regulation of signal transducti...	224	5	3.46	0.2583	1	BP
+GO:0009100	glycoprotein metabolic process	64	2	0.99	0.2595	1	BP
+GO:0006807	nitrogen compound metabolic process	1223	21	18.88	0.2596	1	BP
+GO:0031667	response to nutrient levels	115	3	1.78	0.26	1	BP
+GO:0051172	negative regulation of nitrogen compound...	343	7	5.29	0.2683	1	BP
+GO:0048569	post-embryonic animal organ development	117	3	1.81	0.2685	1	BP
+GO:0022904	respiratory electron transport chain	20	1	0.31	0.2686	1	BP
+GO:0070663	regulation of leukocyte proliferation	20	1	0.31	0.2686	1	BP
+GO:0002699	positive regulation of immune effector p...	20	1	0.31	0.2686	1	BP
+GO:0071466	cellular response to xenobiotic stimulus	20	1	0.31	0.2686	1	BP
+GO:0050848	regulation of calcium-mediated signaling	20	1	0.31	0.2686	1	BP
+GO:0032387	negative regulation of intracellular tra...	20	1	0.31	0.2686	1	BP
+GO:0006959	humoral immune response	20	1	0.31	0.2686	1	BP
+GO:1901657	glycosyl compound metabolic process	20	1	0.31	0.2686	1	BP
+GO:0042048	olfactory behavior	20	1	0.31	0.2686	1	BP
+GO:0051208	sequestering of calcium ion	20	1	0.31	0.2686	1	BP
+GO:0032944	regulation of mononuclear cell prolifera...	20	1	0.31	0.2686	1	BP
+GO:0045580	regulation of T cell differentiation	20	1	0.31	0.2686	1	BP
+GO:0097553	calcium ion transmembrane import into cy...	20	1	0.31	0.2686	1	BP
+GO:0043488	regulation of mRNA stability	20	1	0.31	0.2686	1	BP
+GO:0050670	regulation of lymphocyte proliferation	20	1	0.31	0.2686	1	BP
+GO:0003279	cardiac septum development	20	1	0.31	0.2686	1	BP
+GO:1903305	regulation of regulated secretory pathwa...	20	1	0.31	0.2686	1	BP
+GO:0021675	nerve development	20	1	0.31	0.2686	1	BP
+GO:0048645	animal organ formation	20	1	0.31	0.2686	1	BP
+GO:0015980	energy derivation by oxidation of organi...	66	2	1.02	0.2712	1	BP
+GO:0001816	cytokine production	66	2	1.02	0.2712	1	BP
+GO:0007517	muscle organ development	67	2	1.03	0.277	1	BP
+GO:0001933	negative regulation of protein phosphory...	67	2	1.03	0.277	1	BP
+GO:0048522	positive regulation of cellular process	713	13	11.01	0.2774	1	BP
+GO:0010629	negative regulation of gene expression	288	6	4.45	0.2778	1	BP
+GO:0007586	digestion	21	1	0.32	0.28	1	BP
+GO:0060993	kidney morphogenesis	21	1	0.32	0.28	1	BP
+GO:0043244	regulation of protein-containing complex...	21	1	0.32	0.28	1	BP
+GO:0046683	response to organophosphorus	21	1	0.32	0.28	1	BP
+GO:0098661	inorganic anion transmembrane transport	21	1	0.32	0.28	1	BP
+GO:0033108	mitochondrial respiratory chain complex ...	21	1	0.32	0.28	1	BP
+GO:0022600	digestive system process	21	1	0.32	0.28	1	BP
+GO:0002250	adaptive immune response	21	1	0.32	0.28	1	BP
+GO:0046364	monosaccharide biosynthetic process	21	1	0.32	0.28	1	BP
+GO:0061097	regulation of protein tyrosine kinase ac...	21	1	0.32	0.28	1	BP
+GO:0045619	regulation of lymphocyte differentiation	21	1	0.32	0.28	1	BP
+GO:0071242	cellular response to ammonium ion	21	1	0.32	0.28	1	BP
+GO:0061013	regulation of mRNA catabolic process	21	1	0.32	0.28	1	BP
+GO:0009991	response to extracellular stimulus	120	3	1.85	0.2814	1	BP
+GO:1901564	organonitrogen compound metabolic proces...	906	16	13.98	0.2823	1	BP
+GO:0030155	regulation of cell adhesion	68	2	1.05	0.2828	1	BP
+GO:0019932	second-messenger-mediated signaling	68	2	1.05	0.2828	1	BP
+GO:0043010	camera-type eye development	68	2	1.05	0.2828	1	BP
+GO:1903530	regulation of secretion by cell	121	3	1.87	0.2858	1	BP
+GO:0045862	positive regulation of proteolysis	69	2	1.07	0.2887	1	BP
+GO:0033993	response to lipid	122	3	1.88	0.2901	1	BP
+GO:0032101	regulation of response to external stimu...	122	3	1.88	0.2901	1	BP
+GO:0014902	myotube differentiation	22	1	0.34	0.2912	1	BP
+GO:0070661	leukocyte proliferation	22	1	0.34	0.2912	1	BP
+GO:0046651	lymphocyte proliferation	22	1	0.34	0.2912	1	BP
+GO:0044070	regulation of anion transport	22	1	0.34	0.2912	1	BP
+GO:1901655	cellular response to ketone	22	1	0.34	0.2912	1	BP
+GO:0019229	regulation of vasoconstriction	22	1	0.34	0.2912	1	BP
+GO:0032943	mononuclear cell proliferation	22	1	0.34	0.2912	1	BP
+GO:0043487	regulation of RNA stability	22	1	0.34	0.2912	1	BP
+GO:0090090	negative regulation of canonical Wnt sig...	22	1	0.34	0.2912	1	BP
+GO:0034767	positive regulation of ion transmembrane...	22	1	0.34	0.2912	1	BP
+GO:0043603	cellular amide metabolic process	178	4	2.75	0.2926	1	BP
+GO:0050896	response to stimulus	1057	19	16.32	0.2941	1	BP
+GO:0098660	inorganic ion transmembrane transport	123	3	1.9	0.2944	1	BP
+GO:0044255	cellular lipid metabolic process	142	5	2.19	0.2992	1	BP
+GO:0019752	carboxylic acid metabolic process	143	5	2.21	0.2995	1	BP
+GO:0002119	nematode larval development	71	2	1.1	0.3003	1	BP
+GO:0022408	negative regulation of cell-cell adhesio...	23	1	0.36	0.3023	1	BP
+GO:0022409	positive regulation of cell-cell adhesio...	23	1	0.36	0.3023	1	BP
+GO:1901861	regulation of muscle tissue development	23	1	0.36	0.3023	1	BP
+GO:0014074	response to purine-containing compound	23	1	0.36	0.3023	1	BP
+GO:0051147	regulation of muscle cell differentiatio...	23	1	0.36	0.3023	1	BP
+GO:0016202	regulation of striated muscle tissue dev...	23	1	0.36	0.3023	1	BP
+GO:0048814	regulation of dendrite morphogenesis	23	1	0.36	0.3023	1	BP
+GO:0006970	response to osmotic stress	23	1	0.36	0.3023	1	BP
+GO:0035725	sodium ion transmembrane transport	23	1	0.36	0.3023	1	BP
+GO:1902904	negative regulation of supramolecular fi...	23	1	0.36	0.3023	1	BP
+GO:1903707	negative regulation of hemopoiesis	23	1	0.36	0.3023	1	BP
+GO:1903708	positive regulation of hemopoiesis	23	1	0.36	0.3023	1	BP
+GO:0098655	cation transmembrane transport	125	3	1.93	0.3031	1	BP
+GO:0006325	chromatin organization	125	3	1.93	0.3031	1	BP
+GO:0009056	catabolic process	392	9	6.05	0.3053	1	BP
+GO:0016042	lipid catabolic process	34	3	0.52	0.3059	1	BP
+GO:0010631	epithelial cell migration	72	2	1.11	0.3061	1	BP
+GO:0030001	metal ion transport	127	3	1.96	0.3118	1	BP
+GO:0051650	establishment of vesicle localization	73	2	1.13	0.3119	1	BP
+GO:0001568	blood vessel development	73	2	1.13	0.3119	1	BP
+GO:0051494	negative regulation of cytoskeleton orga...	24	1	0.37	0.3132	1	BP
+GO:0035113	embryonic appendage morphogenesis	24	1	0.37	0.3132	1	BP
+GO:0042310	vasoconstriction	24	1	0.37	0.3132	1	BP
+GO:0071805	potassium ion transmembrane transport	24	1	0.37	0.3132	1	BP
+GO:0042551	neuron maturation	24	1	0.37	0.3132	1	BP
+GO:0042058	regulation of epidermal growth factor re...	24	1	0.37	0.3132	1	BP
+GO:1901184	regulation of ERBB signaling pathway	24	1	0.37	0.3132	1	BP
+GO:0097306	cellular response to alcohol	24	1	0.37	0.3132	1	BP
+GO:0034032	purine nucleoside bisphosphate metabolic...	24	1	0.37	0.3132	1	BP
+GO:0030326	embryonic limb morphogenesis	24	1	0.37	0.3132	1	BP
+GO:0016322	neuron remodeling	24	1	0.37	0.3132	1	BP
+GO:0033865	nucleoside bisphosphate metabolic proces...	24	1	0.37	0.3132	1	BP
+GO:0033875	ribonucleoside bisphosphate metabolic pr...	24	1	0.37	0.3132	1	BP
+GO:0048634	regulation of muscle organ development	24	1	0.37	0.3132	1	BP
+GO:0050767	regulation of neurogenesis	184	4	2.84	0.3143	1	BP
+GO:0090132	epithelium migration	74	2	1.14	0.3177	1	BP
+GO:0051648	vesicle localization	74	2	1.14	0.3177	1	BP
+GO:0023052	signaling	733	13	11.31	0.3196	1	BP
+GO:0051046	regulation of secretion	129	3	1.99	0.3205	1	BP
+GO:0090130	tissue migration	75	2	1.16	0.3235	1	BP
+GO:0008340	determination of adult lifespan	75	2	1.16	0.3235	1	BP
+GO:0035220	wing disc development	75	2	1.16	0.3235	1	BP
+GO:0007565	female pregnancy	25	1	0.39	0.324	1	BP
+GO:0043279	response to alkaloid	25	1	0.39	0.324	1	BP
+GO:0060402	calcium ion transport into cytosol	25	1	0.39	0.324	1	BP
+GO:0051251	positive regulation of lymphocyte activa...	25	1	0.39	0.324	1	BP
+GO:0040018	positive regulation of multicellular org...	25	1	0.39	0.324	1	BP
+GO:0006119	oxidative phosphorylation	25	1	0.39	0.324	1	BP
+GO:0043436	oxoacid metabolic process	150	5	2.32	0.328	1	BP
+GO:0030097	hemopoiesis	131	3	2.02	0.3293	1	BP
+GO:0035282	segmentation	76	2	1.17	0.3293	1	BP
+GO:0051649	establishment of localization in cell	488	9	7.53	0.3295	1	BP
+GO:0006082	organic acid metabolic process	151	5	2.33	0.3321	1	BP
+GO:0006886	intracellular protein transport	189	4	2.92	0.3326	1	BP
+GO:0023057	negative regulation of signaling	248	5	3.83	0.3342	1	BP
+GO:0010648	negative regulation of cell communicatio...	248	5	3.83	0.3342	1	BP
+GO:0015718	monocarboxylic acid transport	26	1	0.4	0.3345	1	BP
+GO:0010927	cellular component assembly involved in ...	26	1	0.4	0.3345	1	BP
+GO:0071901	negative regulation of protein serine/th...	26	1	0.4	0.3345	1	BP
+GO:0050805	negative regulation of synaptic transmis...	26	1	0.4	0.3345	1	BP
+GO:0001818	negative regulation of cytokine producti...	26	1	0.4	0.3345	1	BP
+GO:0031109	microtubule polymerization or depolymeri...	26	1	0.4	0.3345	1	BP
+GO:0048066	developmental pigmentation	26	1	0.4	0.3345	1	BP
+GO:0042326	negative regulation of phosphorylation	77	2	1.19	0.3351	1	BP
+GO:0051173	positive regulation of nitrogen compound...	429	8	6.62	0.3353	1	BP
+GO:0046907	intracellular transport	369	7	5.7	0.3377	1	BP
+GO:0007268	chemical synaptic transmission	133	3	2.05	0.338	1	BP
+GO:0099537	trans-synaptic signaling	133	3	2.05	0.338	1	BP
+GO:0098916	anterograde trans-synaptic signaling	133	3	2.05	0.338	1	BP
+GO:1901135	carbohydrate derivative metabolic proces...	191	4	2.95	0.34	1	BP
+GO:0008015	blood circulation	78	2	1.2	0.3409	1	BP
+GO:0042176	regulation of protein catabolic process	78	2	1.2	0.3409	1	BP
+GO:0001944	vasculature development	78	2	1.2	0.3409	1	BP
+GO:0030178	negative regulation of Wnt signaling pat...	27	1	0.42	0.345	1	BP
+GO:0000956	nuclear-transcribed mRNA catabolic proce...	27	1	0.42	0.345	1	BP
+GO:0019933	cAMP-mediated signaling	27	1	0.42	0.345	1	BP
+GO:0035108	limb morphogenesis	27	1	0.42	0.345	1	BP
+GO:0060401	cytosolic calcium ion transport	27	1	0.42	0.345	1	BP
+GO:0048738	cardiac muscle tissue development	27	1	0.42	0.345	1	BP
+GO:0042472	inner ear morphogenesis	27	1	0.42	0.345	1	BP
+GO:0015698	inorganic anion transport	27	1	0.42	0.345	1	BP
+GO:0071236	cellular response to antibiotic	27	1	0.42	0.345	1	BP
+GO:0022900	electron transport chain	27	1	0.42	0.345	1	BP
+GO:0003013	circulatory system process	79	2	1.22	0.3466	1	BP
+GO:0099536	synaptic signaling	135	3	2.08	0.3468	1	BP
+GO:0031324	negative regulation of cellular metaboli...	373	7	5.76	0.3487	1	BP
+GO:0048534	hematopoietic or lymphoid organ developm...	136	3	2.1	0.3511	1	BP
+GO:0044281	small molecule metabolic process	282	7	4.35	0.3534	1	BP
+GO:1903037	regulation of leukocyte cell-cell adhesi...	28	1	0.43	0.3552	1	BP
+GO:0044272	sulfur compound biosynthetic process	28	1	0.43	0.3552	1	BP
+GO:2000177	regulation of neural precursor cell prol...	28	1	0.43	0.3552	1	BP
+GO:1902905	positive regulation of supramolecular fi...	28	1	0.43	0.3552	1	BP
+GO:0006575	cellular modified amino acid metabolic p...	28	1	0.43	0.3552	1	BP
+GO:0055001	muscle cell development	28	1	0.43	0.3552	1	BP
+GO:0046488	phosphatidylinositol metabolic process	28	1	0.43	0.3552	1	BP
+GO:0019439	aromatic compound catabolic process	81	2	1.25	0.3581	1	BP
+GO:0050804	modulation of chemical synaptic transmis...	82	2	1.27	0.3638	1	BP
+GO:0099177	regulation of trans-synaptic signaling	82	2	1.27	0.3638	1	BP
+GO:0007519	skeletal muscle tissue development	29	1	0.45	0.3653	1	BP
+GO:0031348	negative regulation of defense response	29	1	0.45	0.3653	1	BP
+GO:0050727	regulation of inflammatory response	29	1	0.45	0.3653	1	BP
+GO:0006814	sodium ion transport	29	1	0.45	0.3653	1	BP
+GO:0017148	negative regulation of translation	29	1	0.45	0.3653	1	BP
+GO:0048663	neuron fate commitment	29	1	0.45	0.3653	1	BP
+GO:0046903	secretion	258	5	3.98	0.3668	1	BP
+GO:0009150	purine ribonucleotide metabolic process	83	2	1.28	0.3695	1	BP
+GO:1901361	organic cyclic compound catabolic proces...	83	2	1.28	0.3695	1	BP
+GO:1901615	organic hydroxy compound metabolic proce...	83	2	1.28	0.3695	1	BP
+GO:0060562	epithelial tube morphogenesis	141	3	2.18	0.373	1	BP
+GO:1903531	negative regulation of secretion by cell	30	1	0.46	0.3753	1	BP
+GO:0007159	leukocyte cell-cell adhesion	30	1	0.46	0.3753	1	BP
+GO:0030258	lipid modification	30	1	0.46	0.3753	1	BP
+GO:0042471	ear morphogenesis	30	1	0.46	0.3753	1	BP
+GO:0006813	potassium ion transport	30	1	0.46	0.3753	1	BP
+GO:0065004	protein-DNA complex assembly	30	1	0.46	0.3753	1	BP
+GO:0016485	protein processing	30	1	0.46	0.3753	1	BP
+GO:0045927	positive regulation of growth	85	2	1.31	0.3808	1	BP
+GO:0043161	proteasome-mediated ubiquitin-dependent ...	85	2	1.31	0.3808	1	BP
+GO:0031325	positive regulation of cellular metaboli...	447	8	6.9	0.3826	1	BP
+GO:0010605	negative regulation of macromolecule met...	386	7	5.96	0.385	1	BP
+GO:0046578	regulation of Ras protein signal transdu...	31	1	0.48	0.3851	1	BP
+GO:0051495	positive regulation of cytoskeleton orga...	31	1	0.48	0.3851	1	BP
+GO:0019935	cyclic-nucleotide-mediated signaling	31	1	0.48	0.3851	1	BP
+GO:0042113	B cell activation	31	1	0.48	0.3851	1	BP
+GO:0043409	negative regulation of MAPK cascade	31	1	0.48	0.3851	1	BP
+GO:0034764	positive regulation of transmembrane tra...	31	1	0.48	0.3851	1	BP
+GO:0002520	immune system development	144	3	2.22	0.3861	1	BP
+GO:0009259	ribonucleotide metabolic process	86	2	1.33	0.3864	1	BP
+GO:0001667	ameboidal-type cell migration	86	2	1.33	0.3864	1	BP
+GO:0030855	epithelial cell differentiation	146	3	2.25	0.3947	1	BP
+GO:0050730	regulation of peptidyl-tyrosine phosphor...	32	1	0.49	0.3948	1	BP
+GO:0002696	positive regulation of leukocyte activat...	32	1	0.49	0.3948	1	BP
+GO:0050867	positive regulation of cell activation	32	1	0.49	0.3948	1	BP
+GO:0060173	limb development	32	1	0.49	0.3948	1	BP
+GO:0055085	transmembrane transport	206	4	3.18	0.3953	1	BP
+GO:0005975	carbohydrate metabolic process	88	2	1.36	0.3977	1	BP
+GO:0032787	monocarboxylic acid metabolic process	88	2	1.36	0.3977	1	BP
+GO:0044238	primary metabolic process	1248	21	19.26	0.4002	1	BP
+GO:0019693	ribose phosphate metabolic process	89	2	1.37	0.4032	1	BP
+GO:0006091	generation of precursor metabolites and ...	89	2	1.37	0.4032	1	BP
+GO:0007162	negative regulation of cell adhesion	33	1	0.51	0.4043	1	BP
+GO:0007173	epidermal growth factor receptor signali...	33	1	0.51	0.4043	1	BP
+GO:0051048	negative regulation of secretion	33	1	0.51	0.4043	1	BP
+GO:0007618	mating	33	1	0.51	0.4043	1	BP
+GO:0045861	negative regulation of proteolysis	33	1	0.51	0.4043	1	BP
+GO:0045814	negative regulation of gene expression, ...	33	1	0.51	0.4043	1	BP
+GO:0034249	negative regulation of cellular amide me...	33	1	0.51	0.4043	1	BP
+GO:0043269	regulation of ion transport	90	2	1.39	0.4088	1	BP
+GO:0006163	purine nucleotide metabolic process	90	2	1.39	0.4088	1	BP
+GO:0046434	organophosphate catabolic process	34	1	0.52	0.4136	1	BP
+GO:0016051	carbohydrate biosynthetic process	34	1	0.52	0.4136	1	BP
+GO:0008344	adult locomotory behavior	34	1	0.52	0.4136	1	BP
+GO:0050773	regulation of dendrite development	34	1	0.52	0.4136	1	BP
+GO:0038127	ERBB signaling pathway	34	1	0.52	0.4136	1	BP
+GO:0007617	mating behavior	34	1	0.52	0.4136	1	BP
+GO:0017157	regulation of exocytosis	34	1	0.52	0.4136	1	BP
+GO:0031032	actomyosin structure organization	34	1	0.52	0.4136	1	BP
+GO:0006486	protein glycosylation	34	1	0.52	0.4136	1	BP
+GO:0043413	macromolecule glycosylation	34	1	0.52	0.4136	1	BP
+GO:0006006	glucose metabolic process	34	1	0.52	0.4136	1	BP
+GO:1902105	regulation of leukocyte differentiation	34	1	0.52	0.4136	1	BP
+GO:0048518	positive regulation of biological proces...	775	13	11.96	0.4148	1	BP
+GO:0010498	proteasomal protein catabolic process	92	2	1.42	0.4198	1	BP
+GO:0043086	negative regulation of catalytic activit...	92	2	1.42	0.4198	1	BP
+GO:0003002	regionalization	152	3	2.35	0.4207	1	BP
+GO:0072006	nephron development	35	1	0.54	0.4229	1	BP
+GO:0007635	chemosensory behavior	35	1	0.54	0.4229	1	BP
+GO:0042461	photoreceptor cell development	35	1	0.54	0.4229	1	BP
+GO:0060538	skeletal muscle organ development	35	1	0.54	0.4229	1	BP
+GO:0097746	blood vessel diameter maintenance	35	1	0.54	0.4229	1	BP
+GO:0050806	positive regulation of synaptic transmis...	35	1	0.54	0.4229	1	BP
+GO:0071103	DNA conformation change	35	1	0.54	0.4229	1	BP
+GO:0006402	mRNA catabolic process	35	1	0.54	0.4229	1	BP
+GO:0016477	cell migration	214	4	3.3	0.4248	1	BP
+GO:0014070	response to organic cyclic compound	154	3	2.38	0.4292	1	BP
+GO:0071407	cellular response to organic cyclic comp...	94	2	1.45	0.4308	1	BP
+GO:0070085	glycosylation	36	1	0.56	0.4319	1	BP
+GO:0050863	regulation of T cell activation	36	1	0.56	0.4319	1	BP
+GO:0007204	positive regulation of cytosolic calcium...	36	1	0.56	0.4319	1	BP
+GO:0050905	neuromuscular process	36	1	0.56	0.4319	1	BP
+GO:2000146	negative regulation of cell motility	36	1	0.56	0.4319	1	BP
+GO:0097480	establishment of synaptic vesicle locali...	36	1	0.56	0.4319	1	BP
+GO:0050657	nucleic acid transport	36	1	0.56	0.4319	1	BP
+GO:0050658	RNA transport	36	1	0.56	0.4319	1	BP
+GO:0051960	regulation of nervous system development	217	4	3.35	0.4358	1	BP
+GO:0010563	negative regulation of phosphorus metabo...	95	2	1.47	0.4362	1	BP
+GO:0045936	negative regulation of phosphate metabol...	95	2	1.47	0.4362	1	BP
+GO:0072521	purine-containing compound metabolic pro...	95	2	1.47	0.4362	1	BP
+GO:0007584	response to nutrient	37	1	0.57	0.4409	1	BP
+GO:0009167	purine ribonucleoside monophosphate meta...	37	1	0.57	0.4409	1	BP
+GO:0009126	purine nucleoside monophosphate metaboli...	37	1	0.57	0.4409	1	BP
+GO:0048754	branching morphogenesis of an epithelial...	37	1	0.57	0.4409	1	BP
+GO:0035296	regulation of tube diameter	37	1	0.57	0.4409	1	BP
+GO:0051651	maintenance of location in cell	37	1	0.57	0.4409	1	BP
+GO:0006367	transcription initiation from RNA polyme...	37	1	0.57	0.4409	1	BP
+GO:0006338	chromatin remodeling	37	1	0.57	0.4409	1	BP
+GO:0051236	establishment of RNA localization	37	1	0.57	0.4409	1	BP
+GO:1901605	alpha-amino acid metabolic process	37	1	0.57	0.4409	1	BP
+GO:0044706	multi-multicellular organism process	37	1	0.57	0.4409	1	BP
+GO:0071248	cellular response to metal ion	37	1	0.57	0.4409	1	BP
+GO:0048568	embryonic organ development	96	2	1.48	0.4416	1	BP
+GO:0048477	oogenesis	157	3	2.42	0.442	1	BP
+GO:0045321	leukocyte activation	158	3	2.44	0.4463	1	BP
+GO:2000113	negative regulation of cellular macromol...	220	4	3.4	0.4467	1	BP
+GO:0007155	cell adhesion	97	2	1.5	0.447	1	BP
+GO:0006820	anion transport	97	2	1.5	0.447	1	BP
+GO:0051056	regulation of small GTPase mediated sign...	38	1	0.59	0.4497	1	BP
+GO:0008582	regulation of synaptic assembly at neuro...	38	1	0.59	0.4497	1	BP
+GO:0043393	regulation of protein binding	38	1	0.59	0.4497	1	BP
+GO:0060041	retina development in camera-type eye	38	1	0.59	0.4497	1	BP
+GO:0048565	digestive tract development	38	1	0.59	0.4497	1	BP
+GO:0034220	ion transmembrane transport	159	3	2.45	0.4505	1	BP
+GO:0002164	larval development	98	2	1.51	0.4524	1	BP
+GO:0031400	negative regulation of protein modificat...	98	2	1.51	0.4524	1	BP
+GO:0043408	regulation of MAPK cascade	98	2	1.51	0.4524	1	BP
+GO:1901566	organonitrogen compound biosynthetic pro...	285	5	4.4	0.4554	1	BP
+GO:0048732	gland development	99	2	1.53	0.4577	1	BP
+GO:0060359	response to ammonium ion	39	1	0.6	0.4584	1	BP
+GO:0009161	ribonucleoside monophosphate metabolic p...	39	1	0.6	0.4584	1	BP
+GO:0007631	feeding behavior	39	1	0.6	0.4584	1	BP
+GO:0007605	sensory perception of sound	39	1	0.6	0.4584	1	BP
+GO:0003018	vascular process in circulatory system	39	1	0.6	0.4584	1	BP
+GO:0043473	pigmentation	39	1	0.6	0.4584	1	BP
+GO:0055123	digestive system development	39	1	0.6	0.4584	1	BP
+GO:0007165	signal transduction	666	11	10.28	0.4587	1	BP
+GO:2000026	regulation of multicellular organismal d...	349	6	5.39	0.4588	1	BP
+GO:0010558	negative regulation of macromolecule bio...	224	4	3.46	0.4613	1	BP
+GO:0003008	system process	287	5	4.43	0.4619	1	BP
+GO:0061138	morphogenesis of a branching epithelium	40	1	0.62	0.4669	1	BP
+GO:0070507	regulation of microtubule cytoskeleton o...	40	1	0.62	0.4669	1	BP
+GO:1904396	regulation of neuromuscular junction dev...	40	1	0.62	0.4669	1	BP
+GO:0071383	cellular response to steroid hormone sti...	40	1	0.62	0.4669	1	BP
+GO:0002697	regulation of immune effector process	40	1	0.62	0.4669	1	BP
+GO:0071824	protein-DNA complex subunit organization	40	1	0.62	0.4669	1	BP
+GO:0090276	regulation of peptide hormone secretion	40	1	0.62	0.4669	1	BP
+GO:0001763	morphogenesis of a branching structure	40	1	0.62	0.4669	1	BP
+GO:0051260	protein homooligomerization	40	1	0.62	0.4669	1	BP
+GO:0046328	regulation of JNK cascade	40	1	0.62	0.4669	1	BP
+GO:0019722	calcium-mediated signaling	40	1	0.62	0.4669	1	BP
+GO:0046474	glycerophospholipid biosynthetic process	40	1	0.62	0.4669	1	BP
+GO:0006811	ion transport	227	4	3.5	0.4721	1	BP
+GO:0032268	regulation of cellular protein metabolic...	354	6	5.46	0.4738	1	BP
+GO:0009123	nucleoside monophosphate metabolic proce...	41	1	0.63	0.4753	1	BP
+GO:0008593	regulation of Notch signaling pathway	41	1	0.63	0.4753	1	BP
+GO:0009799	specification of symmetry	41	1	0.63	0.4753	1	BP
+GO:0051271	negative regulation of cellular componen...	41	1	0.63	0.4753	1	BP
+GO:0009855	determination of bilateral symmetry	41	1	0.63	0.4753	1	BP
+GO:0006401	RNA catabolic process	41	1	0.63	0.4753	1	BP
+GO:0019318	hexose metabolic process	41	1	0.63	0.4753	1	BP
+GO:0051924	regulation of calcium ion transport	41	1	0.63	0.4753	1	BP
+GO:0031329	regulation of cellular catabolic process	165	3	2.55	0.4757	1	BP
+GO:0001775	cell activation	165	3	2.55	0.4757	1	BP
+GO:0033365	protein localization to organelle	165	3	2.55	0.4757	1	BP
+GO:0072657	protein localization to membrane	103	2	1.59	0.4788	1	BP
+GO:0051124	synaptic assembly at neuromuscular junct...	42	1	0.65	0.4836	1	BP
+GO:0031503	protein-containing complex localization	42	1	0.65	0.4836	1	BP
+GO:1904062	regulation of cation transmembrane trans...	42	1	0.65	0.4836	1	BP
+GO:1901654	response to ketone	42	1	0.65	0.4836	1	BP
+GO:0040014	regulation of multicellular organism gro...	42	1	0.65	0.4836	1	BP
+GO:0045665	negative regulation of neuron differenti...	42	1	0.65	0.4836	1	BP
+GO:0007292	female gamete generation	167	3	2.58	0.484	1	BP
+GO:0015833	peptide transport	294	5	4.54	0.4846	1	BP
+GO:0006812	cation transport	168	3	2.59	0.4881	1	BP
+GO:0007389	pattern specification process	168	3	2.59	0.4881	1	BP
+GO:0019827	stem cell population maintenance	43	1	0.66	0.4918	1	BP
+GO:0051604	protein maturation	43	1	0.66	0.4918	1	BP
+GO:0008654	phospholipid biosynthetic process	43	1	0.66	0.4918	1	BP
+GO:0098727	maintenance of cell number	43	1	0.66	0.4918	1	BP
+GO:0001525	angiogenesis	43	1	0.66	0.4918	1	BP
+GO:0051674	localization of cell	234	4	3.61	0.4971	1	BP
+GO:0048870	cell motility	234	4	3.61	0.4971	1	BP
+GO:0035556	intracellular signal transduction	362	6	5.59	0.4977	1	BP
+GO:0009892	negative regulation of metabolic process	426	7	6.58	0.4978	1	BP
+GO:0006873	cellular ion homeostasis	107	2	1.65	0.4994	1	BP
+GO:0009199	ribonucleoside triphosphate metabolic pr...	44	1	0.68	0.4998	1	BP
+GO:0045229	external encapsulating structure organiz...	44	1	0.68	0.4998	1	BP
+GO:0022407	regulation of cell-cell adhesion	44	1	0.68	0.4998	1	BP
+GO:0009141	nucleoside triphosphate metabolic proces...	44	1	0.68	0.4998	1	BP
+GO:0009144	purine nucleoside triphosphate metabolic...	44	1	0.68	0.4998	1	BP
+GO:0009205	purine ribonucleoside triphosphate metab...	44	1	0.68	0.4998	1	BP
+GO:0032872	regulation of stress-activated MAPK casc...	44	1	0.68	0.4998	1	BP
+GO:0070302	regulation of stress-activated protein k...	44	1	0.68	0.4998	1	BP
+GO:0071241	cellular response to inorganic substance	44	1	0.68	0.4998	1	BP
+GO:0051963	regulation of synapse assembly	44	1	0.68	0.4998	1	BP
+GO:0042886	amide transport	299	5	4.62	0.5007	1	BP
+GO:0010646	regulation of cell communication	492	8	7.59	0.5032	1	BP
+GO:0031327	negative regulation of cellular biosynth...	236	4	3.64	0.5042	1	BP
+GO:0032940	secretion by cell	236	4	3.64	0.5042	1	BP
+GO:0007507	heart development	108	2	1.67	0.5044	1	BP
+GO:0009966	regulation of signal transduction	429	7	6.62	0.5062	1	BP
+GO:0060828	regulation of canonical Wnt signaling pa...	45	1	0.69	0.5077	1	BP
+GO:0005996	monosaccharide metabolic process	45	1	0.69	0.5077	1	BP
+GO:0007254	JNK cascade	45	1	0.69	0.5077	1	BP
+GO:0045017	glycerolipid biosynthetic process	45	1	0.69	0.5077	1	BP
+GO:0030072	peptide hormone secretion	45	1	0.69	0.5077	1	BP
+GO:0009893	positive regulation of metabolic process	495	8	7.64	0.5112	1	BP
+GO:0032989	cellular component morphogenesis	238	4	3.67	0.5112	1	BP
+GO:0009890	negative regulation of biosynthetic proc...	238	4	3.67	0.5112	1	BP
+GO:0009725	response to hormone	174	3	2.69	0.5126	1	BP
+GO:0061061	muscle structure development	110	2	1.7	0.5145	1	BP
+GO:0009101	glycoprotein biosynthetic process	46	1	0.71	0.5155	1	BP
+GO:0031175	neuron projection development	240	4	3.7	0.5182	1	BP
+GO:0023051	regulation of signaling	498	8	7.69	0.5191	1	BP
+GO:0010975	regulation of neuron projection developm...	111	2	1.71	0.5195	1	BP
+GO:0035239	tube morphogenesis	176	3	2.72	0.5206	1	BP
+GO:0001932	regulation of protein phosphorylation	176	3	2.72	0.5206	1	BP
+GO:0140352	export from cell	241	4	3.72	0.5217	1	BP
+GO:0003006	developmental process involved in reprod...	306	5	4.72	0.5229	1	BP
+GO:0018212	peptidyl-tyrosine modification	47	1	0.73	0.5232	1	BP
+GO:0035150	regulation of tube size	47	1	0.73	0.5232	1	BP
+GO:0046034	ATP metabolic process	47	1	0.73	0.5232	1	BP
+GO:0009267	cellular response to starvation	47	1	0.73	0.5232	1	BP
+GO:0048839	inner ear development	47	1	0.73	0.5232	1	BP
+GO:0018108	peptidyl-tyrosine phosphorylation	47	1	0.73	0.5232	1	BP
+GO:0034641	cellular nitrogen compound metabolic pro...	821	13	12.67	0.5239	1	BP
+GO:0006511	ubiquitin-dependent protein catabolic pr...	112	2	1.73	0.5244	1	BP
+GO:0045055	regulated exocytosis	112	2	1.73	0.5244	1	BP
+GO:0060341	regulation of cellular localization	177	3	2.73	0.5246	1	BP
+GO:0045944	positive regulation of transcription by ...	177	3	2.73	0.5246	1	BP
+GO:0051241	negative regulation of multicellular org...	178	3	2.75	0.5286	1	BP
+GO:0006468	protein phosphorylation	243	4	3.75	0.5287	1	BP
+GO:0019941	modification-dependent protein catabolic...	113	2	1.74	0.5293	1	BP
+GO:0051480	regulation of cytosolic calcium ion conc...	48	1	0.74	0.5307	1	BP
+GO:0043270	positive regulation of ion transport	48	1	0.74	0.5307	1	BP
+GO:0050954	sensory perception of mechanical stimulu...	48	1	0.74	0.5307	1	BP
+GO:0009746	response to hexose	48	1	0.74	0.5307	1	BP
+GO:0034284	response to monosaccharide	48	1	0.74	0.5307	1	BP
+GO:1903311	regulation of mRNA metabolic process	48	1	0.74	0.5307	1	BP
+GO:0070588	calcium ion transmembrane transport	48	1	0.74	0.5307	1	BP
+GO:0044703	multi-organism reproductive process	309	5	4.77	0.5323	1	BP
+GO:0009117	nucleotide metabolic process	114	2	1.76	0.5342	1	BP
+GO:0006753	nucleoside phosphate metabolic process	114	2	1.76	0.5342	1	BP
+GO:0045859	regulation of protein kinase activity	114	2	1.76	0.5342	1	BP
+GO:0016310	phosphorylation	310	5	4.79	0.5355	1	BP
+GO:0051254	positive regulation of RNA metabolic pro...	245	4	3.78	0.5356	1	BP
+GO:0051146	striated muscle cell differentiation	49	1	0.76	0.5382	1	BP
+GO:0015931	nucleobase-containing compound transport	49	1	0.76	0.5382	1	BP
+GO:0051246	regulation of protein metabolic process	376	6	5.8	0.5388	1	BP
+GO:0043632	modification-dependent macromolecule cat...	115	2	1.78	0.5391	1	BP
+GO:0051171	regulation of nitrogen compound metaboli...	700	11	10.8	0.5416	1	BP
+GO:0043043	peptide biosynthetic process	116	2	1.79	0.5439	1	BP
+GO:0120039	plasma membrane bounded cell projection ...	182	3	2.81	0.5443	1	BP
+GO:0048812	neuron projection morphogenesis	182	3	2.81	0.5443	1	BP
+GO:0031334	positive regulation of protein-containin...	50	1	0.77	0.5455	1	BP
+GO:0007623	circadian rhythm	50	1	0.77	0.5455	1	BP
+GO:0043583	ear development	50	1	0.77	0.5455	1	BP
+GO:0045892	negative regulation of transcription, DN...	183	3	2.82	0.5482	1	BP
+GO:0048858	cell projection morphogenesis	183	3	2.82	0.5482	1	BP
+GO:0071417	cellular response to organonitrogen comp...	117	2	1.81	0.5487	1	BP
+GO:0044265	cellular macromolecule catabolic process	184	3	2.84	0.5521	1	BP
+GO:0009743	response to carbohydrate	51	1	0.79	0.5527	1	BP
+GO:0046942	carboxylic acid transport	51	1	0.79	0.5527	1	BP
+GO:1903507	negative regulation of nucleic acid-temp...	185	3	2.86	0.556	1	BP
+GO:0002009	morphogenesis of an epithelium	185	3	2.86	0.556	1	BP
+GO:1902679	negative regulation of RNA biosynthetic ...	185	3	2.86	0.556	1	BP
+GO:0007267	cell-cell signaling	251	4	3.87	0.556	1	BP
+GO:1903522	regulation of blood circulation	52	1	0.8	0.5598	1	BP
+GO:0060070	canonical Wnt signaling pathway	52	1	0.8	0.5598	1	BP
+GO:0015849	organic acid transport	52	1	0.8	0.5598	1	BP
+GO:0007350	blastoderm segmentation	52	1	0.8	0.5598	1	BP
+GO:0046883	regulation of hormone secretion	52	1	0.8	0.5598	1	BP
+GO:0071702	organic substance transport	384	6	5.93	0.5617	1	BP
+GO:0051276	chromosome organization	187	3	2.89	0.5636	1	BP
+GO:0098656	anion transmembrane transport	53	1	0.82	0.5668	1	BP
+GO:0002683	negative regulation of immune system pro...	53	1	0.82	0.5668	1	BP
+GO:0048872	homeostasis of number of cells	53	1	0.82	0.5668	1	BP
+GO:0019221	cytokine-mediated signaling pathway	53	1	0.82	0.5668	1	BP
+GO:0032990	cell part morphogenesis	188	3	2.9	0.5674	1	BP
+GO:0000165	MAPK cascade	121	2	1.87	0.5675	1	BP
+GO:0043009	chordate embryonic development	121	2	1.87	0.5675	1	BP
+GO:1902531	regulation of intracellular signal trans...	255	4	3.94	0.5694	1	BP
+GO:0051403	stress-activated MAPK cascade	54	1	0.83	0.5737	1	BP
+GO:0007219	Notch signaling pathway	54	1	0.83	0.5737	1	BP
+GO:0006954	inflammatory response	54	1	0.83	0.5737	1	BP
+GO:0061351	neural precursor cell proliferation	54	1	0.83	0.5737	1	BP
+GO:0021537	telencephalon development	54	1	0.83	0.5737	1	BP
+GO:0043405	regulation of MAP kinase activity	54	1	0.83	0.5737	1	BP
+GO:0001503	ossification	54	1	0.83	0.5737	1	BP
+GO:0009719	response to endogenous stimulus	257	4	3.97	0.5761	1	BP
+GO:0051656	establishment of organelle localization	123	2	1.9	0.5767	1	BP
+GO:0098771	inorganic ion homeostasis	123	2	1.9	0.5767	1	BP
+GO:0055086	nucleobase-containing small molecule met...	123	2	1.9	0.5767	1	BP
+GO:0009894	regulation of catabolic process	191	3	2.95	0.5787	1	BP
+GO:0007610	behavior	258	4	3.98	0.5793	1	BP
+GO:0032886	regulation of microtubule-based process	55	1	0.85	0.5805	1	BP
+GO:0009953	dorsal/ventral pattern formation	55	1	0.85	0.5805	1	BP
+GO:0097193	intrinsic apoptotic signaling pathway	55	1	0.85	0.5805	1	BP
+GO:0051716	cellular response to stimulus	847	13	13.07	0.5849	1	BP
+GO:0051603	proteolysis involved in cellular protein...	125	2	1.93	0.5858	1	BP
+GO:0032870	cellular response to hormone stimulus	125	2	1.93	0.5858	1	BP
+GO:0008361	regulation of cell size	56	1	0.86	0.5872	1	BP
+GO:1901888	regulation of cell junction assembly	56	1	0.86	0.5872	1	BP
+GO:0006403	RNA localization	56	1	0.86	0.5872	1	BP
+GO:0046879	hormone secretion	56	1	0.86	0.5872	1	BP
+GO:0048638	regulation of developmental growth	126	2	1.94	0.5903	1	BP
+GO:0010604	positive regulation of macromolecule met...	460	7	7.1	0.5904	1	BP
+GO:0010243	response to organonitrogen compound	195	3	3.01	0.5936	1	BP
+GO:0050778	positive regulation of immune response	57	1	0.88	0.5937	1	BP
+GO:0031669	cellular response to nutrient levels	57	1	0.88	0.5937	1	BP
+GO:0051668	localization within membrane	127	2	1.96	0.5948	1	BP
+GO:0080090	regulation of primary metabolic process	723	11	11.16	0.5963	1	BP
+GO:0048729	tissue morphogenesis	196	3	3.03	0.5972	1	BP
+GO:0043549	regulation of kinase activity	128	2	1.98	0.5992	1	BP
+GO:0008152	metabolic process	1362	22	21.02	0.5996	1	BP
+GO:0007528	neuromuscular junction development	58	1	0.9	0.6002	1	BP
+GO:0051098	regulation of binding	58	1	0.9	0.6002	1	BP
+GO:0031098	stress-activated protein kinase signalin...	58	1	0.9	0.6002	1	BP
+GO:0042692	muscle cell differentiation	58	1	0.9	0.6002	1	BP
+GO:0032984	protein-containing complex disassembly	58	1	0.9	0.6002	1	BP
+GO:0007281	germ cell development	197	3	3.04	0.6008	1	BP
+GO:0048646	anatomical structure formation involved ...	197	3	3.04	0.6008	1	BP
+GO:0006887	exocytosis	129	2	1.99	0.6036	1	BP
+GO:1901699	cellular response to nitrogen compound	129	2	1.99	0.6036	1	BP
+GO:0006810	transport	727	11	11.22	0.6056	1	BP
+GO:0007416	synapse assembly	59	1	0.91	0.6066	1	BP
+GO:0001817	regulation of cytokine production	59	1	0.91	0.6066	1	BP
+GO:0009914	hormone transport	59	1	0.91	0.6066	1	BP
+GO:0051641	cellular localization	598	9	9.23	0.608	1	BP
+GO:0051253	negative regulation of RNA metabolic pro...	200	3	3.09	0.6116	1	BP
+GO:0022414	reproductive process	402	6	6.21	0.6118	1	BP
+GO:0050801	ion homeostasis	131	2	2.02	0.6122	1	BP
+GO:0030111	regulation of Wnt signaling pathway	60	1	0.93	0.6129	1	BP
+GO:0050768	negative regulation of neurogenesis	60	1	0.93	0.6129	1	BP
+GO:0035264	multicellular organism growth	60	1	0.93	0.6129	1	BP
+GO:0010959	regulation of metal ion transport	60	1	0.93	0.6129	1	BP
+GO:0048511	rhythmic process	60	1	0.93	0.6129	1	BP
+GO:1903706	regulation of hemopoiesis	60	1	0.93	0.6129	1	BP
+GO:0006518	peptide metabolic process	132	2	2.04	0.6165	1	BP
+GO:0031328	positive regulation of cellular biosynth...	270	4	4.17	0.6179	1	BP
+GO:0060541	respiratory system development	61	1	0.94	0.6191	1	BP
+GO:0042594	response to starvation	61	1	0.94	0.6191	1	BP
+GO:1902903	regulation of supramolecular fiber organ...	61	1	0.94	0.6191	1	BP
+GO:0030534	adult behavior	61	1	0.94	0.6191	1	BP
+GO:0000122	negative regulation of transcription by ...	133	2	2.05	0.6208	1	BP
+GO:0045935	positive regulation of nucleobase-contai...	271	4	4.18	0.621	1	BP
+GO:0051179	localization	927	14	14.31	0.6212	1	BP
+GO:0042325	regulation of phosphorylation	203	3	3.13	0.6222	1	BP
+GO:0019216	regulation of lipid metabolic process	62	1	0.96	0.6251	1	BP
+GO:0043410	positive regulation of MAPK cascade	62	1	0.96	0.6251	1	BP
+GO:0055082	cellular chemical homeostasis	135	2	2.08	0.6292	1	BP
+GO:0009891	positive regulation of biosynthetic proc...	274	4	4.23	0.6303	1	BP
+GO:0010769	regulation of cell morphogenesis involve...	63	1	0.97	0.6311	1	BP
+GO:0098609	cell-cell adhesion	63	1	0.97	0.6311	1	BP
+GO:0048813	dendrite morphogenesis	63	1	0.97	0.6311	1	BP
+GO:0031668	cellular response to extracellular stimu...	63	1	0.97	0.6311	1	BP
+GO:0009880	embryonic pattern specification	63	1	0.97	0.6311	1	BP
+GO:0009410	response to xenobiotic stimulus	63	1	0.97	0.6311	1	BP
+GO:0048639	positive regulation of developmental gro...	63	1	0.97	0.6311	1	BP
+GO:1901698	response to nitrogen compound	206	3	3.18	0.6327	1	BP
+GO:0000003	reproduction	410	6	6.33	0.6331	1	BP
+GO:0044092	negative regulation of molecular functio...	136	2	2.1	0.6333	1	BP
+GO:0071704	organic substance metabolic process	1305	21	20.14	0.6349	1	BP
+GO:0040011	locomotion	344	5	5.31	0.6365	1	BP
+GO:1903532	positive regulation of secretion by cell	64	1	0.99	0.637	1	BP
+GO:0010976	positive regulation of neuron projection...	64	1	0.99	0.637	1	BP
+GO:0007265	Ras protein signal transduction	64	1	0.99	0.637	1	BP
+GO:0006816	calcium ion transport	64	1	0.99	0.637	1	BP
+GO:0051235	maintenance of location	64	1	0.99	0.637	1	BP
+GO:0044257	cellular protein catabolic process	137	2	2.11	0.6374	1	BP
+GO:0043604	amide biosynthetic process	138	2	2.13	0.6415	1	BP
+GO:0071705	nitrogen compound transport	346	5	5.34	0.642	1	BP
+GO:0006874	cellular calcium ion homeostasis	65	1	1	0.6428	1	BP
+GO:0050807	regulation of synapse organization	65	1	1	0.6428	1	BP
+GO:0048562	embryonic organ morphogenesis	65	1	1	0.6428	1	BP
+GO:0050877	nervous system process	209	3	3.23	0.6429	1	BP
+GO:0051338	regulation of transferase activity	139	2	2.15	0.6456	1	BP
+GO:0006913	nucleocytoplasmic transport	66	1	1.02	0.6486	1	BP
+GO:0044237	cellular metabolic process	1311	21	20.24	0.6489	1	BP
+GO:0048519	negative regulation of biological proces...	747	11	11.53	0.6511	1	BP
+GO:0051234	establishment of localization	748	11	11.55	0.6533	1	BP
+GO:0120035	regulation of plasma membrane bounded ce...	141	2	2.18	0.6536	1	BP
+GO:0031344	regulation of cell projection organizati...	141	2	2.18	0.6536	1	BP
+GO:0010721	negative regulation of cell development	67	1	1.03	0.6542	1	BP
+GO:0019098	reproductive behavior	67	1	1.03	0.6542	1	BP
+GO:0051047	positive regulation of secretion	67	1	1.03	0.6542	1	BP
+GO:0055074	calcium ion homeostasis	67	1	1.03	0.6542	1	BP
+GO:0001501	skeletal system development	67	1	1.03	0.6542	1	BP
+GO:0051169	nuclear transport	68	1	1.05	0.6597	1	BP
+GO:0097305	response to alcohol	68	1	1.05	0.6597	1	BP
+GO:0072503	cellular divalent inorganic cation homeo...	68	1	1.05	0.6597	1	BP
+GO:0072359	circulatory system development	143	2	2.21	0.6614	1	BP
+GO:0045893	positive regulation of transcription, DN...	216	3	3.33	0.6661	1	BP
+GO:0048523	negative regulation of cellular process	690	10	10.65	0.6692	1	BP
+GO:0031347	regulation of defense response	70	1	1.08	0.6706	1	BP
+GO:0000209	protein polyubiquitination	70	1	1.08	0.6706	1	BP
+GO:0010639	negative regulation of organelle organiz...	70	1	1.08	0.6706	1	BP
+GO:0048666	neuron development	288	4	4.45	0.6718	1	BP
+GO:0032270	positive regulation of cellular protein ...	218	3	3.36	0.6726	1	BP
+GO:0042391	regulation of membrane potential	71	1	1.1	0.6758	1	BP
+GO:0007264	small GTPase mediated signal transductio...	71	1	1.1	0.6758	1	BP
+GO:0015031	protein transport	290	4	4.48	0.6775	1	BP
+GO:0045934	negative regulation of nucleobase-contai...	220	3	3.4	0.6789	1	BP
+GO:0060560	developmental growth involved in morphog...	72	1	1.11	0.681	1	BP
+GO:0071496	cellular response to external stimulus	72	1	1.11	0.681	1	BP
+GO:0006417	regulation of translation	72	1	1.11	0.681	1	BP
+GO:0022412	cellular process involved in reproductio...	221	3	3.41	0.6821	1	BP
+GO:1901360	organic cyclic compound metabolic proces...	763	11	11.78	0.6858	1	BP
+GO:0007420	brain development	150	2	2.32	0.6879	1	BP
+GO:0031323	regulation of cellular metabolic process	765	11	11.81	0.69	1	BP
+GO:0015711	organic anion transport	74	1	1.14	0.6912	1	BP
+GO:0002791	regulation of peptide secretion	74	1	1.14	0.6912	1	BP
+GO:0034655	nucleobase-containing compound catabolic...	74	1	1.14	0.6912	1	BP
+GO:0072507	divalent inorganic cation homeostasis	74	1	1.14	0.6912	1	BP
+GO:0051049	regulation of transport	296	4	4.57	0.6942	1	BP
+GO:1903508	positive regulation of nucleic acid-temp...	225	3	3.47	0.6944	1	BP
+GO:1902680	positive regulation of RNA biosynthetic ...	225	3	3.47	0.6944	1	BP
+GO:0071396	cellular response to lipid	75	1	1.16	0.6962	1	BP
+GO:0048469	cell maturation	75	1	1.16	0.6962	1	BP
+GO:0009888	tissue development	367	5	5.66	0.6976	1	BP
+GO:0019953	sexual reproduction	298	4	4.6	0.6997	1	BP
+GO:0060429	epithelium development	298	4	4.6	0.6997	1	BP
+GO:0016055	Wnt signaling pathway	76	1	1.17	0.7011	1	BP
+GO:0043254	regulation of protein-containing complex...	76	1	1.17	0.7011	1	BP
+GO:0010817	regulation of hormone levels	76	1	1.17	0.7011	1	BP
+GO:0071900	regulation of protein serine/threonine k...	76	1	1.17	0.7011	1	BP
+GO:0051094	positive regulation of developmental pro...	228	3	3.52	0.7035	1	BP
+GO:0009617	response to bacterium	77	1	1.19	0.7059	1	BP
+GO:0046677	response to antibiotic	77	1	1.19	0.7059	1	BP
+GO:0042060	wound healing	77	1	1.19	0.7059	1	BP
+GO:0050803	regulation of synapse structure or activ...	77	1	1.19	0.7059	1	BP
+GO:1901576	organic substance biosynthetic process	774	11	11.95	0.7087	1	BP
+GO:0000902	cell morphogenesis	230	3	3.55	0.7094	1	BP
+GO:0044270	cellular nitrogen compound catabolic pro...	78	1	1.2	0.7106	1	BP
+GO:0046700	heterocycle catabolic process	78	1	1.2	0.7106	1	BP
+GO:0051961	negative regulation of nervous system de...	78	1	1.2	0.7106	1	BP
+GO:0009057	macromolecule catabolic process	231	3	3.57	0.7123	1	BP
+GO:0060322	head development	157	2	2.42	0.7127	1	BP
+GO:0048598	embryonic morphogenesis	157	2	2.42	0.7127	1	BP
+GO:0009790	embryo development	303	4	4.68	0.713	1	BP
+GO:0045184	establishment of protein localization	303	4	4.68	0.713	1	BP
+GO:0051259	protein complex oligomerization	79	1	1.22	0.7153	1	BP
+GO:0016311	dephosphorylation	79	1	1.22	0.7153	1	BP
+GO:0030900	forebrain development	79	1	1.22	0.7153	1	BP
+GO:0045597	positive regulation of cell differentiat...	158	2	2.44	0.7161	1	BP
+GO:0009058	biosynthetic process	778	11	12.01	0.7168	1	BP
+GO:0065008	regulation of biological quality	580	8	8.95	0.7177	1	BP
+GO:0051093	negative regulation of developmental pro...	159	2	2.45	0.7195	1	BP
+GO:0198738	cell-cell signaling by wnt	80	1	1.23	0.7199	1	BP
+GO:0050794	regulation of cellular process	1180	18	18.21	0.72	1	BP
+GO:0035295	tube development	234	3	3.61	0.721	1	BP
+GO:0051247	positive regulation of protein metabolic...	235	3	3.63	0.7239	1	BP
+GO:0006508	proteolysis	235	3	3.63	0.7239	1	BP
+GO:0031346	positive regulation of cell projection o...	81	1	1.25	0.7244	1	BP
+GO:0034976	response to endoplasmic reticulum stress	81	1	1.25	0.7244	1	BP
+GO:0032386	regulation of intracellular transport	81	1	1.25	0.7244	1	BP
+GO:0016358	dendrite development	81	1	1.25	0.7244	1	BP
+GO:0019725	cellular homeostasis	161	2	2.49	0.7262	1	BP
+GO:0008219	cell death	309	4	4.77	0.7285	1	BP
+GO:0022603	regulation of anatomical structure morph...	162	2	2.5	0.7294	1	BP
+GO:0051640	organelle localization	162	2	2.5	0.7294	1	BP
+GO:0051174	regulation of phosphorus metabolic proce...	237	3	3.66	0.7295	1	BP
+GO:0019220	regulation of phosphate metabolic proces...	237	3	3.66	0.7295	1	BP
+GO:0023056	positive regulation of signaling	238	3	3.67	0.7323	1	BP
+GO:0010647	positive regulation of cell communicatio...	238	3	3.67	0.7323	1	BP
+GO:0050776	regulation of immune response	83	1	1.28	0.7333	1	BP
+GO:0071695	anatomical structure maturation	83	1	1.28	0.7333	1	BP
+GO:0002682	regulation of immune system process	164	2	2.53	0.7359	1	BP
+GO:0030163	protein catabolic process	164	2	2.53	0.7359	1	BP
+GO:0006875	cellular metal ion homeostasis	84	1	1.3	0.7376	1	BP
+GO:0045666	positive regulation of neuron differenti...	84	1	1.3	0.7376	1	BP
+GO:0060548	negative regulation of cell death	165	2	2.55	0.7391	1	BP
+GO:0040012	regulation of locomotion	165	2	2.55	0.7391	1	BP
+GO:0007186	G protein-coupled receptor signaling pat...	85	1	1.31	0.7418	1	BP
+GO:0043434	response to peptide hormone	85	1	1.31	0.7418	1	BP
+GO:0032535	regulation of cellular component size	85	1	1.31	0.7418	1	BP
+GO:0051050	positive regulation of transport	166	2	2.56	0.7423	1	BP
+GO:0007411	axon guidance	86	1	1.33	0.746	1	BP
+GO:0034329	cell junction assembly	86	1	1.33	0.746	1	BP
+GO:0090596	sensory organ morphogenesis	100	3	1.54	0.7493	1	BP
+GO:0051051	negative regulation of transport	87	1	1.34	0.7501	1	BP
+GO:0034248	regulation of cellular amide metabolic p...	87	1	1.34	0.7501	1	BP
+GO:0031399	regulation of protein modification proce...	245	3	3.78	0.7512	1	BP
+GO:0120036	plasma membrane bounded cell projection ...	319	4	4.92	0.753	1	BP
+GO:0046483	heterocycle metabolic process	731	10	11.28	0.7533	1	BP
+GO:0009605	response to external stimulus	391	5	6.04	0.7542	1	BP
+GO:0034613	cellular protein localization	320	4	4.94	0.7553	1	BP
+GO:0002684	positive regulation of immune system pro...	89	1	1.37	0.7582	1	BP
+GO:0097485	neuron projection guidance	89	1	1.37	0.7582	1	BP
+GO:0060255	regulation of macromolecule metabolic pr...	735	10	11.35	0.7607	1	BP
+GO:0051493	regulation of cytoskeleton organization	90	1	1.39	0.7621	1	BP
+GO:0030030	cell projection organization	323	4	4.99	0.7623	1	BP
+GO:0010608	post-transcriptional regulation of gene ...	91	1	1.4	0.7659	1	BP
+GO:0006725	cellular aromatic compound metabolic pro...	738	10	11.39	0.7663	1	BP
+GO:0048609	multicellular organismal reproductive pr...	326	4	5.03	0.7692	1	BP
+GO:0048667	cell morphogenesis involved in neuron di...	175	2	2.7	0.7694	1	BP
+GO:0044057	regulation of system process	92	1	1.42	0.7698	1	BP
+GO:0040008	regulation of growth	176	2	2.72	0.7722	1	BP
+GO:0022411	cellular component disassembly	93	1	1.44	0.7735	1	BP
+GO:0009636	response to toxic substance	93	1	1.44	0.7735	1	BP
+GO:0022604	regulation of cell morphogenesis	93	1	1.44	0.7735	1	BP
+GO:0002366	leukocyte activation involved in immune ...	93	1	1.44	0.7735	1	BP
+GO:0032504	multicellular organism reproduction	328	4	5.06	0.7737	1	BP
+GO:0040007	growth	254	3	3.92	0.774	1	BP
+GO:0051239	regulation of multicellular organismal p...	471	6	7.27	0.7745	1	BP
+GO:0051240	positive regulation of multicellular org...	255	3	3.94	0.7765	1	BP
+GO:1905114	cell surface receptor signaling pathway ...	94	1	1.45	0.7772	1	BP
+GO:0002263	cell activation involved in immune respo...	94	1	1.45	0.7772	1	BP
+GO:0006979	response to oxidative stress	94	1	1.45	0.7772	1	BP
+GO:0070727	cellular macromolecule localization	330	4	5.09	0.7781	1	BP
+GO:0006915	apoptotic process	256	3	3.95	0.7789	1	BP
+GO:0044271	cellular nitrogen compound biosynthetic ...	611	8	9.43	0.7789	1	BP
+GO:0010557	positive regulation of macromolecule bio...	257	3	3.97	0.7813	1	BP
+GO:0010468	regulation of gene expression	544	7	8.4	0.7814	1	BP
+GO:0006928	movement of cell or subcellular componen...	332	4	5.12	0.7825	1	BP
+GO:0009611	response to wounding	96	1	1.48	0.7844	1	BP
+GO:0021700	developmental maturation	96	1	1.48	0.7844	1	BP
+GO:0008610	lipid biosynthetic process	96	1	1.48	0.7844	1	BP
+GO:0007626	locomotory behavior	97	1	1.5	0.7879	1	BP
+GO:0044283	small molecule biosynthetic process	97	1	1.5	0.7879	1	BP
+GO:0008285	negative regulation of cell population p...	98	1	1.51	0.7914	1	BP
+GO:0045165	cell fate commitment	98	1	1.51	0.7914	1	BP
+GO:0042221	response to chemical	592	9	9.14	0.7916	1	BP
+GO:0019222	regulation of metabolic process	819	11	12.64	0.793	1	BP
+GO:0010941	regulation of cell death	262	3	4.04	0.793	1	BP
+GO:0007276	gamete generation	262	3	4.04	0.793	1	BP
+GO:0048583	regulation of response to stimulus	551	7	8.5	0.7942	1	BP
+GO:0055065	metal ion homeostasis	99	1	1.53	0.7948	1	BP
+GO:0043933	protein-containing complex organization	339	4	5.23	0.7972	1	BP
+GO:0030003	cellular cation homeostasis	100	1	1.54	0.7981	1	BP
+GO:0007005	mitochondrion organization	100	1	1.54	0.7981	1	BP
+GO:1901652	response to peptide	100	1	1.54	0.7981	1	BP
+GO:0032879	regulation of localization	414	5	6.39	0.8014	1	BP
+GO:1901137	carbohydrate derivative biosynthetic pro...	101	1	1.56	0.8014	1	BP
+GO:0006412	translation	101	1	1.56	0.8014	1	BP
+GO:0097435	supramolecular fiber organization	101	1	1.56	0.8014	1	BP
+GO:0097190	apoptotic signaling pathway	101	1	1.56	0.8014	1	BP
+GO:0002790	peptide secretion	102	1	1.57	0.8047	1	BP
+GO:0044087	regulation of cellular component biogene...	189	2	2.92	0.8068	1	BP
+GO:0045595	regulation of cell differentiation	294	5	4.54	0.8071	1	BP
+GO:0050769	positive regulation of neurogenesis	103	1	1.59	0.8078	1	BP
+GO:0044089	positive regulation of cellular componen...	103	1	1.59	0.8078	1	BP
+GO:0098657	import into cell	103	1	1.59	0.8078	1	BP
+GO:0050808	synapse organization	103	1	1.59	0.8078	1	BP
+GO:0006351	transcription, DNA-templated	418	5	6.45	0.8089	1	BP
+GO:0007417	central nervous system development	190	2	2.93	0.8092	1	BP
+GO:0000904	cell morphogenesis involved in different...	190	2	2.93	0.8092	1	BP
+GO:0044249	cellular biosynthetic process	764	10	11.79	0.811	1	BP
+GO:0048878	chemical homeostasis	191	2	2.95	0.8117	1	BP
+GO:0090407	organophosphate biosynthetic process	105	1	1.62	0.8141	1	BP
+GO:0016049	cell growth	106	1	1.64	0.8171	1	BP
+GO:0071345	cellular response to cytokine stimulus	106	1	1.64	0.8171	1	BP
+GO:0009792	embryo development ending in birth or eg...	194	2	2.99	0.8188	1	BP
+GO:0006950	response to stress	566	7	8.74	0.8199	1	BP
+GO:0010638	positive regulation of organelle organiz...	107	1	1.65	0.8201	1	BP
+GO:0022008	neurogenesis	382	6	5.9	0.8204	1	BP
+GO:0048584	positive regulation of response to stimu...	275	3	4.24	0.8211	1	BP
+GO:0097659	nucleic acid-templated transcription	425	5	6.56	0.8215	1	BP
+GO:0050789	regulation of biological process	1235	18	19.06	0.8218	1	BP
+GO:0007600	sensory perception	108	1	1.67	0.8231	1	BP
+GO:0045596	negative regulation of cell differentiat...	108	1	1.67	0.8231	1	BP
+GO:0032774	RNA biosynthetic process	426	5	6.58	0.8233	1	BP
+GO:0006955	immune response	196	2	3.03	0.8235	1	BP
+GO:0044267	cellular protein metabolic process	706	9	10.9	0.8249	1	BP
+GO:0012501	programmed cell death	277	3	4.28	0.8251	1	BP
+GO:0030334	regulation of cell migration	109	1	1.68	0.826	1	BP
+GO:0031326	regulation of cellular biosynthetic proc...	500	6	7.72	0.8269	1	BP
+GO:0042592	homeostatic process	278	3	4.29	0.8271	1	BP
+GO:0001934	positive regulation of protein phosphory...	111	1	1.71	0.8317	1	BP
+GO:0048468	cell development	503	6	7.76	0.8318	1	BP
+GO:0051962	positive regulation of nervous system de...	112	1	1.73	0.8344	1	BP
+GO:0009889	regulation of biosynthetic process	506	6	7.81	0.8366	1	BP
+GO:0051252	regulation of RNA metabolic process	434	5	6.7	0.8368	1	BP
+GO:0080134	regulation of response to stress	202	2	3.12	0.8368	1	BP
+GO:2000145	regulation of cell motility	113	1	1.74	0.8371	1	BP
+GO:0060627	regulation of vesicle-mediated transport	114	1	1.76	0.8398	1	BP
+GO:0006935	chemotaxis	114	1	1.76	0.8398	1	BP
+GO:0048589	developmental growth	204	2	3.15	0.8411	1	BP
+GO:0065003	protein-containing complex assembly	286	3	4.41	0.8424	1	BP
+GO:0016071	mRNA metabolic process	115	1	1.78	0.8425	1	BP
+GO:0055080	cation homeostasis	115	1	1.78	0.8425	1	BP
+GO:0009967	positive regulation of signal transducti...	205	2	3.16	0.8431	1	BP
+GO:0010942	positive regulation of cell death	116	1	1.79	0.8451	1	BP
+GO:0030036	actin cytoskeleton organization	117	1	1.81	0.8476	1	BP
+GO:0007169	transmembrane receptor protein tyrosine ...	117	1	1.81	0.8476	1	BP
+GO:0034097	response to cytokine	117	1	1.81	0.8476	1	BP
+GO:0010628	positive regulation of gene expression	290	3	4.48	0.8496	1	BP
+GO:0007275	multicellular organism development	849	12	13.1	0.8499	1	BP
+GO:0010720	positive regulation of cell development	119	1	1.84	0.8526	1	BP
+GO:0042127	regulation of cell population proliferat...	210	2	3.24	0.8532	1	BP
+GO:0042330	taxis	121	1	1.87	0.8574	1	BP
+GO:0033554	cellular response to stress	373	4	5.76	0.8585	1	BP
+GO:0006357	regulation of transcription by RNA polym...	297	3	4.58	0.8616	1	BP
+GO:0042327	positive regulation of phosphorylation	123	1	1.9	0.8621	1	BP
+GO:1902533	positive regulation of intracellular sig...	123	1	1.9	0.8621	1	BP
+GO:0090087	regulation of peptide transport	124	1	1.91	0.8644	1	BP
+GO:0000226	microtubule cytoskeleton organization	124	1	1.91	0.8644	1	BP
+GO:0034645	cellular macromolecule biosynthetic proc...	596	7	9.2	0.8645	1	BP
+GO:0065007	biological regulation	1327	19	20.48	0.8654	1	BP
+GO:0009653	anatomical structure morphogenesis	491	7	7.58	0.8663	1	BP
+GO:0071495	cellular response to endogenous stimulus	217	2	3.35	0.8664	1	BP
+GO:0090066	regulation of anatomical structure size	126	1	1.94	0.8689	1	BP
+GO:0150063	visual system development	142	3	2.19	0.8691	1	BP
+GO:0001654	eye development	142	3	2.19	0.8691	1	BP
+GO:0007409	axonogenesis	127	1	1.96	0.871	1	BP
+GO:2000112	regulation of cellular macromolecule bio...	458	5	7.07	0.8728	1	BP
+GO:0051129	negative regulation of cellular componen...	128	1	1.98	0.8732	1	BP
+GO:0006355	regulation of transcription, DNA-templat...	383	4	5.91	0.8734	1	BP
+GO:0030182	neuron differentiation	333	5	5.14	0.8744	1	BP
+GO:0048880	sensory system development	145	3	2.24	0.8751	1	BP
+GO:0010467	gene expression	677	8	10.45	0.8788	1	BP
+GO:0045664	regulation of neuron differentiation	147	3	2.27	0.879	1	BP
+GO:0009987	cellular process	1765	27	27.24	0.8799	1	BP
+GO:0007010	cytoskeleton organization	225	2	3.47	0.8802	1	BP
+GO:0048513	animal organ development	580	8	8.95	0.8804	1	BP
+GO:0030029	actin filament-based process	132	1	2.04	0.8814	1	BP
+GO:0061564	axon development	132	1	2.04	0.8814	1	BP
+GO:0044260	cellular macromolecule metabolic process	1010	13	15.59	0.8816	1	BP
+GO:0019538	protein metabolic process	749	9	11.56	0.883	1	BP
+GO:0010562	positive regulation of phosphorus metabo...	133	1	2.05	0.8834	1	BP
+GO:0045937	positive regulation of phosphate metabol...	133	1	2.05	0.8834	1	BP
+GO:0051130	positive regulation of cellular componen...	227	2	3.5	0.8834	1	BP
+GO:0009887	animal organ morphogenesis	250	4	3.86	0.8839	1	BP
+GO:0034330	cell junction organization	134	1	2.07	0.8853	1	BP
+GO:0080135	regulation of cellular response to stres...	134	1	2.07	0.8853	1	BP
+GO:2001141	regulation of RNA biosynthetic process	393	4	6.07	0.8871	1	BP
+GO:1903506	regulation of nucleic acid-templated tra...	393	4	6.07	0.8871	1	BP
+GO:0051270	regulation of cellular component movemen...	136	1	2.1	0.8891	1	BP
+GO:0009059	macromolecule biosynthetic process	617	7	9.52	0.8904	1	BP
+GO:0043066	negative regulation of apoptotic process	137	1	2.11	0.891	1	BP
+GO:0010556	regulation of macromolecule biosynthetic...	476	5	7.35	0.8955	1	BP
+GO:0016070	RNA metabolic process	550	6	8.49	0.8957	1	BP
+GO:0002252	immune effector process	140	1	2.16	0.8963	1	BP
+GO:0043069	negative regulation of programmed cell d...	141	1	2.18	0.8981	1	BP
+GO:0050793	regulation of developmental process	436	6	6.73	0.8981	1	BP
+GO:0016567	protein ubiquitination	142	1	2.19	0.8998	1	BP
+GO:0019219	regulation of nucleobase-containing comp...	480	5	7.41	0.9	1	BP
+GO:0006366	transcription by RNA polymerase II	325	3	5.02	0.902	1	BP
+GO:0032446	protein modification by small protein co...	148	1	2.28	0.9094	1	BP
+GO:0048699	generation of neurons	362	5	5.59	0.9108	1	BP
+GO:0006139	nucleobase-containing compound metabolic...	708	8	10.93	0.9121	1	BP
+GO:0048856	anatomical structure development	906	12	13.98	0.9132	1	BP
+GO:0006464	cellular protein modification process	572	6	8.83	0.9182	1	BP
+GO:0036211	protein modification process	572	6	8.83	0.9182	1	BP
+GO:0043207	response to external biotic stimulus	154	1	2.38	0.9182	1	BP
+GO:0006952	defense response	154	1	2.38	0.9182	1	BP
+GO:0051707	response to other organism	154	1	2.38	0.9182	1	BP
+GO:0031401	positive regulation of protein modificat...	156	1	2.41	0.9209	1	BP
+GO:0071310	cellular response to organic substance	343	3	5.29	0.9222	1	BP
+GO:0002376	immune system process	344	3	5.31	0.9232	1	BP
+GO:0034654	nucleobase-containing compound biosynthe...	503	5	7.76	0.9233	1	BP
+GO:0007167	enzyme linked receptor protein signaling...	158	1	2.44	0.9236	1	BP
+GO:0009607	response to biotic stimulus	160	1	2.47	0.9262	1	BP
+GO:0022607	cellular component assembly	507	5	7.83	0.9269	1	BP
+GO:0008104	protein localization	434	4	6.7	0.931	1	BP
+GO:0007423	sensory organ development	183	3	2.82	0.9317	1	BP
+GO:1901700	response to oxygen-containing compound	265	2	4.09	0.9319	1	BP
+GO:0007166	cell surface receptor signaling pathway	355	3	5.48	0.9336	1	BP
+GO:0019438	aromatic compound biosynthetic process	516	5	7.96	0.9343	1	BP
+GO:0018130	heterocycle biosynthetic process	516	5	7.96	0.9343	1	BP
+GO:0010033	response to organic substance	442	4	6.82	0.9376	1	BP
+GO:0007399	nervous system development	481	6	7.42	0.9396	1	BP
+GO:0006996	organelle organization	671	7	10.36	0.9397	1	BP
+GO:1901701	cellular response to oxygen-containing c...	172	1	2.65	0.9399	1	BP
+GO:0007017	microtubule-based process	172	1	2.65	0.9399	1	BP
+GO:0043412	macromolecule modification	599	6	9.25	0.9403	1	BP
+GO:0044085	cellular component biogenesis	525	5	8.1	0.9412	1	BP
+GO:0032501	multicellular organismal process	1020	14	15.74	0.9413	1	BP
+GO:0048731	system development	728	9	11.24	0.9442	1	BP
+GO:0008283	cell population proliferation	279	2	4.31	0.9446	1	BP
+GO:1901362	organic cyclic compound biosynthetic pro...	533	5	8.23	0.9468	1	BP
+GO:0018193	peptidyl-amino acid modification	180	1	2.78	0.9476	1	BP
+GO:0070647	protein modification by small protein co...	181	1	2.79	0.9485	1	BP
+GO:0090304	nucleic acid metabolic process	614	6	9.48	0.9503	1	BP
+GO:0050790	regulation of catalytic activity	290	2	4.48	0.953	1	BP
+GO:0065009	regulation of molecular function	388	3	5.99	0.9578	1	BP
+GO:0070887	cellular response to chemical stimulus	394	3	6.08	0.9612	1	BP
+GO:0044419	biological process involved in interspec...	202	1	3.12	0.9643	1	BP
+GO:0033036	macromolecule localization	485	4	7.49	0.9647	1	BP
+GO:0051726	regulation of cell cycle	205	1	3.16	0.9661	1	BP
+GO:0043170	macromolecule metabolic process	1127	13	17.4	0.9711	1	BP
+GO:0042981	regulation of apoptotic process	219	1	3.38	0.9735	1	BP
+GO:0033043	regulation of organelle organization	223	1	3.44	0.9753	1	BP
+GO:0016192	vesicle-mediated transport	336	2	5.19	0.977	1	BP
+GO:0043067	regulation of programmed cell death	230	1	3.55	0.9782	1	BP
+GO:0051128	regulation of cellular component organiz...	436	3	6.73	0.9791	1	BP
+GO:0016043	cellular component organization	960	10	14.82	0.9791	1	BP
+GO:0030154	cell differentiation	652	7	10.06	0.9802	1	BP
+GO:0071840	cellular component organization or bioge...	971	10	14.99	0.9822	1	BP
+GO:0048869	cellular developmental process	664	7	10.25	0.9832	1	BP
+GO:0032502	developmental process	975	12	15.05	0.986	1	BP
+GO:0009628	response to abiotic stimulus	261	1	4.03	0.9875	1	BP
+GO:0007049	cell cycle	306	1	4.72	0.9946	1	BP
+GO:0046530	photoreceptor cell differentiation	54	2	0.83	1	1	BP
+GO:0046532	regulation of photoreceptor cell differe...	12	2	0.19	1	1	BP
+GO:0001751	compound eye photoreceptor cell differen...	35	2	0.54	1	1	BP
+GO:0001754	eye photoreceptor cell differentiation	46	2	0.71	1	1	BP
+GO:0048749	compound eye development	75	2	1.16	1	1	BP
+GO:0001745	compound eye morphogenesis	54	2	0.83	1	1	BP
+GO:0110116	regulation of compound eye photoreceptor...	7	2	0.11	1	1	BP
+GO:0008150	biological_process	1814	28	28	1	1	BP
+GO:0045466	R7 cell differentiation	12	2	0.19	1	1	BP
+GO:0048592	eye morphogenesis	79	2	1.22	1	1	BP
+GO:0010035	response to inorganic substance	120	2	1.85	1	1	BP
+GO:0010038	response to metal ion	68	2	1.05	1	1	BP
+GO:0008889	glycerophosphodiester phosphodiesterase ...	1	1	0.02	0.016	1	MF
+GO:0042301	phosphate ion binding	1	1	0.02	0.016	1	MF
+GO:0004108	citrate (Si)-synthase activity	1	1	0.02	0.016	1	MF
+GO:0046912	acyltransferase activity, acyl groups co...	1	1	0.02	0.016	1	MF
+GO:0047395	glycerophosphoinositol glycerophosphodie...	1	1	0.02	0.016	1	MF
+GO:0005047	signal recognition particle binding	1	1	0.02	0.016	1	MF
+GO:0036440	citrate synthase activity	1	1	0.02	0.016	1	MF
+GO:0042134	rRNA primary transcript binding	1	1	0.02	0.016	1	MF
+GO:0046592	polyamine oxidase activity	1	1	0.02	0.016	1	MF
+GO:0016647	oxidoreductase activity, acting on the C...	1	1	0.02	0.016	1	MF
+GO:0005436	sodium:phosphate symporter activity	1	1	0.02	0.016	1	MF
+GO:0016421	CoA carboxylase activity	1	1	0.02	0.016	1	MF
+GO:0070547	L-tyrosine aminotransferase activity	1	1	0.02	0.016	1	MF
+GO:0034597	phosphatidylinositol-4,5-bisphosphate 4-...	1	1	0.02	0.016	1	MF
+GO:0008083	growth factor activity	1	1	0.02	0.016	1	MF
+GO:0004838	L-tyrosine:2-oxoglutarate aminotransfera...	1	1	0.02	0.016	1	MF
+GO:0008312	7S RNA binding	1	1	0.02	0.016	1	MF
+GO:0004658	propionyl-CoA carboxylase activity	1	1	0.02	0.016	1	MF
+GO:0005228	intracellular sodium activated potassium...	1	1	0.02	0.016	1	MF
+GO:0052901	spermine:oxygen oxidoreductase (spermidi...	1	1	0.02	0.016	1	MF
+GO:0052904	N1-acetylspermidine:oxygen oxidoreductas...	1	1	0.02	0.016	1	MF
+GO:0052689	carboxylic ester hydrolase activity	17	2	0.27	0.028	1	MF
+GO:0043168	anion binding	200	7	3.14	0.029	1	MF
+GO:0003839	gamma-glutamylcyclotransferase activity	2	1	0.03	0.031	1	MF
+GO:0015114	phosphate ion transmembrane transporter ...	2	1	0.03	0.031	1	MF
+GO:0016885	ligase activity, forming carbon-carbon b...	2	1	0.03	0.031	1	MF
+GO:0030911	TPR domain binding	2	1	0.03	0.031	1	MF
+GO:0047372	acylglycerol lipase activity	2	1	0.03	0.031	1	MF
+GO:0070016	armadillo repeat domain binding	2	1	0.03	0.031	1	MF
+GO:0016298	lipase activity	19	2	0.3	0.034	1	MF
+GO:0005102	signaling receptor binding	165	6	2.59	0.038	1	MF
+GO:0106019	phosphatidylinositol-4,5-bisphosphate ph...	3	1	0.05	0.046	1	MF
+GO:0015269	calcium-activated potassium channel acti...	3	1	0.05	0.046	1	MF
+GO:0031402	sodium ion binding	3	1	0.05	0.046	1	MF
+GO:0001094	TFIID-class transcription factor complex...	3	1	0.05	0.046	1	MF
+GO:0004806	triglyceride lipase activity	3	1	0.05	0.046	1	MF
+GO:0000987	cis-regulatory region sequence-specific ...	57	3	0.9	0.057	1	MF
+GO:0000978	RNA polymerase II cis-regulatory region ...	57	3	0.9	0.057	1	MF
+GO:0008429	phosphatidylethanolamine binding	4	1	0.06	0.061	1	MF
+GO:0004879	nuclear receptor activity	4	1	0.06	0.061	1	MF
+GO:0034593	phosphatidylinositol bisphosphate phosph...	4	1	0.06	0.061	1	MF
+GO:0034596	phosphatidylinositol phosphate 4-phospha...	4	1	0.06	0.061	1	MF
+GO:0016840	carbon-nitrogen lyase activity	4	1	0.06	0.061	1	MF
+GO:0005544	calcium-dependent phospholipid binding	4	1	0.06	0.061	1	MF
+GO:0016842	amidine-lyase activity	4	1	0.06	0.061	1	MF
+GO:0001091	RNA polymerase II general transcription ...	4	1	0.06	0.061	1	MF
+GO:0098531	ligand-activated transcription factor ac...	4	1	0.06	0.061	1	MF
+GO:0004622	lysophospholipase activity	5	1	0.08	0.076	1	MF
+GO:0001223	transcription coactivator binding	5	1	0.08	0.076	1	MF
+GO:0070840	dynein complex binding	5	1	0.08	0.076	1	MF
+GO:0005154	epidermal growth factor receptor binding	5	1	0.08	0.076	1	MF
+GO:0015370	solute:sodium symporter activity	5	1	0.08	0.076	1	MF
+GO:0008483	transaminase activity	5	1	0.08	0.076	1	MF
+GO:0031420	alkali metal ion binding	5	1	0.08	0.076	1	MF
+GO:0017162	aryl hydrocarbon receptor binding	6	1	0.09	0.091	1	MF
+GO:0005200	structural constituent of cytoskeleton	6	1	0.09	0.091	1	MF
+GO:0016645	oxidoreductase activity, acting on the C...	6	1	0.09	0.091	1	MF
+GO:0052866	phosphatidylinositol phosphate phosphata...	6	1	0.09	0.091	1	MF
+GO:0030546	signaling receptor activator activity	6	1	0.09	0.091	1	MF
+GO:0048018	receptor ligand activity	6	1	0.09	0.091	1	MF
+GO:0008013	beta-catenin binding	6	1	0.09	0.091	1	MF
+GO:0016769	transferase activity, transferring nitro...	7	1	0.11	0.105	1	MF
+GO:0050997	quaternary ammonium group binding	7	1	0.11	0.105	1	MF
+GO:0015271	outward rectifier potassium channel acti...	7	1	0.11	0.105	1	MF
+GO:0031210	phosphatidylcholine binding	7	1	0.11	0.105	1	MF
+GO:0030545	signaling receptor regulator activity	7	1	0.11	0.105	1	MF
+GO:0005227	calcium activated cation channel activit...	7	1	0.11	0.105	1	MF
+GO:0035064	methylated histone binding	8	1	0.13	0.119	1	MF
+GO:0005112	Notch binding	8	1	0.13	0.119	1	MF
+GO:0140034	methylation-dependent protein binding	8	1	0.13	0.119	1	MF
+GO:0019843	rRNA binding	8	1	0.13	0.119	1	MF
+GO:0044877	protein-containing complex binding	170	5	2.67	0.12	1	MF
+GO:0000977	RNA polymerase II transcription regulato...	79	3	1.24	0.124	1	MF
+GO:0016655	oxidoreductase activity, acting on NAD(P...	9	1	0.14	0.133	1	MF
+GO:0003955	NAD(P)H dehydrogenase (quinone) activity	9	1	0.14	0.133	1	MF
+GO:0001221	transcription coregulator binding	9	1	0.14	0.133	1	MF
+GO:0008137	NADH dehydrogenase (ubiquinone) activity	9	1	0.14	0.133	1	MF
+GO:0050136	NADH dehydrogenase (quinone) activity	9	1	0.14	0.133	1	MF
+GO:0001098	basal transcription machinery binding	9	1	0.14	0.133	1	MF
+GO:0001099	basal RNA polymerase II transcription ma...	9	1	0.14	0.133	1	MF
+GO:1990841	promoter-specific chromatin binding	9	1	0.14	0.133	1	MF
+GO:0070888	E-box binding	9	1	0.14	0.133	1	MF
+GO:0005249	voltage-gated potassium channel activity	10	1	0.16	0.147	1	MF
+GO:0003954	NADH dehydrogenase activity	10	1	0.16	0.147	1	MF
+GO:0017171	serine hydrolase activity	10	1	0.16	0.147	1	MF
+GO:0016597	amino acid binding	10	1	0.16	0.147	1	MF
+GO:0003678	DNA helicase activity	11	1	0.17	0.16	1	MF
+GO:0015294	solute:cation symporter activity	11	1	0.17	0.16	1	MF
+GO:0000976	transcription cis-regulatory region bind...	89	3	1.4	0.16	1	MF
+GO:0035091	phosphatidylinositol binding	46	2	0.72	0.161	1	MF
+GO:0070405	ammonium ion binding	12	1	0.19	0.174	1	MF
+GO:0005178	integrin binding	12	1	0.19	0.174	1	MF
+GO:0030971	receptor tyrosine kinase binding	12	1	0.19	0.174	1	MF
+GO:0070851	growth factor receptor binding	12	1	0.19	0.174	1	MF
+GO:0015293	symporter activity	12	1	0.19	0.174	1	MF
+GO:0017025	TBP-class protein binding	12	1	0.19	0.174	1	MF
+GO:0035639	purine ribonucleoside triphosphate bindi...	93	3	1.46	0.176	1	MF
+GO:1990837	sequence-specific double-stranded DNA bi...	95	3	1.49	0.184	1	MF
+GO:0001067	transcription regulatory region nucleic ...	98	3	1.54	0.196	1	MF
+GO:0004860	protein kinase inhibitor activity	14	1	0.22	0.199	1	MF
+GO:0019210	kinase inhibitor activity	14	1	0.22	0.199	1	MF
+GO:1990782	protein tyrosine kinase binding	14	1	0.22	0.199	1	MF
+GO:0005267	potassium channel activity	14	1	0.22	0.199	1	MF
+GO:0140296	general transcription initiation factor ...	14	1	0.22	0.199	1	MF
+GO:0015453	oxidoreduction-driven active transmembra...	14	1	0.22	0.199	1	MF
+GO:0019904	protein domain specific binding	151	4	2.37	0.207	1	MF
+GO:0015081	sodium ion transmembrane transporter act...	15	1	0.24	0.212	1	MF
+GO:0042578	phosphoric ester hydrolase activity	57	2	0.9	0.225	1	MF
+GO:0004620	phospholipase activity	16	1	0.25	0.225	1	MF
+GO:0008094	ATP-dependent activity, acting on DNA	16	1	0.25	0.225	1	MF
+GO:0051879	Hsp90 protein binding	16	1	0.25	0.225	1	MF
+GO:0005126	cytokine receptor binding	16	1	0.25	0.225	1	MF
+GO:0003690	double-stranded DNA binding	106	3	1.66	0.229	1	MF
+GO:0046873	metal ion transmembrane transporter acti...	58	2	0.91	0.23	1	MF
+GO:0036094	small molecule binding	158	4	2.48	0.231	1	MF
+GO:0032553	ribonucleotide binding	107	3	1.68	0.234	1	MF
+GO:0032555	purine ribonucleotide binding	107	3	1.68	0.234	1	MF
+GO:0002039	p53 binding	17	1	0.27	0.237	1	MF
+GO:0031406	carboxylic acid binding	17	1	0.27	0.237	1	MF
+GO:0043177	organic acid binding	17	1	0.27	0.237	1	MF
+GO:0015079	potassium ion transmembrane transporter ...	17	1	0.27	0.237	1	MF
+GO:0016788	hydrolase activity, acting on ester bond...	109	3	1.71	0.242	1	MF
+GO:0022804	active transmembrane transporter activit...	60	2	0.94	0.242	1	MF
+GO:0043167	ion binding	329	7	5.17	0.245	1	MF
+GO:0017076	purine nucleotide binding	110	3	1.73	0.247	1	MF
+GO:0022843	voltage-gated cation channel activity	18	1	0.28	0.249	1	MF
+GO:0008081	phosphoric diester hydrolase activity	18	1	0.28	0.249	1	MF
+GO:0043565	sequence-specific DNA binding	112	3	1.76	0.255	1	MF
+GO:0140030	modification-dependent protein binding	19	1	0.3	0.261	1	MF
+GO:0016651	oxidoreductase activity, acting on NAD(P...	20	1	0.31	0.273	1	MF
+GO:0004386	helicase activity	20	1	0.31	0.273	1	MF
+GO:0005543	phospholipid binding	66	2	1.04	0.278	1	MF
+GO:0009055	electron transfer activity	21	1	0.33	0.284	1	MF
+GO:0005524	ATP binding	68	2	1.07	0.29	1	MF
+GO:0019901	protein kinase binding	120	3	1.88	0.29	1	MF
+GO:0015103	inorganic anion transmembrane transporte...	22	1	0.35	0.296	1	MF
+GO:1901265	nucleoside phosphate binding	122	3	1.92	0.299	1	MF
+GO:0000166	nucleotide binding	122	3	1.92	0.299	1	MF
+GO:0016746	acyltransferase activity	23	1	0.36	0.307	1	MF
+GO:0019900	kinase binding	126	3	1.98	0.317	1	MF
+GO:0022832	voltage-gated channel activity	24	1	0.38	0.318	1	MF
+GO:0015291	secondary active transmembrane transport...	24	1	0.38	0.318	1	MF
+GO:0005244	voltage-gated ion channel activity	24	1	0.38	0.318	1	MF
+GO:0097367	carbohydrate derivative binding	127	3	1.99	0.321	1	MF
+GO:0043021	ribonucleoprotein complex binding	25	1	0.39	0.329	1	MF
+GO:0051087	chaperone binding	25	1	0.39	0.329	1	MF
+GO:0038023	signaling receptor activity	76	2	1.19	0.337	1	MF
+GO:0060089	molecular transducer activity	77	2	1.21	0.343	1	MF
+GO:0042393	histone binding	27	1	0.42	0.35	1	MF
+GO:0016874	ligase activity	27	1	0.42	0.35	1	MF
+GO:0003824	catalytic activity	740	13	11.62	0.36	1	MF
+GO:0019887	protein kinase regulator activity	28	1	0.44	0.36	1	MF
+GO:0030165	PDZ domain binding	28	1	0.44	0.36	1	MF
+GO:0032559	adenyl ribonucleotide binding	81	2	1.27	0.366	1	MF
+GO:0016491	oxidoreductase activity	81	2	1.27	0.366	1	MF
+GO:0032549	ribonucleoside binding	29	1	0.46	0.371	1	MF
+GO:0005525	GTP binding	29	1	0.46	0.371	1	MF
+GO:0032550	purine ribonucleoside binding	29	1	0.46	0.371	1	MF
+GO:0050839	cell adhesion molecule binding	29	1	0.46	0.371	1	MF
+GO:0030554	adenyl nucleotide binding	83	2	1.3	0.378	1	MF
+GO:0008289	lipid binding	83	2	1.3	0.378	1	MF
+GO:0016829	lyase activity	30	1	0.47	0.381	1	MF
+GO:0022890	inorganic cation transmembrane transport...	85	2	1.33	0.389	1	MF
+GO:0001882	nucleoside binding	31	1	0.49	0.391	1	MF
+GO:0001883	purine nucleoside binding	31	1	0.49	0.391	1	MF
+GO:0019207	kinase regulator activity	31	1	0.49	0.391	1	MF
+GO:0032561	guanyl ribonucleotide binding	32	1	0.5	0.4	1	MF
+GO:0019001	guanyl nucleotide binding	32	1	0.5	0.4	1	MF
+GO:0022857	transmembrane transporter activity	146	3	2.29	0.406	1	MF
+GO:0008324	cation transmembrane transporter activit...	88	2	1.38	0.407	1	MF
+GO:0031072	heat shock protein binding	33	1	0.52	0.41	1	MF
+GO:0046982	protein heterodimerization activity	92	2	1.44	0.429	1	MF
+GO:0022853	active ion transmembrane transporter act...	36	1	0.57	0.438	1	MF
+GO:0015399	primary active transmembrane transporter...	36	1	0.57	0.438	1	MF
+GO:0003924	GTPase activity	36	1	0.57	0.438	1	MF
+GO:0016757	glycosyltransferase activity	37	1	0.58	0.447	1	MF
+GO:0140097	catalytic activity, acting on DNA	37	1	0.58	0.447	1	MF
+GO:0004857	enzyme inhibitor activity	38	1	0.6	0.456	1	MF
+GO:0061629	RNA polymerase II-specific DNA-binding t...	38	1	0.6	0.456	1	MF
+GO:0005509	calcium ion binding	39	1	0.61	0.465	1	MF
+GO:0016791	phosphatase activity	39	1	0.61	0.465	1	MF
+GO:0140297	DNA-binding transcription factor binding	41	1	0.64	0.482	1	MF
+GO:0022839	ion gated channel activity	42	1	0.66	0.49	1	MF
+GO:0008017	microtubule binding	43	1	0.68	0.498	1	MF
+GO:0022836	gated channel activity	44	1	0.69	0.506	1	MF
+GO:0000981	DNA-binding transcription factor activit...	107	2	1.68	0.51	1	MF
+GO:1901363	heterocyclic compound binding	428	7	6.72	0.526	1	MF
+GO:0005215	transporter activity	176	3	2.76	0.534	1	MF
+GO:0015318	inorganic molecular entity transmembrane...	112	2	1.76	0.535	1	MF
+GO:0003676	nucleic acid binding	304	5	4.77	0.535	1	MF
+GO:0005261	cation channel activity	48	1	0.75	0.538	1	MF
+GO:0097159	organic cyclic compound binding	434	7	6.82	0.543	1	MF
+GO:0008509	anion transmembrane transporter activity	49	1	0.77	0.545	1	MF
+GO:0017111	nucleoside-triphosphatase activity	116	2	1.82	0.555	1	MF
+GO:0015075	ion transmembrane transporter activity	116	2	1.82	0.555	1	MF
+GO:0016462	pyrophosphatase activity	119	2	1.87	0.569	1	MF
+GO:0016817	hydrolase activity, acting on acid anhyd...	119	2	1.87	0.569	1	MF
+GO:0016818	hydrolase activity, acting on acid anhyd...	119	2	1.87	0.569	1	MF
+GO:0003677	DNA binding	185	3	2.91	0.57	1	MF
+GO:0016787	hydrolase activity	315	5	4.95	0.57	1	MF
+GO:0015631	tubulin binding	55	1	0.86	0.588	1	MF
+GO:0005198	structural molecule activity	57	1	0.9	0.601	1	MF
+GO:0008092	cytoskeletal protein binding	127	2	1.99	0.606	1	MF
+GO:0003700	DNA-binding transcription factor activit...	130	2	2.04	0.619	1	MF
+GO:0005216	ion channel activity	60	1	0.94	0.62	1	MF
+GO:0001228	DNA-binding transcription activator acti...	61	1	0.96	0.626	1	MF
+GO:0001216	DNA-binding transcription activator acti...	61	1	0.96	0.626	1	MF
+GO:0015267	channel activity	62	1	0.97	0.632	1	MF
+GO:0022803	passive transmembrane transporter activi...	62	1	0.97	0.632	1	MF
+GO:0046983	protein dimerization activity	206	3	3.23	0.647	1	MF
+GO:0003723	RNA binding	141	2	2.21	0.665	1	MF
+GO:0016887	ATP hydrolysis activity	75	1	1.18	0.704	1	MF
+GO:0005515	protein binding	950	14	14.92	0.722	1	MF
+GO:0042803	protein homodimerization activity	158	2	2.48	0.727	1	MF
+GO:0140657	ATP-dependent activity	83	1	1.3	0.741	1	MF
+GO:0140640	catalytic activity, acting on a nucleic ...	83	1	1.3	0.741	1	MF
+GO:0046872	metal ion binding	167	2	2.62	0.756	1	MF
+GO:0003682	chromatin binding	87	1	1.37	0.757	1	MF
+GO:0016740	transferase activity	320	4	5.03	0.772	1	MF
+GO:0004842	ubiquitin-protein transferase activity	92	1	1.44	0.777	1	MF
+GO:0019787	ubiquitin-like protein transferase activ...	95	1	1.49	0.788	1	MF
+GO:0043169	cation binding	182	2	2.86	0.799	1	MF
+GO:0140110	transcription regulator activity	186	2	2.92	0.809	1	MF
+GO:0098772	molecular function regulator activity	188	2	2.95	0.814	1	MF
+GO:0042802	identical protein binding	268	3	4.21	0.819	1	MF
+GO:0008134	transcription factor binding	119	1	1.87	0.859	1	MF
+GO:0005488	binding	1204	17	18.91	0.869	1	MF
+GO:0030234	enzyme regulator activity	160	1	2.51	0.931	1	MF
+GO:0019899	enzyme binding	387	3	6.08	0.963	1	MF
+GO:0140096	catalytic activity, acting on a protein	316	1	4.96	0.996	1	MF
+GO:0003674	molecular_function	1592	25	25	1	1	MF
+GO:0005786	signal recognition particle, endoplasmic...	1	1	0.01	0.015	1	CC
+GO:0048500	signal recognition particle	1	1	0.01	0.015	1	CC
+GO:0008352	katanin complex	1	1	0.01	0.015	1	CC
+GO:0035097	histone methyltransferase complex	16	2	0.24	0.023	1	CC
+GO:0005902	microvillus	17	2	0.25	0.025	1	CC
+GO:0034752	cytosolic aryl hydrocarbon receptor comp...	2	1	0.03	0.03	1	CC
+GO:0034708	methyltransferase complex	19	2	0.28	0.031	1	CC
+GO:0034753	nuclear aryl hydrocarbon receptor comple...	3	1	0.04	0.044	1	CC
+GO:0005829	cytosol	703	15	10.49	0.057	1	CC
+GO:0005782	peroxisomal matrix	4	1	0.06	0.058	1	CC
+GO:0046581	intercellular canaliculus	4	1	0.06	0.058	1	CC
+GO:0031528	microvillus membrane	4	1	0.06	0.058	1	CC
+GO:0031907	microbody lumen	4	1	0.06	0.058	1	CC
+GO:0034751	aryl hydrocarbon receptor complex	4	1	0.06	0.058	1	CC
+GO:0048188	Set1C/COMPASS complex	4	1	0.06	0.058	1	CC
+GO:0071339	MLL1 complex	5	1	0.07	0.073	1	CC
+GO:0044232	organelle membrane contact site	6	1	0.09	0.086	1	CC
+GO:0044665	MLL1/2 complex	7	1	0.1	0.1	1	CC
+GO:0098858	actin-based cell projection	37	2	0.55	0.104	1	CC
+GO:1902495	transmembrane transporter complex	38	2	0.57	0.109	1	CC
+GO:0045169	fusome	8	1	0.12	0.114	1	CC
+GO:1990351	transporter complex	40	2	0.6	0.118	1	CC
+GO:0008076	voltage-gated potassium channel complex	9	1	0.13	0.127	1	CC
+GO:0034705	potassium channel complex	9	1	0.13	0.127	1	CC
+GO:0005887	integral component of plasma membrane	136	4	2.03	0.14	1	CC
+GO:0045271	respiratory chain complex I	12	1	0.18	0.166	1	CC
+GO:0005747	mitochondrial respiratory chain complex ...	12	1	0.18	0.166	1	CC
+GO:0030964	NADH dehydrogenase complex	12	1	0.18	0.166	1	CC
+GO:0031226	intrinsic component of plasma membrane	146	4	2.18	0.168	1	CC
+GO:0031526	brush border membrane	13	1	0.19	0.178	1	CC
+GO:0005819	spindle	52	2	0.78	0.181	1	CC
+GO:0045121	membrane raft	53	2	0.79	0.186	1	CC
+GO:0098857	membrane microdomain	53	2	0.79	0.186	1	CC
+GO:0005615	extracellular space	55	2	0.82	0.197	1	CC
+GO:0031234	extrinsic component of cytoplasmic side ...	15	1	0.22	0.203	1	CC
+GO:0031902	late endosome membrane	15	1	0.22	0.203	1	CC
+GO:0098803	respiratory chain complex	15	1	0.22	0.203	1	CC
+GO:0005901	caveola	16	1	0.24	0.215	1	CC
+GO:0072686	mitotic spindle	17	1	0.25	0.226	1	CC
+GO:0005746	mitochondrial respirasome	18	1	0.27	0.238	1	CC
+GO:0070469	respirasome	18	1	0.27	0.238	1	CC
+GO:0005811	lipid droplet	19	1	0.28	0.25	1	CC
+GO:1990204	oxidoreductase complex	20	1	0.3	0.261	1	CC
+GO:0019897	extrinsic component of plasma membrane	21	1	0.31	0.272	1	CC
+GO:0044853	plasma membrane raft	21	1	0.31	0.272	1	CC
+GO:0005777	peroxisome	21	1	0.31	0.272	1	CC
+GO:0042579	microbody	21	1	0.31	0.272	1	CC
+GO:0098800	inner mitochondrial membrane protein com...	21	1	0.31	0.272	1	CC
+GO:0034703	cation channel complex	21	1	0.31	0.272	1	CC
+GO:0030496	midbody	23	1	0.34	0.294	1	CC
+GO:0034702	ion channel complex	23	1	0.34	0.294	1	CC
+GO:0005739	mitochondrion	245	5	3.66	0.298	1	CC
+GO:0000922	spindle pole	24	1	0.36	0.305	1	CC
+GO:0005903	brush border	24	1	0.36	0.305	1	CC
+GO:0005759	mitochondrial matrix	77	2	1.15	0.32	1	CC
+GO:0005789	endoplasmic reticulum membrane	139	3	2.07	0.344	1	CC
+GO:0098862	cluster of actin-based cell projections	28	1	0.42	0.346	1	CC
+GO:0005911	cell-cell junction	82	2	1.22	0.348	1	CC
+GO:0070161	anchoring junction	82	2	1.22	0.348	1	CC
+GO:0016020	membrane	838	14	12.51	0.349	1	CC
+GO:0042175	nuclear outer membrane-endoplasmic retic...	141	3	2.1	0.353	1	CC
+GO:0098827	endoplasmic reticulum subcompartment	144	3	2.15	0.365	1	CC
+GO:0005875	microtubule associated complex	30	1	0.45	0.365	1	CC
+GO:0043235	receptor complex	31	1	0.46	0.375	1	CC
+GO:0005874	microtubule	32	1	0.48	0.385	1	CC
+GO:0031965	nuclear membrane	37	1	0.55	0.43	1	CC
+GO:0098798	mitochondrial protein-containing complex	37	1	0.55	0.43	1	CC
+GO:0005912	adherens junction	40	1	0.6	0.456	1	CC
+GO:0005654	nucleoplasm	493	8	7.36	0.463	1	CC
+GO:0030176	integral component of endoplasmic reticu...	41	1	0.61	0.464	1	CC
+GO:0030426	growth cone	41	1	0.61	0.464	1	CC
+GO:0099513	polymeric cytoskeletal fiber	41	1	0.61	0.464	1	CC
+GO:0031227	intrinsic component of endoplasmic retic...	41	1	0.61	0.464	1	CC
+GO:0016021	integral component of membrane	298	5	4.45	0.466	1	CC
+GO:0019898	extrinsic component of membrane	42	1	0.63	0.472	1	CC
+GO:0009898	cytoplasmic side of plasma membrane	42	1	0.63	0.472	1	CC
+GO:0030427	site of polarized growth	43	1	0.64	0.48	1	CC
+GO:0005765	lysosomal membrane	43	1	0.64	0.48	1	CC
+GO:0005770	late endosome	45	1	0.67	0.496	1	CC
+GO:0031224	intrinsic component of membrane	312	5	4.66	0.51	1	CC
+GO:0098562	cytoplasmic side of membrane	47	1	0.7	0.511	1	CC
+GO:0009925	basal plasma membrane	47	1	0.7	0.511	1	CC
+GO:0098852	lytic vacuole membrane	47	1	0.7	0.511	1	CC
+GO:0016323	basolateral plasma membrane	47	1	0.7	0.511	1	CC
+GO:0008021	synaptic vesicle	48	1	0.72	0.519	1	CC
+GO:0031984	organelle subcompartment	259	4	3.87	0.555	1	CC
+GO:0005783	endoplasmic reticulum	262	4	3.91	0.564	1	CC
+GO:0070382	exocytic vesicle	55	1	0.82	0.568	1	CC
+GO:0045178	basal part of cell	55	1	0.82	0.568	1	CC
+GO:0005576	extracellular region	126	2	1.88	0.572	1	CC
+GO:0140513	nuclear protein-containing complex	196	3	2.93	0.574	1	CC
+GO:0012505	endomembrane system	613	9	9.15	0.597	1	CC
+GO:0016607	nuclear speck	61	1	0.91	0.607	1	CC
+GO:0005774	vacuolar membrane	62	1	0.93	0.613	1	CC
+GO:0098797	plasma membrane protein complex	62	1	0.93	0.613	1	CC
+GO:0010008	endosome membrane	63	1	0.94	0.619	1	CC
+GO:0030424	axon	141	2	2.1	0.635	1	CC
+GO:0098552	side of membrane	66	1	0.99	0.636	1	CC
+GO:1990234	transferase complex	142	2	2.12	0.639	1	CC
+GO:0009986	cell surface	67	1	1	0.642	1	CC
+GO:0005743	mitochondrial inner membrane	67	1	1	0.642	1	CC
+GO:0031253	cell projection membrane	67	1	1	0.642	1	CC
+GO:0005802	trans-Golgi network	67	1	1	0.642	1	CC
+GO:0031981	nuclear lumen	570	8	8.51	0.655	1	CC
+GO:0043233	organelle lumen	708	10	10.57	0.659	1	CC
+GO:0031974	membrane-enclosed lumen	708	10	10.57	0.659	1	CC
+GO:0070013	intracellular organelle lumen	708	10	10.57	0.659	1	CC
+GO:0005635	nuclear envelope	72	1	1.07	0.669	1	CC
+GO:0016324	apical plasma membrane	72	1	1.07	0.669	1	CC
+GO:0019866	organelle inner membrane	74	1	1.1	0.679	1	CC
+GO:0031301	integral component of organelle membrane	76	1	1.13	0.689	1	CC
+GO:0098796	membrane protein complex	156	2	2.33	0.691	1	CC
+GO:0005667	transcription regulator complex	77	1	1.15	0.694	1	CC
+GO:0031300	intrinsic component of organelle membran...	78	1	1.16	0.698	1	CC
+GO:0005768	endosome	159	2	2.37	0.702	1	CC
+GO:0005737	cytoplasm	1445	21	21.57	0.709	1	CC
+GO:0030133	transport vesicle	81	1	1.21	0.712	1	CC
+GO:0150034	distal axon	83	1	1.24	0.721	1	CC
+GO:0030054	cell junction	244	3	3.64	0.727	1	CC
+GO:1902494	catalytic complex	248	3	3.7	0.738	1	CC
+GO:0031090	organelle membrane	470	6	7.01	0.742	1	CC
+GO:0099512	supramolecular fiber	89	1	1.33	0.746	1	CC
+GO:0099081	supramolecular polymer	89	1	1.33	0.746	1	CC
+GO:0098590	plasma membrane region	176	2	2.63	0.756	1	CC
+GO:0005813	centrosome	92	1	1.37	0.758	1	CC
+GO:0031967	organelle envelope	177	2	2.64	0.759	1	CC
+GO:0031975	envelope	177	2	2.64	0.759	1	CC
+GO:0005856	cytoskeleton	256	3	3.82	0.759	1	CC
+GO:0015630	microtubule cytoskeleton	180	2	2.69	0.767	1	CC
+GO:0005764	lysosome	96	1	1.43	0.773	1	CC
+GO:0031966	mitochondrial membrane	97	1	1.45	0.777	1	CC
+GO:0045177	apical part of cell	97	1	1.45	0.777	1	CC
+GO:0005622	intracellular anatomical structure	1700	25	25.37	0.78	1	CC
+GO:0098793	presynapse	99	1	1.48	0.784	1	CC
+GO:0005886	plasma membrane	492	6	7.34	0.785	1	CC
+GO:0000323	lytic vacuole	100	1	1.49	0.787	1	CC
+GO:0120025	plasma membrane bounded cell projection	355	4	5.3	0.807	1	CC
+GO:0042995	cell projection	356	4	5.31	0.809	1	CC
+GO:0005740	mitochondrial envelope	108	1	1.61	0.813	1	CC
+GO:0016604	nuclear body	115	1	1.72	0.832	1	CC
+GO:0071944	cell periphery	525	6	7.84	0.841	1	CC
+GO:0005815	microtubule organizing center	120	1	1.79	0.845	1	CC
+GO:0043229	intracellular organelle	1511	21	22.55	0.858	1	CC
+GO:0005773	vacuole	126	1	1.88	0.86	1	CC
+GO:1990904	ribonucleoprotein complex	126	1	1.88	0.86	1	CC
+GO:0043025	neuronal cell body	127	1	1.9	0.862	1	CC
+GO:0048471	perinuclear region of cytoplasm	132	1	1.97	0.873	1	CC
+GO:0005730	nucleolus	133	1	1.99	0.875	1	CC
+GO:0043231	intracellular membrane-bounded organelle	1410	19	21.04	0.881	1	CC
+GO:0044297	cell body	137	1	2.04	0.883	1	CC
+GO:0099503	secretory vesicle	138	1	2.06	0.885	1	CC
+GO:0099080	supramolecular complex	140	1	2.09	0.888	1	CC
+GO:0031410	cytoplasmic vesicle	326	3	4.87	0.89	1	CC
+GO:0097708	intracellular vesicle	326	3	4.87	0.89	1	CC
+GO:0030659	cytoplasmic vesicle membrane	146	1	2.18	0.899	1	CC
+GO:0098791	Golgi apparatus subcompartment	147	1	2.19	0.9	1	CC
+GO:0012506	vesicle membrane	148	1	2.21	0.902	1	CC
+GO:0005634	nucleus	860	10	12.84	0.903	1	CC
+GO:0043226	organelle	1540	21	22.99	0.907	1	CC
+GO:0043005	neuron projection	252	2	3.76	0.908	1	CC
+GO:0140535	intracellular protein-containing complex	154	1	2.3	0.911	1	CC
+GO:0031982	vesicle	344	3	5.13	0.912	1	CC
+GO:0043227	membrane-bounded organelle	1458	19	21.76	0.939	1	CC
+GO:0045202	synapse	179	1	2.67	0.941	1	CC
+GO:0036477	somatodendritic compartment	180	1	2.69	0.942	1	CC
+GO:0043228	non-membrane-bounded organelle	551	5	8.22	0.948	1	CC
+GO:0043232	intracellular non-membrane-bounded organ...	551	5	8.22	0.948	1	CC
+GO:0032991	protein-containing complex	742	7	11.07	0.968	1	CC
+GO:0110165	cellular anatomical entity	1807	27	26.97	0.97	1	CC
+GO:0005794	Golgi apparatus	240	1	3.58	0.979	1	CC
+GO:0098588	bounding membrane of organelle	283	1	4.22	0.99	1	CC
+GO:0005575	cellular_component	1809	27	27	1	1	CC
