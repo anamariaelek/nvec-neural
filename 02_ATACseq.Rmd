@@ -2337,8 +2337,6 @@ fwrite(
 )
 ```
 
-Subset targets for expressed genes.
-
 ```{r}
 # load motif binding in peaks
 bound_dt <- fread(file.path(bind_dir, "motifs_all.tsv.gz"))
@@ -2359,7 +2357,11 @@ bound_dt <- merge.data.table(
   all.x = TRUE, sort = FALSE, allow.cartesian = TRUE
 )
 bound_dt <- bound_dt[!is.na(target_gene)]
+```
 
+Aggregate peaks and subset targets for expressed genes
+
+```{r}
 # parse only motif + gene + target gene + sample info, for pos samples
 mo_dt <- bound_dt[order(-footprint_score)][, .SD[1], .(motif, gene, target_gene, sample)][grep("pos", sample)]
 mo_dt <- unique(mo_dt[, .(
@@ -2495,4 +2497,66 @@ pdf(
 )
 hits_gp
 dev.off()
+```
+
+Find different peaks for same genes in different reporter lines
+
+```{r}
+bound_pos_dt <- bound_dt[grepl("pos",sample)]#[bound==1]
+bound_pos_dt[, npeaks := length(unique(.SD$peak)), target_gene]
+
+# subset for expressed genes
+bound_pos_dt <- merge.data.table(bound_pos_dt, tpm_genes_dt, by = c("sample", "gene"))
+bound_pos_dt <- merge.data.table(bound_pos_dt, tmp_tgenes_dt, by = c("sample", "target_gene"))
+bound_pos_dt <- bound_pos_dt[expression_tpm > 1000]
+
+# any bound TF per peak
+bound_pos_dt <- bound_pos_dt[, bound := any(bound==1), .(peak, target_gene, sample)]
+bound_pos_dt[, c("gene","name","pfam", "expression_tpm"):= NULL]
+bound_pos_dt <- unique(bound_pos_dt)
+
+# # # # # # # # # # 
+# peaks approach  #
+# # # # # # # # # #
+
+# genes only expressed in fox
+genes_fox <- unique(bound_pos_dt[sample=="Fox_pos" & target_expression_tpm > 1000]$target_gene)
+genes_notncol <- unique(bound_pos_dt[sample=="Ncol_pos" & target_expression_tpm < 1000]$target_gene)
+genes_notelav <- unique(bound_pos_dt[sample=="Elav_pos" & target_expression_tpm < 1000]$target_gene)
+genes_not <- intersect(genes_notncol, genes_notelav)
+length(genes_not)
+# 10524
+genes_cand <- intersect(genes_not, genes_fox)
+length(genes_cand)
+# 612
+
+# peaks that are bound only in fox
+pks_notncol=unique(bound_pos_dt[(sample=="Ncol_pos" & bound==0)]$peak)
+pks_notelav=unique(bound_pos_dt[(sample=="Elav_pos" & bound==0)]$peak)
+pks_not=intersect(pks_notelav, pks_notncol)
+length(pks_not)
+# 31335
+pks_cand=intersect(pks_not, pks_fox)
+length(pks_cand)
+# 1173
+
+# get genes associated to candidate peaks
+cands_dt <- unique(bound_pos_dt[target_gene %in% genes_cand])
+cands_dt <- unique(cands_dt[peak %in% pks_cand][sample=="Fox_pos"][order(-footprint_score)][,.(target_gene, peak, footprint_score)])
+
+# # # # # # # # # # 
+# genes approach  #
+# # # # # # # # # #
+
+# in how many lines is each peak associated to gene
+pks_cnt_dt <- unique(bound_pos_dt[,.(target_gene,peak,sample)])[,.N,.(target_gene,peak)]
+
+# in how many lines are all peaks associated to each gene
+gns_cnt_dt <- pks_cnt_dt[,.(N=length(unique(.SD$N))),target_gene]
+
+# get candidate genes that have different peaks in three reporter lines
+cands <- bound_pos_dt[
+  target_gene %in% gns_cnt_dt[N==3]$target_gene &
+    peak %in% pks_cnt_dt[target_gene %in% gns_cnt_dt[N==3]$target_gene]$peak
+]
 ```

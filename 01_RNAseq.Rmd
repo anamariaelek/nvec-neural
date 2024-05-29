@@ -1151,3 +1151,96 @@ pdf(
 draw(hm)
 dev.off()
 ```
+
+## Files for browser
+
+Merge per-sample bigwig files for visualization in the browser
+
+```{bash eval=FALSE}
+# Convert bigWig to bedGraph
+cd RNASEQ_QUANTIFICATION/bw
+
+for bw in *bw
+do
+  echo $bw
+  ~/bin/UCSC/bigWigToBedGraph $bw ${bw%%.bw}.bedGraph
+done
+```
+
+Map chr ids to Refseq names used in the genome browser
+
+```{r eval=FALSE}
+require(data.table)
+require(stringr)
+
+mapping_dt <- fread("genome/sequence_report.tsv",select=c(4,10))
+setnames(mapping_dt, c("chromosome", "refseq"))
+mappings <- mapping_dt[, setNames(refseq, chromosome)]
+
+# list all bedgraph files
+bedgraph_fn <- list.files("RNASEQ_QUANTIFICATION/bw", pattern = "bedGraph", full.names = TRUE)
+
+# chromosome sizes
+chr_size <- fread("genome/Nvec_vc1.1_gDNA_mtDNA.fasta.fai", select = 1:2, col.names = c("chr", "end"))
+chr_size[, start:=1]
+chr_seqinfo <- chr_size[, setNames(end, chr)]
+chr_gr <- makeGRangesFromDataFrame(chr_size, start.field = "start", end.field = "end", seqinfo = chr_seqinfo)
+
+# loop over all bedgraph files and replace chromosome names
+for (fn in bedgraph_fn) {
+  
+  bed_dt <- fread(fn, col.names = c("chr", "start", "end", "value"))
+
+  # check that all chr names can be matched
+  if (!all(bed_dt$chr %in% mapping_dt$chromosome)) {
+
+    warning(sprintf("Some of the chr names in %s couldnt be matched!", fn))
+
+  } else {
+
+    # match and replace chr names
+    bed_dt[, seqnames := mapping_dt[match(chr, chromosome), refseq]]
+    bed_dt[, chr := NULL]
+    setcolorder(bed_dt, "seqnames")
+
+    # restrict to chromosome coordinates
+    bed_gr <- makeGRangesFromDataFrame(bed_dt, keep.extra.columns = TRUE, seqinfo = chr_seqinfo)
+    bed_trim_gr <- trim(bed_gr)
+    bed_trim <- as.data.table(bed_trim_gr)
+    bed_trim[, c("width", "strand") := NULL]
+
+    # save
+    fwrite(bed_trim, fn, sep = "\t", quote = FALSE, col.names = FALSE)
+    message(sprintf("Saved %s", fn))
+  }
+}
+
+for (fn in bedgraph_fn) {
+  
+  bed_dt <- fread(fn, col.names = c("chr", "start", "end", "value"))
+  #print(bed_dt[, .N, start<end])
+  bed_trim <- bed_dt[start<end]
+  fwrite(bed_trim, fn, sep = "\t", quote = FALSE, col.names = FALSE)
+  message(sprintf("Saved %s", fn))
+
+}
+```
+
+Merge bedGraph files and convert to bigwig
+
+```{bash eval=FALSE}
+cd RNASEQ_QUANTIFICATION/bw
+
+genome_sizes="../../genome/Nvec_vc1.1_gDNA_mtDNA.fasta.fai"
+
+# Merge bigWig files per condition
+for ID in FoxPos FoxNeg ElavPos ElavNeg NcolPos NcolNeg
+do
+  bws=$( ls *${ID}*.bw)
+  bedgraph=$ID.bedGraph
+  bw=$ID.bw
+  echo $bws ">" $bw
+  ~/bin/UCSC/bigWigMerge $bws $bedgraph
+  ~/bin/UCSC/bedGraphToBigWig $bedgraph $genome_sizes $bw
+done
+```
